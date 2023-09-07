@@ -1,0 +1,112 @@
+\documentclass[aspectratio=169,xcolor=dvipsnames]{beamer}
+\usetheme{SimplePlus}
+
+\usepackage{hyperref}
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{cancel}
+\usepackage{lineno}
+\modulolinenumbers[5]
+\usepackage{booktabs}
+\usepackage{amssymb,amsmath,nccmath}
+\usepackage{cclicenses}
+\usepackage{makecell}
+\usepackage{lscape,array}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}} 
+\usepackage[thin, , thinc]{esdiff}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{framed}  
+\usepackage[font=small,skip=0pt]{caption}
+\newcommand{\?}{}
+\begin{document}
+\begin{frame}{Preliminary Notation I}
+\begin{itemize}
+\item $Y_{it}$ is the observed mortality in county i at biweek t. $t=1\cdots T$
+\item $E_{it}$ is the expected mortality count if risk of mortality was uniform across the population in county i at biweek t. 
+\end{itemize}
+\[E_{it}=\frac{Pop_{i}}{\sum_i{Pop_i}}*\big(\sum_i(Y_{it})\big)\]
+\begin{itemize}
+\item $Pop_i$ is the population of county i
+\item County populations change but for the purpose of the study we assume the ratio of county i population relative to the state is approximately constant through the time period.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Preliminary Notation II}
+\begin{itemize}
+\item $K_{t}$ will represent a regime at time period $t$.(Increase/Decrease, BullMarket vs BearMarket etc...) it can take values between $1 \cdots K$ 
+\item There are N spatial "connected" areas. 
+\item The number of spatial areas is $i=1 \cdots I$ 
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Likelihood of the HMM Model}
+\begin{itemize}
+\item For the calculations we will need to obtain the likelihood     
+\end{itemize}
+\[P(Y_{1:T},k_{1:T};\omega)\]
+\begin{itemize}
+\item where $\omega$ represents all the parameters.
+\item This is not trivial. 
+\item We can assume distributions for certain components of the model
+\end{itemize}
+\[P(Y_{i}|\lambda_{k})\]
+\[P(K_{1}=k)\]
+\begin{itemize}
+\item First let's understand mixture models.
+\end{itemize}
+\end{frame}
+\begin{frame}{Model-Simplest Mixture Model}
+\[Y_{it} \sim Poisson(\lambda_{it1})\pi_1+\cdots+ Poisson(\lambda_{itk})\pi_{tk}+\cdots + Poisson(\lambda_{itK})\pi_{tK}\]
+\begin{itemize}
+\item Recall that sum of Poisson r.v. is also Poisson distributed with the sum of their means as the overall mean. 
+\end{itemize}
+\[\lambda_{itk} = E_{it}*exp(\mu_{k})\]
+\[\lambda_{it}=\sum_k E_{it}*exp(\mu_{k})*\pi_{tk}\]
+\[k=1,\cdots,K\]
+\begin{itemize}
+    \item k is regime for simplicity take K=2
+    \item $\mu_{1} < \mu_{2}$ for identifiablity
+    \item $\sum_{k} \pi_{k} =1$
+
+\end{itemize} 
+\end{frame}
+\begin{frame}{Likelihood of the Simplest Mixture Model}
+\[L(\lambda;Y) = \]
+\[\prod_{i=1}^{i=N}\prod_{t=1}^{t=T}Pois(\lambda_{it}) \]
+\begin{itemize}
+\item Since we assume $Y$ has a mixture distriubution of K components...
+\end{itemize}
+\[\prod_{i=1}^{i=58}\prod_{t=1}^{t=75}\sum_{k=1}^{k=K}Pois(E_{it}*\mu_k) \times \pi_{ik}\]
+\end{frame}
+
+\begin{frame}{Model-An additional step extending $\pi$}
+\[Y_{it} \sim Poisson(\lambda_{it})\]
+\[\lambda_{itk} = E_{it}*exp(\mu_{k})\]
+
+\[\prod_{i=1}^{i=58}\prod_{t=1}^{t=75}\sum_{k=1}^{k=K}Pois(E_{it}*\mu_k) \times \boldsymbol{\pi_{itk}}\]
+\end{frame}
+
+\begin{frame}{Applying Hidden Markov Models}
+\begin{itemize}
+\item The main difference will be in the modeling of $\pi$. Instead of having the marginal probability of being in regime $k$ at time $t$ in county $i$, we will think about how being in regime $k$ in time period $t-1$ effects the probability of being in regime $k'$ using transition matrices.
+\item The likelihood when $t \ge 1$.
+\end{itemize}
+\[P(k,Y)=P(k_0=j)*P(X_0|k_0=j)\prod_{t=1}^{t=T}P(X_{t}|k_t=j)P(k_t=j|k_{t-1}=i)\]
+\end{frame}
+
+
+% \[L(\boldsymbol{\lambda_{t \ge 1}},\boldsymbol{\pi}) = %\prod_{i=1}^{i=58}\prod_{t=1}^{t=75}\sum_{k'=1}^{k'=K}Pois(E_{it}\mu_{k})P{k_{%t}|k_{t-1}'}\]
+%\begin{itemize}
+%\item At time 0
+%\end{itemize}
+
+%\[L(\boldsymbol{\lambda_{t =0}},\boldsymbol{\pi_0}) =
+%\prod_{i=1}^{i=58}\sum_{k'=1}^{k'=K}Pois(E_{it}\mu_{k})\pi_{k_{t=0}'}
+%\]
+\end{document}
