@@ -7,4 +7,4 @@ For the sake of this discussion Y will represent the biweekly mortality in Calif
 Since we have information on each of California's counties, we will model the biweekly mortality $Y_{it}$ where $t=1 \cdots T=77$ and $i=1 \cdots N=58$.  
 A discrete probability distribution which can be used to model mortality is Poisson. 
 
-\[ \Pr(Y{=}y)={\frac {\lambda ^{y}e^{-\lambda }}{y!}}\]
+ $\Pr(Y{=}y)={\frac {\lambda ^{y}e^{-\lambda }}{y!}}$
