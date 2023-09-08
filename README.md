@@ -11,7 +11,7 @@ A discrete probability distribution which can be used to model mortality is Pois
 Once we have decided on the distribution of mortality, what separates out one distribution from the other is (are) the parameter(s) of the distribution. There are countless variables we can use instead of mortality but what changes uncertainty evaluation (probability) for Y is not what Y stands for but the parameter(s) used in the equation. 
 For instance, in the equation for poisson distribution, the equation itself is fixed and you are trying to evaluate the probability that Y (what the random variable stands for) is y (the number itself). What changes the result (P(Y=y)) is really $\lambda$.   
 To demonstrate the distribution of Y with different $\lambda$ values, we will use R:
-
+#Libraries to be used:
 library(ggplot2)
 library(dplyr)
 
@@ -55,7 +55,7 @@ stackedpoisson2 <- stackedpoisson %>%
   
 #and here is the plot that represents poisson variates simulated with 
 
-#different lambda values
+#different lambda values. 
 
 ggplot(data=stackedpoisson2, aes(x=values,y=perc, fill=ind))+
   geom_bar(stat="identity")+
@@ -64,3 +64,10 @@ ggplot(data=stackedpoisson2, aes(x=values,y=perc, fill=ind))+
   
   
 ![Rplot](https://github.com/mmusal/mmusal.github.io/assets/11746560/32b2a741-5c22-4a1c-8898-d7d3b8b6e442)
+
+The point of the plot is to show you how changing the value lambda, changes the uncertainty evaluations regarding the values of Y.
+
+In this presentation we assume that the biweekly mortality in the counties of California is Poisson distributed. 
+$Y_{it}\sim Poisson(\lambda_{it})$
+
+
