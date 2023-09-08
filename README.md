@@ -14,7 +14,9 @@ To demonstrate the distribution of Y with different $\lambda$ values, we will us
 
 library(ggplot2)
 library(dplyr)
+
 #values that lambda is going to take
+
 lambda=c(1,3,5,10,20)
 #how many variates we will generate
 n=10000
