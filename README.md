@@ -79,3 +79,16 @@ In this presentation we assume that the biweekly mortality in the counties of Ca
 $Y_{it}\sim Poisson(\lambda_{it})$
 To eloborate on what I mentioned earlier, this by itself is not really interesting. We can assign probabilities to values other than the ones we have seen at a particular time $t$ in a particular county $i$. However this would rely very heavily on the assumption of biweekly mortality being Poisson distributed and not be of particular use by itself.  
 
+The goal of the project is to model the biweekly mortality in the counties of California in order to answer the following questions:
+1) How did socio-demographic factors effect biweekly mortality
+2) How did these change through the progression of the pandemic
+3) Can we detect regions (counties or collection of counties) that performed better than others.
+4) Did specific policies at county or state level effect the unobserved up/down trends.
+
+In order to answer these questions we will need some background so that we can develop models to help answer those questions:
+A) Data/tools needed for spatial models in R.
+B) Some neccessary Probability concepts.
+C) Spatial Models (We will use Besag York Mollie).
+D) Hidden Markov Models.
+E) Bayesian Modeling Tool (STAN).
+6) Combine Bayesian Spatial and Hidden Markov Models  
