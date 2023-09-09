@@ -32,8 +32,8 @@ The formulation to calculate what we refer to as posterior distribution of the p
 $P(\theta|Y_{1},\cdots,Y_{N})=
 \frac{P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\int_{\theta} P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}$
 
-Note that the denominator in the ratio above is simply 
-$P(Y_{1}),\cdots,P(Y_{N})$ 
+Note that the denominator in the ratio above is simply the joint probability of the data.
+$P(Y_{1},\cdots,Y_{N})$ 
 
 when we integrate out the parameter. It should be remembered that choosing the right distribution to represent the uncertainty about Y have important implications since it determines the likelihood and all the calculations that follow. 
 As simple as it is to write the formulation it is not usually straightforward to actually carry out the integration in the denominator. This is the reason why we use Monte Carlo Markov Chains.  
