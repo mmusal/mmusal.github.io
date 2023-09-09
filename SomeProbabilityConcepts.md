@@ -27,7 +27,7 @@ This set up of multiplying conditonal probabilities requires $P(Y_{i}|\theta), i
 In statistical modeling we use probability distributions which have parameters that have explicit meanings. For instance if Y is assumed to follow a Poisson distribution, the distribution has a single parameter $\lambda$. This is the mean and variance of the distribution. If Y is assumed to follow a Normal distribution it has two parameters $\mu$ and $\sigma^{2}$ that stands for the mean and variance of Y. In modeling we would like to learn about the parameters of the random variable after observing data. In other words we would like to learn
 
 $P(\theta|Y_{1}\cdots Y_{N})$
-The formulation is straightforward
+The formulation to calculate what we refer to as posterior distribution of the parameter(S) is (are) straightforward.
 
 $P(\theta|Y_{1},\cdots,Y_{N})=
 \frac{P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\int_{\theta} P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}$
@@ -36,3 +36,4 @@ Note that the denominator in the ratio above is simply
 $P(Y_{1}),\cdots,P(Y_{N})$ 
 
 when we integrate out the parameter. It should be remembered that choosing the right distribution to represent the uncertainty about Y have important implications since it determines the likelihood and all the calculations that follow. 
+As simple as it is to write the formulation it is not usually straightforward to actually carry out the integration in the denominator. This is the reason why we use Monte Carlo Markov Chains.  
