@@ -1,4 +1,4 @@
-#On this page we will discuss various steps in developing a Hidden Markov Model Spatial Model. 
+#In this project we will discuss various steps in developing a Hidden Markov Model Spatial Model. 
 First we need to discuss each model separately. These descriptions are going to be very shallow, which we will elaborate as we progress. 
 Spatial Models:
 A spatial model is based on the premise that things that are closer to each other are more similar than things that are further away. There are different frameworks on describing distances between things. Here we will assume that distances are described by a neighbourhood structure between counties of California. A county will effect the counties that it shares a boundry with and vice versa.   
