@@ -29,4 +29,5 @@ In statistical modeling we use probability distributions which have parameters t
 $P(\theta|Y_{1}\cdots Y_{N})$
 The formulation is straightforward
 
-$$P(\theta|Y_{1},\cdots,Y_{N})=\frac{P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\int_{\theta} P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}$$
+$P(\theta|Y_{1},\cdots,Y_{N})=
+\frac{P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\int_{\theta} P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}$
