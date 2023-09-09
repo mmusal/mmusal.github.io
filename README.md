@@ -89,7 +89,7 @@ In order to answer these questions we will need some background so that we can d
 
 A) Data/tools needed for spatial models in R.
 
-B) Some neccessary Probability concepts.
+B) Some neccessary Probability concepts. https://github.com/mmusal/mmusal.github.io/blob/6283ffb66c9eb6d4f17fea37300ceac20bd7fb51/SomeProbabilityConcepts.md
 
 C) Spatial Models (We will use Besag York Mollie).
 
