@@ -30,4 +30,9 @@ $P(\theta|Y_{1}\cdots Y_{N})$
 The formulation is straightforward
 
 $P(\theta|Y_{1},\cdots,Y_{N})=
-\frac{P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\int_{\theta} P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}$
+\frac{P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}{\int_{\theta} P(Y_{1},\cdots,Y_{N}|\theta)*P(\theta)}$
+
+Note that the denominator in the ratio above is simply 
+$P(Y_{1}),\cdots,P(Y_{N})$ 
+
+when we integrate out the parameter. It should be remembered that choosing the right distribution to represent the uncertainty about Y have important implications since it determines the likelihood and all the calculations that follow. 
