@@ -16,6 +16,8 @@ $P(Y_{1}|\theta)*P(Y_{2}|\theta)=P(Y_{1},Y_{2}|\theta)$
 
 Likelihood: 
 The likelihood is the joint probability (function) of the data given the parameters. In many straightforward models with N data points, the likelihood can be calculated as
+
 $P(Y_{1}|\theta) * \cdots* P(Y_{N}|\theta)=$
+
 $P(Y_{1},\cdots,Y_{N}|\theta)$
 
