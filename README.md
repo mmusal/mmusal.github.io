@@ -107,7 +107,7 @@ The goal of the project is to model the biweekly mortality in the counties of Ca
 
 In order to answer these questions we will need some background so that we can develop models to help answer those questions:
 
-## A) Data/tools needed for spatial models in R.
+## A) Data/tools for spatial models in R.
 
 ## B) [Some neccessary Probability concepts:](./SomeProbabilityConcepts.md) 
 
