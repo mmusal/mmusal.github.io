@@ -12,7 +12,7 @@ As you can see from the download, there are additional files present besides the
 In this project we make use of a multitude of spatial tools and functions for statistical analysis but for now we will focus only on the mapping aspects and the simple features, [sf package](https://r-spatial.github.io/sf/). 
 
 ```
-####getting the shape data
+<!--####getting the shape data -->
 shape <- read_sf(dsn = "C:/Users/rm84/Desktop/research/HMM/data/tl_2021_us_county.shp")
 #selecting the state via FIPS
 shape=shape[(shape$STATEFP %in% '06'),]
