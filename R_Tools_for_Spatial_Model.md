@@ -11,9 +11,9 @@ The folder we are going to download exists within the US Census Bureau website. 
 As you can see from the download, there are additional files present besides the .shp, .shx and .dbf. These are files that are not required for R and Python to create informative maps but we will keep them in our folder. 
 In this project we make use of a multitude of spatial tools and functions for statistical analysis but for now we will focus only on the mapping aspects and the simple features, [sf package](https://r-spatial.github.io/sf/). 
 
-``
+```
 ####getting the shape data
 shape <- read_sf(dsn = "C:/Users/rm84/Desktop/research/HMM/data/tl_2021_us_county.shp")
 #selecting the state via FIPS
 shape=shape[(shape$STATEFP %in% '06'),]
-``
+```
