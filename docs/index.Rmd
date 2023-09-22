@@ -1,5 +1,5 @@
 ---
-title: "Intro_to_R_Spatial_Tools"
+title: "Intro_R_Spatial_Tools"
 author: "RMM"
 date: "2023-09-22"
 output: html_document
@@ -9,26 +9,62 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-Both R and Python have libraries that can process files referred to as "shape files". Details on the definition and development of the format can be read at [wikipedia] (https://en.wikipedia.org/wiki/Shapefile). An important thing to know is that whereas shape file refers to data that is used to represent geographical features, it needs 3 files to be operational.
-### .shp 
+### R Markdown
+
+Both R and Python have libraries that can process files referred to as "shape files". Details on the definition and development of the format can be read at [wikipedia] (<https://en.wikipedia.org/wiki/Shapefile>). An important thing to know is that whereas shape file refers to data that is used to represent geographical features, it needs 3 files to be operational.
+
+### .shp
+
 where coordinates of geographical features are kept.
+
 ### .shx
+
 an indexing file for geometric features.
+
 ### .dbf
-data that is associated with the geometric features.
-The folder we are going to download exists within the US Census Bureau website. From the website we navigate to where the 
-[shape files for all the counties in USA are located](https://www2.census.gov/geo/tiger/TIGER2021/COUNTY/)
 
-As you can see from the download, there are additional files present besides the .shp, .shx and .dbf. These are files that are not required for R and Python to create informative maps but we will keep them in our folder. 
-In this project we make use of a multitude of spatial tools and functions for statistical analysis but for now we will focus only on the mapping aspects and the simple features, [sf package](https://r-spatial.github.io/sf/). 
+data that is associated with the geometric features. The folder we are going to download exists within the US Census Bureau website. From the website we navigate to where the [shape files for all the counties in USA are located](https://www2.census.gov/geo/tiger/TIGER2021/COUNTY/)
 
-```
-<!-- Loading the library, if you are using Windows you will have to make sure you have Rtools before being able to use the library-->
+As you can see from the download, there are additional files present besides the .shp, .shx and .dbf. These are files that are not required for R and Python to create informative maps but we will keep them in our folder. In this project we make use of a multitude of spatial tools and functions for statistical analysis but for now we will focus only on the mapping aspects and the simple features, [sf package](https://r-spatial.github.io/sf/).
+
+```{r}
+# Loading the library, if you are using Windows you will have to make sure you have Rtools before being able to use the library -->
 library(sf)
-<!--getting the shape data and reading it with the read_sf command-->
+#We downloaded the shape zip folder, unzipped all the files in it to the data folder and read it in with the read_sf command--> 
 shape <- read_sf(dsn = "C:/Users/rm84/Desktop/research/HMM/data/tl_2021_us_county.shp")
-<!--selecting California via FIPS state code as you can see selection is done via base R via the %in% statement-->
+#as can be seen from the dim command you have 3234 observations (counties) and 18 features associated with each county
+dim(shape)
+
+
+#In R, objects have attributes. The shape object has 5 of these
+length(attributes(shape))
+#We will look at only the first attribute's values
+attributes(shape)[1]
+#Names function will give us the values in the first attribute 
+names(shape)
+
+
+#We will be working with only the Californian state 
+#selecting California via FIPS state code as you can see selection is done via base R via the %in% statement
 shape=shape[(shape$STATEFP %in% '06'),]
+
+#We could look at a very simple set of plots
+plot(shape)
+
+
+#The shape function has 17 attributes and R chooses to plot a smaller number of them to fit the screen. 
+
+
+#We would rather do something a bit more useful and plot one of the attributes we are interested in
+plot(shape[15])
+
+#Note that if you wrote plot(shape$AWATER) you get a scatterplot.
+
+
 ```
+
+A good [vignette](https://r-spatial.github.io/sf/articles/) exists to explain the sf package.
+
+Before we introduce better looking plots we need to understand how to merge data to a shapefile. 
+
 
