@@ -427,6 +427,101 @@ plot(shape[15])</code></pre>
 explain the sf package.</p>
 <p>Before we introduce better looking plots we need to understand how to
 merge data to a shapefile.</p>
+<p>We created a dataframe named by wrangling through a multitude of
+datasets which will be discussed on a later post. It is important to
+look at some of the output from this dataset.</p>
+<pre class="r"><code>CASummary=read.table(header=TRUE,sep=&#39;,&#39;,&#39;C:/Users/rm84/Documents/CASummary.csv&#39;)
+#Each of the 58 counties of California in alphabetical and FIPS order have 164 columns of information associated with it.
+dim(names)</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>names(CASummary)</code></pre>
+<pre><code>##   [1] &quot;X&quot;                             &quot;ID&quot;                           
+##   [3] &quot;Name&quot;                          &quot;Percent.in.Poverty_2020&quot;      
+##   [5] &quot;Percent.in.Poverty_2021&quot;       &quot;Median.Household.Income._2020&quot;
+##   [7] &quot;Median.Household.Income._2021&quot; &quot;area&quot;                         
+##   [9] &quot;population&quot;                    &quot;X202003&quot;                      
+##  [11] &quot;X202004&quot;                       &quot;X202005&quot;                      
+##  [13] &quot;X202006&quot;                       &quot;X202007&quot;                      
+##  [15] &quot;X202008&quot;                       &quot;X202009&quot;                      
+##  [17] &quot;X202010&quot;                       &quot;X202011&quot;                      
+##  [19] &quot;X202012&quot;                       &quot;X202013&quot;                      
+##  [21] &quot;X202014&quot;                       &quot;X202015&quot;                      
+##  [23] &quot;X202016&quot;                       &quot;X202017&quot;                      
+##  [25] &quot;X202018&quot;                       &quot;X202019&quot;                      
+##  [27] &quot;X202020&quot;                       &quot;X202021&quot;                      
+##  [29] &quot;X202022&quot;                       &quot;X202023&quot;                      
+##  [31] &quot;X202024&quot;                       &quot;X202025&quot;                      
+##  [33] &quot;X202026&quot;                       &quot;X202027&quot;                      
+##  [35] &quot;X202101&quot;                       &quot;X202102&quot;                      
+##  [37] &quot;X202103&quot;                       &quot;X202104&quot;                      
+##  [39] &quot;X202105&quot;                       &quot;X202106&quot;                      
+##  [41] &quot;X202107&quot;                       &quot;X202108&quot;                      
+##  [43] &quot;X202109&quot;                       &quot;X202110&quot;                      
+##  [45] &quot;X202111&quot;                       &quot;X202112&quot;                      
+##  [47] &quot;X202113&quot;                       &quot;X202114&quot;                      
+##  [49] &quot;X202115&quot;                       &quot;X202116&quot;                      
+##  [51] &quot;X202117&quot;                       &quot;X202118&quot;                      
+##  [53] &quot;X202119&quot;                       &quot;X202120&quot;                      
+##  [55] &quot;X202121&quot;                       &quot;X202122&quot;                      
+##  [57] &quot;X202123&quot;                       &quot;X202124&quot;                      
+##  [59] &quot;X202125&quot;                       &quot;X202126&quot;                      
+##  [61] &quot;X202201&quot;                       &quot;X202202&quot;                      
+##  [63] &quot;X202203&quot;                       &quot;X202204&quot;                      
+##  [65] &quot;X202205&quot;                       &quot;X202206&quot;                      
+##  [67] &quot;X202207&quot;                       &quot;X202208&quot;                      
+##  [69] &quot;X202209&quot;                       &quot;X202210&quot;                      
+##  [71] &quot;X202211&quot;                       &quot;X202212&quot;                      
+##  [73] &quot;X202213&quot;                       &quot;X202214&quot;                      
+##  [75] &quot;X202215&quot;                       &quot;X202216&quot;                      
+##  [77] &quot;X202217&quot;                       &quot;X202218&quot;                      
+##  [79] &quot;X202219&quot;                       &quot;X202220&quot;                      
+##  [81] &quot;X202221&quot;                       &quot;X202222&quot;                      
+##  [83] &quot;X202223&quot;                       &quot;X202224&quot;                      
+##  [85] &quot;X202225&quot;                       &quot;X202226&quot;                      
+##  [87] &quot;X202301&quot;                       &quot;X202302&quot;                      
+##  [89] &quot;X1&quot;                            &quot;X2&quot;                           
+##  [91] &quot;X3&quot;                            &quot;X4&quot;                           
+##  [93] &quot;X5&quot;                            &quot;X6&quot;                           
+##  [95] &quot;X7&quot;                            &quot;X8&quot;                           
+##  [97] &quot;X9&quot;                            &quot;X10&quot;                          
+##  [99] &quot;X11&quot;                           &quot;X12&quot;                          
+## [101] &quot;X13&quot;                           &quot;X14&quot;                          
+## [103] &quot;X15&quot;                           &quot;X16&quot;                          
+## [105] &quot;X17&quot;                           &quot;X18&quot;                          
+## [107] &quot;X19&quot;                           &quot;X20&quot;                          
+## [109] &quot;X21&quot;                           &quot;X22&quot;                          
+## [111] &quot;X23&quot;                           &quot;X24&quot;                          
+## [113] &quot;X25&quot;                           &quot;X26&quot;                          
+## [115] &quot;X27&quot;                           &quot;X28&quot;                          
+## [117] &quot;X29&quot;                           &quot;X30&quot;                          
+## [119] &quot;X31&quot;                           &quot;X32&quot;                          
+## [121] &quot;X33&quot;                           &quot;X34&quot;                          
+## [123] &quot;X35&quot;                           &quot;X36&quot;                          
+## [125] &quot;X37&quot;                           &quot;X38&quot;                          
+## [127] &quot;X39&quot;                           &quot;X40&quot;                          
+## [129] &quot;X41&quot;                           &quot;X42&quot;                          
+## [131] &quot;X43&quot;                           &quot;X44&quot;                          
+## [133] &quot;X45&quot;                           &quot;X46&quot;                          
+## [135] &quot;X47&quot;                           &quot;X48&quot;                          
+## [137] &quot;X49&quot;                           &quot;X50&quot;                          
+## [139] &quot;X51&quot;                           &quot;X52&quot;                          
+## [141] &quot;X53&quot;                           &quot;X54&quot;                          
+## [143] &quot;X55&quot;                           &quot;X56&quot;                          
+## [145] &quot;X57&quot;                           &quot;X58&quot;                          
+## [147] &quot;X59&quot;                           &quot;X60&quot;                          
+## [149] &quot;X61&quot;                           &quot;X62&quot;                          
+## [151] &quot;X63&quot;                           &quot;X64&quot;                          
+## [153] &quot;X65&quot;                           &quot;X66&quot;                          
+## [155] &quot;X67&quot;                           &quot;X68&quot;                          
+## [157] &quot;X69&quot;                           &quot;X70&quot;                          
+## [159] &quot;X71&quot;                           &quot;X72&quot;                          
+## [161] &quot;X73&quot;                           &quot;X74&quot;                          
+## [163] &quot;X75&quot;                           &quot;X76&quot;                          
+## [165] &quot;X77&quot;</code></pre>
+<pre class="r"><code>#We use a merge statement that will perform a 1 to 1 match
+shapeanddata &lt;- merge(shape, CASummary, by.x = &quot;GEOID&quot;, by.y = &quot;ID&quot;)</code></pre>
+<p>#be careful shape data is not in order shapeanddata &lt;-
+merge(shape, CASummary, by.x = “GEOID”, by.y = “ID”)</p>
 </div>
 
 

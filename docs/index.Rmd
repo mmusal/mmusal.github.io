@@ -67,4 +67,22 @@ A good [vignette](https://r-spatial.github.io/sf/articles/) exists to explain th
 
 Before we introduce better looking plots we need to understand how to merge data to a shapefile. 
 
+We created a dataframe named \bold{CASummary} by wrangling through a multitude of datasets which will be discussed on a later post. It is important to look at some of the output from this dataset.
+```{r}
+CASummary=read.table(header=TRUE,sep=',','C:/Users/rm84/Documents/CASummary.csv')
+#Each of the 58 counties of California in alphabetical and FIPS order have 164 columns of information associated with it.
+dim(names)
+
+names(CASummary)
+
+#We use a merge statement that will perform a 1 to 1 match
+shapeanddata <- merge(shape, CASummary, by.x = "GEOID", by.y = "ID")
+
+```
+
+#be careful shape data is not in order
+shapeanddata <- merge(shape, CASummary, by.x = "GEOID", by.y = "ID")
+
+
+
 
