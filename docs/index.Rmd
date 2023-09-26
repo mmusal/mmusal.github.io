@@ -158,9 +158,63 @@ map_Pov21=ggplot() +
 map_Pov2021 <- ggarrange(labels=c("Poverty 2020","Poverty 2021"),map_Pov20, map_Pov21, nrow = 1, align = "h", common.legend = TRUE)
 annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_Pov2021, fig.lab = "Maps of Poverty Percentages")
 
-
 ```
 
+```{r}
+library(tidyr)
+library(dplyr)
+VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
+names=sort(shape$NAMELSAD)
+gvacPop1=as.data.frame(cbind(names,VacPop))
+names(gvacPop1)[1]="names"
+names(gvacPop1)[2]="fips"
+T=ncol(VacPop)-1
+for(c in 1:(T)){
+  names(gvacPop1)[c+2]=paste0("Time_",c)
+} 
+gvacPop2=gvacPop1 %>% 
+  pivot_longer(
+    cols = starts_with("Time"), 
+    names_to = "Time", 
+    values_to = "Vac",
+    values_drop_na = TRUE
+  )
+
+head(gvacPop2)
+gvacPop2=select(gvacPop2, -c(fips))
+gvacPop2=as.data.frame(gvacPop2)
+head(gvacPop2)
+#Create a numerical time index for the 58 counties in California, recall T is 77
+gvacPop2$Time=rep(c(1:T),58)
+#First 6 rows of the dataset gvacPop2
+head(gvacPop2)
+##################################
+maxtime=ncol(VacPop)-1
+labels = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
+
+gvacPop2$Vac=as.numeric(gvacPop2$Vac)
+maxlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1])), maxtime+1])+0.02,
+                      Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1]))]))
+#minlabel and maxlabel are created in order to demonstrate how to partially parameterize the annotations on the ggplot. minlabel will have the information regarding the county with the least amount of vaccination. maxlabel will have the information regarding the county with the most amount of vaccination
+
+minlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==min(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
+i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
+  geom_line()+  
+  theme(legend.position = "none")+
+  theme(axis.title.y =element_blank())+
+  xlab("Biweek t")+
+  annotate("text", x = maxtime-15, y = maxlabel[,1], label =maxlabel[,3])+
+  annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=maxlabel[,1], 
+           yend=maxlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
+  annotate("text", x = maxtime-15, y = minlabel[,1], label = minlabel[,3])+
+  annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=minlabel[,1], 
+           yend=minlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
+  ggtitle("Percent of Population Vaccinated")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+i3
+
+```
 
 
 
