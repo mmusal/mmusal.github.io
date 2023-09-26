@@ -2,7 +2,10 @@
 title: "Intro_R_Spatial_Tools"
 author: "RMM"
 date: "2023-09-22"
-output: html_document
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -68,20 +71,101 @@ A good [vignette](https://r-spatial.github.io/sf/articles/) exists to explain th
 Before we introduce better looking plots we need to understand how to merge data to a shapefile. 
 
 We created a dataframe named \bold{CASummary} by wrangling through a multitude of datasets which will be discussed on a later post. It is important to look at some of the output from this dataset.
+
+```{r include=TRUE}
+
+library(sf)
+library(ggpubr)
+library(cowplot)
+library(viridis)
+library(ggplot2)
+library(ggspatial)
+library(stringr)
+#The shape file for the counties of United States
+shape <- read_sf(dsn = "C:/Users/rm84/Desktop/research/HMM/data/tl_2021_us_county.shp")
+#Get California
+shape=shape[(shape$STATEFP %in% '06'),]
+#There are pages of multiple scripts to create this data-frame this will be uploaded to github later.
+#For the sake of presentation this was exported as a csv file
+data_for_spatial=read.table(header=TRUE,sep=',','C:/Users/rm84/Documents/data_for_spatial.csv')
+
+poverty_for_spatial=read.table(header=TRUE,sep=',','C:/Users/rm84/Documents/poverty_for_spatial.csv')
+#Leading 0s are erased by default which creates a problem for County Identifiers since they will be matched to the same set of values under another name in the Spatial file. 
+data_for_spatial$ID=str_sub(paste0('00',data_for_spatial$ID),-3)
+#Each of the 58 counties of California in alphabetical and FIPS order have 164 columns of information associated with it. The last 154 columns represent 2 sets of variables across a 77 biweek time period. Mortality and Vaccinations Rates.
+dim(data_for_spatial)
+
+#First 10 values in the data.frame object
+#
+names(data_for_spatial)[1:10]
+
+#identify the unique keys in each object. shape and #CASUmmary has 58 unique GEOID and ID values representing #the counties in California They are 3 digit FIPS codes.
+#001 003 etc...
+#it is important to first write the shape file otherwise you end up with a data frame
+shapeanddata=merge(shape,data_for_spatial,by.x="COUNTYFP",by.y="ID")
+#This is needed to unnormalize the poverty percentages
+meanpov=mean(poverty_for_spatial[,5])
+sdpov=sd(poverty_for_spatial[,5])
+#_spatial options require ggspatial package operations on data are allowed. In this instance we used to unnormalize the poverty variable
+map_Pov20=ggplot() +
+  annotation_spatial(shapeanddata) +
+  layer_spatial(shapeanddata, aes(fill = (Poverty20*sdpov+meanpov)))+
+  labs(fill = "Pov. 20")
+#We can create a simple plot that shows the poverty rates in 2020
+map_Pov20
+
+map_Pov21=ggplot() +
+  annotation_spatial(shapeanddata) +
+  layer_spatial(shapeanddata, aes(fill = (Poverty21*sdpov+meanpov)))+
+  labs(fill = "Pov. 21")
+
+#Different scales we need to put them on the same scale
+plot_grid(map_Pov20,map_Pov21)
+#########################################
+#Let us hide the legend and use a common scale for these two years. Since we remove the legend from map_Pov20 the plot does not look good when put side by side even though the scales are the same. Note how the direction -1 specifies the color scale reversal. 
+map_Pov20=ggplot() +
+  annotation_spatial(shapeanddata) +
+  layer_spatial(shapeanddata, aes(fill = (Poverty20*sdpov+meanpov)))+
+  labs(fill = "Pov. 20")+scale_fill_viridis(limits = c(0,22),direction=-1)+
+  theme(legend.position = "none",plot.title =element_blank())
+
+
+map_Pov21=ggplot() +
+  annotation_spatial(shapeanddata) +
+  layer_spatial(shapeanddata, aes(fill = (Poverty21*sdpov+meanpov)))+
+  labs(fill = "Pov. 21")+scale_fill_viridis(limits = c(0,22),direction=-1)
+
+plot_grid(map_Pov20,map_Pov21)
+```
+
+We can do better by using the ggpubr library.Furthermore annotating the map allows us to highlight counties such as Merced which has its Poverty percentage increase from 2020 to 2021. We have hard coded the label and its coordinates which is not ideal and opens room for error.
+
 ```{r}
-CASummary=read.table(header=TRUE,sep=',','C:/Users/rm84/Documents/CASummary.csv')
-#Each of the 58 counties of California in alphabetical and FIPS order have 164 columns of information associated with it.
-dim(names)
+map_Pov20=ggplot() +
+  annotation_spatial(shapeanddata) +
+  layer_spatial(shapeanddata, aes(fill = (Poverty20*sdpov+meanpov)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Pov. 20")+scale_fill_viridis(limits = c(0,22),direction=-1)
 
-names(CASummary)
+map_Pov21=ggplot() +
+  annotation_spatial(shapeanddata) +
+  layer_spatial(shapeanddata, aes(fill = (Poverty21*sdpov+meanpov)))+annotate("text", x = -118, y =40 , label = "Merced")+
+  annotate("segment", color="red", x=-118, xend = -120.5, 
+           y=39.8, 
+           yend=37.2, arrow=arrow(length=unit(0.2,"cm")))+xlab("")+ylab("")+
+  labs(fill = "Pov. 21")+scale_fill_viridis(limits = c(0,22),direction=-1)
 
-#We use a merge statement that will perform a 1 to 1 match
-shapeanddata <- merge(shape, CASummary, by.x = "GEOID", by.y = "ID")
+map_Pov2021 <- ggarrange(labels=c("Poverty 2020","Poverty 2021"),map_Pov20, map_Pov21, nrow = 1, align = "h", common.legend = TRUE)
+annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_Pov2021, fig.lab = "Maps of Poverty Percentages")
+
 
 ```
 
-#be careful shape data is not in order
-shapeanddata <- merge(shape, CASummary, by.x = "GEOID", by.y = "ID")
+
+
+
+
+
 
 
 
