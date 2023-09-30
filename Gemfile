@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 group :jekyll_plugins do
     gem 'listen' 
     gem 'classifier-reborn'
+    gem 'jekyll-toc'
     gem 'jekyll'
     gem 'jekyll-archives'
     gem 'jekyll-diagrams'
