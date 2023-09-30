@@ -1,0 +1,175 @@
+"","Year","ID","Name","Percent.in.Poverty"
+"1",2019,6001,"Alameda County",8.9
+"2",2019,6003,"Alpine County",17.2
+"3",2019,6005,"Amador County",9.8
+"4",2019,6007,"Butte County",16.1
+"5",2019,6009,"Calaveras County",12.1
+"6",2019,6011,"Colusa County",12
+"7",2019,6013,"Contra Costa County",7.9
+"8",2019,6015,"Del Norte County",17.9
+"9",2019,6017,"El Dorado County",8.7
+"10",2019,6019,"Fresno County",20.5
+"11",2019,6021,"Glenn County",12.1
+"12",2019,6023,"Humboldt County",19.1
+"13",2019,6025,"Imperial County",22
+"14",2019,6027,"Inyo County",11.7
+"15",2019,6029,"Kern County",19
+"16",2019,6031,"Kings County",16
+"17",2019,6033,"Lake County",18.3
+"18",2019,6035,"Lassen County",16.5
+"19",2019,6037,"Los Angeles County",13.4
+"20",2019,6039,"Madera County",17.6
+"21",2019,6041,"Marin County",6.9
+"22",2019,6043,"Mariposa County",15.1
+"23",2019,6045,"Mendocino County",14
+"24",2019,6047,"Merced County",17
+"25",2019,6049,"Modoc County",20.5
+"26",2019,6051,"Mono County",10.1
+"27",2019,6053,"Monterey County",12.6
+"28",2019,6055,"Napa County",7.4
+"29",2019,6057,"Nevada County",9.4
+"30",2019,6059,"Orange County",9.5
+"31",2019,6061,"Placer County",6.6
+"32",2019,6063,"Plumas County",13.2
+"33",2019,6065,"Riverside County",11.3
+"34",2019,6067,"Sacramento County",12.6
+"35",2019,6069,"San Benito County",10.4
+"36",2019,6071,"San Bernardino County",13.3
+"37",2019,6073,"San Diego County",10.3
+"38",2019,6075,"San Francisco County",9.5
+"39",2019,6077,"San Joaquin County",13.6
+"40",2019,6079,"San Luis Obispo County",11.6
+"41",2019,6081,"San Mateo County",6.1
+"42",2019,6083,"Santa Barbara County",12
+"43",2019,6085,"Santa Clara County",6.1
+"44",2019,6087,"Santa Cruz County",10.6
+"45",2019,6089,"Shasta County",13.3
+"46",2019,6091,"Sierra County",12.7
+"47",2019,6093,"Siskiyou County",17.4
+"48",2019,6095,"Solano County",9
+"49",2019,6097,"Sonoma County",7.2
+"50",2019,6099,"Stanislaus County",13
+"51",2019,6101,"Sutter County",12.8
+"52",2019,6103,"Tehama County",16.3
+"53",2019,6105,"Trinity County",16.5
+"54",2019,6107,"Tulare County",18.9
+"55",2019,6109,"Tuolumne County",11.3
+"56",2019,6111,"Ventura County",8.2
+"57",2019,6113,"Yolo County",16.9
+"58",2019,6115,"Yuba County",15.2
+"59",2020,6001,"Alameda County",8.6
+"60",2020,6003,"Alpine County",14.3
+"61",2020,6005,"Amador County",10.3
+"62",2020,6007,"Butte County",17.3
+"63",2020,6009,"Calaveras County",11.6
+"64",2020,6011,"Colusa County",10.3
+"65",2020,6013,"Contra Costa County",7.2
+"66",2020,6015,"Del Norte County",18.5
+"67",2020,6017,"El Dorado County",8.4
+"68",2020,6019,"Fresno County",17.1
+"69",2020,6021,"Glenn County",12.4
+"70",2020,6023,"Humboldt County",15.8
+"71",2020,6025,"Imperial County",18.1
+"72",2020,6027,"Inyo County",10.9
+"73",2020,6029,"Kern County",18.3
+"74",2020,6031,"Kings County",14.5
+"75",2020,6033,"Lake County",15.9
+"76",2020,6035,"Lassen County",15.5
+"77",2020,6037,"Los Angeles County",13.2
+"78",2020,6039,"Madera County",14.1
+"79",2020,6041,"Marin County",6
+"80",2020,6043,"Mariposa County",13.3
+"81",2020,6045,"Mendocino County",14.3
+"82",2020,6047,"Merced County",16.3
+"83",2020,6049,"Modoc County",17.9
+"84",2020,6051,"Mono County",9
+"85",2020,6053,"Monterey County",11.6
+"86",2020,6055,"Napa County",7.9
+"87",2020,6057,"Nevada County",9.2
+"88",2020,6059,"Orange County",9
+"89",2020,6061,"Placer County",6.5
+"90",2020,6063,"Plumas County",13.5
+"91",2020,6065,"Riverside County",11.2
+"92",2020,6067,"Sacramento County",12.5
+"93",2020,6069,"San Benito County",7.9
+"94",2020,6071,"San Bernardino County",14.3
+"95",2020,6073,"San Diego County",9.5
+"96",2020,6075,"San Francisco County",10
+"97",2020,6077,"San Joaquin County",13.9
+"98",2020,6079,"San Luis Obispo County",10.6
+"99",2020,6081,"San Mateo County",5.5
+"100",2020,6083,"Santa Barbara County",10.5
+"101",2020,6085,"Santa Clara County",6.6
+"102",2020,6087,"Santa Cruz County",10.7
+"103",2020,6089,"Shasta County",13.9
+"104",2020,6091,"Sierra County",11.5
+"105",2020,6093,"Siskiyou County",14.3
+"106",2020,6095,"Solano County",9.3
+"107",2020,6097,"Sonoma County",7.8
+"108",2020,6099,"Stanislaus County",13
+"109",2020,6101,"Sutter County",11.5
+"110",2020,6103,"Tehama County",13.3
+"111",2020,6105,"Trinity County",18
+"112",2020,6107,"Tulare County",17.1
+"113",2020,6109,"Tuolumne County",12.1
+"114",2020,6111,"Ventura County",9.1
+"115",2020,6113,"Yolo County",14.8
+"116",2020,6115,"Yuba County",16.3
+"117",2021,6001,"Alameda County",9.4
+"118",2021,6003,"Alpine County",15.8
+"119",2021,6005,"Amador County",11.1
+"120",2021,6007,"Butte County",16.6
+"121",2021,6009,"Calaveras County",13.5
+"122",2021,6011,"Colusa County",11.4
+"123",2021,6013,"Contra Costa County",8.8
+"124",2021,6015,"Del Norte County",21.4
+"125",2021,6017,"El Dorado County",8.8
+"126",2021,6019,"Fresno County",19.4
+"127",2021,6021,"Glenn County",15.5
+"128",2021,6023,"Humboldt County",19.4
+"129",2021,6025,"Imperial County",17.3
+"130",2021,6027,"Inyo County",12.8
+"131",2021,6029,"Kern County",18.5
+"132",2021,6031,"Kings County",17.7
+"133",2021,6033,"Lake County",16.5
+"134",2021,6035,"Lassen County",18.8
+"135",2021,6037,"Los Angeles County",14.1
+"136",2021,6039,"Madera County",20.4
+"137",2021,6041,"Marin County",7.8
+"138",2021,6043,"Mariposa County",14.1
+"139",2021,6045,"Mendocino County",16.1
+"140",2021,6047,"Merced County",21.9
+"141",2021,6049,"Modoc County",19.9
+"142",2021,6051,"Mono County",9.8
+"143",2021,6053,"Monterey County",12.1
+"144",2021,6055,"Napa County",9
+"145",2021,6057,"Nevada County",11.8
+"146",2021,6059,"Orange County",9.9
+"147",2021,6061,"Placer County",6.6
+"148",2021,6063,"Plumas County",13
+"149",2021,6065,"Riverside County",11.6
+"150",2021,6067,"Sacramento County",13
+"151",2021,6069,"San Benito County",8.9
+"152",2021,6071,"San Bernardino County",13.2
+"153",2021,6073,"San Diego County",10.7
+"154",2021,6075,"San Francisco County",11.4
+"155",2021,6077,"San Joaquin County",12.3
+"156",2021,6079,"San Luis Obispo County",13.1
+"157",2021,6081,"San Mateo County",6.8
+"158",2021,6083,"Santa Barbara County",15.2
+"159",2021,6085,"Santa Clara County",6.9
+"160",2021,6087,"Santa Cruz County",10.6
+"161",2021,6089,"Shasta County",14
+"162",2021,6091,"Sierra County",12.3
+"163",2021,6093,"Siskiyou County",16.8
+"164",2021,6095,"Solano County",10
+"165",2021,6097,"Sonoma County",9.1
+"166",2021,6099,"Stanislaus County",14.1
+"167",2021,6101,"Sutter County",15.5
+"168",2021,6103,"Tehama County",15.6
+"169",2021,6105,"Trinity County",19.1
+"170",2021,6107,"Tulare County",18.7
+"171",2021,6109,"Tuolumne County",13.2
+"172",2021,6111,"Ventura County",8.9
+"173",2021,6113,"Yolo County",14.8
+"174",2021,6115,"Yuba County",15.6
