@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: <a href='#'>Affiliations</a>. Address. Contacts. Moto. Etc.
+subtitle: <a href='#'>Affiliations</a>. McCoy 463 Texas State University rm84@txstate.edu .
 
 profile:
   align: right
@@ -19,5 +19,5 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: false  # includes social icons at the bottom of the page
 ---
 
-I was born in Izmir which is a coastal town in Turkey. Currently living in Texas working on applied Bayesian models and teaching Data Mining/ Statistical Modeling in Texas State University San Marcos. I enjoy working on hard to solve problems/projects whether they exist academically or in the adventure realm. I love the sea and the mountains. Favorite places to visit: Moab, Utah; Leadville, Buena Vista Colorado; San Francisco, Bishop; California, Juneau, Talkeetna Alaska, Washington D.C..  Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
+I was born in Izmir which is a coastal town in Turkey. Currently living in Texas working on applied Bayesian models and teaching Data Mining/ Statistical Modeling in Texas State University San Marcos. I enjoy working on hard to solve problems/projects whether they exist academically or in the adventure realm. I love the sea and the mountains. Favorite places to visit: Moab, Utah; Leadville, Buena Vista Colorado; San Francisco, Bishop; California, Juneau, Talkeetna Alaska, Washington D.C.. 
 Currently I have been working on combining Hidden Markov and Spatial Models using STAN. I am working on speeding the computational work. My other interest lies in Fraud detection. 
