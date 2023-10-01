@@ -1,24 +1,24 @@
 {
   "basics": {
-    "name": "Albert Einstein",
-    "label": "Scientist",
+    "name": "Rasim Muzaffer Musal",
+    "label": "Associate Professor, Ultramarathon and mountain runner ",
     "image": "",
-    "email": "albert@einstein.de",
-    "phone": "(912) 123-4567",
-    "url": "https://alshedivat.github.io/al-folio/",
-    "summary": "A German-born theoretical physicist, widely ranked among the greatest and most influential scientists of all time",
+    "email": "rm84@txstate.edu",
+    "phone": "",
+    "url": "https://mmusal.github.io/mmusal/",
+    "summary": "An academician, currently residing in Texas, dreaming of mountains and oceans",
     "location": {
-      "address": "2712 Broadway St",
-      "postalCode": "CA 94115",
-      "city": "San Francisco",
+      //"address": "",
+      //"postalCode": "TX 78749",
+      "city": "Austin",
       "countryCode": "US",
-      "region": "California"
+      //"region": "California"
     },
     "profiles": [
       {
-        "network": "Twitter",
-        "username": "AlbertEinstein",
-        "url": "https://twitter.com/AlbertEinstein"
+        "network": "linkedin",
+        "username": "rmuzaffermusal",
+        "url": "https://www.linkedin.com/in/rmuzaffermusal/"
       }
     ]
   },
@@ -38,16 +38,16 @@
   "volunteer": [],
   "education": [
     {
-      "institution": "University of Zurich, Zurich, Switzerland",
-      "url": "https://www.uzh.ch/",
-      "area": "Software Development",
+      "institution": "George Washington University",
+      "url": "https://business.gwu.edu/academics/departments/decision-sciences",
+      "area": "Decision Sciences",
       "studyType": "PhD",
-      "startDate": "1905-01-01",
-      "endDate": "1905-01-01",
+      "startDate": "08-15-2001",
+      "endDate": "01-15-2007",
       "score": "",
-      "courses": [
-        "Theory of Relativity"
-      ]
+      //"courses": [
+       // "Theory of Relativity"
+      //]
     }
   ],
   "awards": [
