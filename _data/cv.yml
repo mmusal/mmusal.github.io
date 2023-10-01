@@ -3,8 +3,8 @@
   contents:
     - name: Full Name
       value: Rasim Muzaffer Musal
-    - name: Date of Birth
-      value: 25th June 1976
+    //- name: Date of Birth
+     // value: 25th June 1976
     - name: Languages
       value: Turkish, English, German (Beginner)
 
@@ -15,25 +15,16 @@
       institution: George Washington University, Washington D.C.,USA
       year: 2007
       description:
-        - Description 1. 
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
+        - Title 1. Bayesian modeling of group preferences and population utility estimation
+        - Summary: We have used the multiplicative approach to multi attribute utility theory to build a social preference probability distribution where the likelihood was established as Dirichlet.
+ 
     - title: MBA
       institution: George Washington University, Washington D.C.,USA
       year: 2001
-      description:
-        - Description 1.
-        - Description 2.
 
     - title: BA
       institution: Koc University, Istanbul,Turkey
       year: 1998
-      description:
-        - Description 1.
-        - Description 2.
 
 - title: Experience
   type: time_table
