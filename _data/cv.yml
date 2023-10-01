@@ -28,12 +28,19 @@
         - Description 1.
         - Description 2.
 
+    - title: BA
+      institution: Koc University, Istanbul,Turkey
+      year: 1998
+      description:
+        - Description 1.
+        - Description 2.
+
 - title: Experience
   type: time_table
   contents:
-    - title: Professor of Theoretical Physics
-      institution: Institute for Advanced Study, Princeton University
-      year: 1933 - 1955
+    - title: Associate Professor of Analytics
+      institution: McCoy School of Business, Texas State University
+      year: 2016 - 
       description:
         - Description 1.
         - Description 2.
