@@ -3,8 +3,6 @@
   contents:
     - name: Full Name
       value: Rasim Muzaffer Musal
-    //- name: Date of Birth
-     // value: 25th June 1976
     - name: Languages
       value: Turkish, English, German (Beginner)
 
@@ -52,9 +50,7 @@
         - Spatial Models
     - title: Fraud Detection
       items:
-        - Outlier identification.
-        	- Geographical Distances Travelled
-		- Clustering Provider Groups 
+        - Outlier identification: Geographical Distances Travel, Clustering Provider Groups 
 
 - title: Other Interests
   type: list
