@@ -3,6 +3,8 @@
   contents:
     - name: Full Name
       value: Rasim Muzaffer Musal
+    //- name: Date of Birth
+     // value: 25th June 1976
     - name: Languages
       value: Turkish, English, German (Beginner)
 
@@ -31,63 +33,30 @@
       institution: McCoy School of Business, Texas State University
       year: 2016 - 
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Visiting Professor
-      institution: California Institute of Technology, Pasadena, California, US
-      year: 1933
-      description:
-        - Description 1.
-        - Description 2.
+        - Description 1. Taught Data Mining (G/UG) , Statistical Modeling (UG) , Probability and Statistical Models (G),Introduction to Statistics (UG), Advanced Statistics (G)
+        - Description 2. Researched in the areas of Spatial Models and Fraud Detection.
 
-    - title: Director
-      institution: Kaiser Wilhelm Institute for Physics, Berlin, Germany.
-      year: 1917-1933
+    - title: Assistant Professor
+      institution: McCoy School of Business, Texas State University
+      year: 2009-2015
 
-    - title: Professor of Theoretical Physics
-      institution: Karl-Ferdinand University, Prague, Czechoslovakia
-      year: 1911 - 1917
-      description:
-
-    - title: Associate Professor of Theoretical Physics
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1909 - 1911
-
-- title: Open Source Projects
-  type: time_table
-  contents:
-    - title: <a href="https://github.com/alshedivat/al-folio">al-folio</a>
-      year: 2015-now
-      description: A beautiful, simple, clean, and responsive Jekyll theme for academics.
-
-- title: Honors and Awards
-  type: time_table
-  contents:
-    - year: 1921
-      items: 
-        - Nobel Prize in Physics 
-        - Matteucci Medal
-    - year: 2029
-      items: 
-        - Max Planck Medal
+    - title: Senior Statistician / Visiting Professor
+      institution: Integrity Management Services, George Washington University
+      year: 2007-2008
 
 - title: Academic Interests
   type: nested_list
   contents:
-    - title: Topic 1.
+    - title: Bayesian Models 
       items: 
-        - Description 1.
-        - Description 2.
-    - title: Topic 2.
+        - Spatial Models
+    - title: Fraud Detection
       items:
-        - Description 1.
-        - Description 2.
+        - Outlier identification.
+        	- Geographical Distances Travelled
+		- Clustering Provider Groups 
 
 - title: Other Interests
   type: list
   contents:
-    - <u>Hobbies:</u> Hobby 1, Hobby 2, etc.
+    - <u>Hobbies:</u> Running, Scrambling, Mountain Biking, Flint Knapping, Gym Climbing.
