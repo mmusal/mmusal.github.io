@@ -1,34 +1,41 @@
 ---
-title: "Intro_R_Spatial_Tools"
-author: "RMM"
-date: "2023-09-22"
-output:
-  html_document: default
-  word_document: default
-  pdf_document: default
+title: "Intro_to_Spatial_Tools_and_Files"
+author: "Rasim M Musal"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+    theme: lumen
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### R Markdown
+# What are shape files
 
 Both R and Python have libraries that can process files referred to as "shape files". Details on the definition and development of the format can be read at [wikipedia] (<https://en.wikipedia.org/wiki/Shapefile>). An important thing to know is that whereas shape file refers to data that is used to represent geographical features, it needs 3 files to be operational.
 
-### .shp
+## .shp
 
 where coordinates of geographical features are kept.
 
-### .shx
+## .shx
 
 an indexing file for geometric features.
 
-### .dbf
+## .dbf
+
+# Where you can get US county boundaries + information to visualize in ggmap
 
 data that is associated with the geometric features. The folder we are going to download exists within the US Census Bureau website. From the website we navigate to where the [shape files for all the counties in USA are located](https://www2.census.gov/geo/tiger/TIGER2021/COUNTY/)
 
 As you can see from the download, there are additional files present besides the .shp, .shx and .dbf. These are files that are not required for R and Python to create informative maps but we will keep them in our folder. In this project we make use of a multitude of spatial tools and functions for statistical analysis but for now we will focus only on the mapping aspects and the simple features, [sf package](https://r-spatial.github.io/sf/).
+
+## Reading in shape file via sf package
 
 ```{r}
 # Loading the library, if you are using Windows you will have to make sure you have Rtools before being able to use the library -->
@@ -36,6 +43,11 @@ library(sf)
 #We downloaded the shape zip folder, unzipped all the files in it to the data folder and read it in with the read_sf command--> 
 shape <- read_sf(dsn = "C:/Users/rm84/Desktop/research/HMM/data/tl_2021_us_county.shp")
 #as can be seen from the dim command you have 3234 observations (counties) and 18 features associated with each county
+```
+
+## Getting attributes
+
+```{r}
 dim(shape)
 
 
@@ -66,11 +78,15 @@ plot(shape[15])
 
 ```
 
+## Further reading
+
 A good [vignette](https://r-spatial.github.io/sf/articles/) exists to explain the sf package.
 
-Before we introduce better looking plots we need to understand how to merge data to a shapefile. 
+Before we introduce better looking plots we need to understand how to merge data to a shapefile.
 
 We created a dataframe named \bold{CASummary} by wrangling through a multitude of datasets which will be discussed on a later post. It is important to look at some of the output from this dataset.
+
+## Reading in the shape file, filtering USA to CA, merging data.frame
 
 ```{r include=TRUE}
 
@@ -103,10 +119,14 @@ names(data_for_spatial)[1:10]
 #001 003 etc...
 #it is important to first write the shape file otherwise you end up with a data frame
 shapeanddata=merge(shape,data_for_spatial,by.x="COUNTYFP",by.y="ID")
-#This is needed to unnormalize the poverty percentages
+#_spatial options require ggspatial package operations on data are allowed. In this instance we used to unnormalize the poverty variable
+```
+## Using ggplot for our first maps
+```{r}
+#These variables are needed to unnormalize the poverty percentages
 meanpov=mean(poverty_for_spatial[,5])
 sdpov=sd(poverty_for_spatial[,5])
-#_spatial options require ggspatial package operations on data are allowed. In this instance we used to unnormalize the poverty variable
+#We can do arithmetic operations on variables to be 
 map_Pov20=ggplot() +
   annotation_spatial(shapeanddata) +
   layer_spatial(shapeanddata, aes(fill = (Poverty20*sdpov+meanpov)))+
@@ -119,7 +139,7 @@ map_Pov21=ggplot() +
   layer_spatial(shapeanddata, aes(fill = (Poverty21*sdpov+meanpov)))+
   labs(fill = "Pov. 21")
 
-#Different scales we need to put them on the same scale
+#Different scales on the maps below we need to put them on the same scale
 plot_grid(map_Pov20,map_Pov21)
 #########################################
 #Let us hide the legend and use a common scale for these two years. Since we remove the legend from map_Pov20 the plot does not look good when put side by side even though the scales are the same. Note how the direction -1 specifies the color scale reversal. 
@@ -138,6 +158,7 @@ map_Pov21=ggplot() +
 plot_grid(map_Pov20,map_Pov21)
 ```
 
+## Using the ggbupr library and annotation  
 We can do better by using the ggpubr library.Furthermore annotating the map allows us to highlight counties such as Merced which has its Poverty percentage increase from 2020 to 2021. We have hard coded the label and its coordinates which is not ideal and opens room for error.
 
 ```{r}
@@ -159,6 +180,8 @@ map_Pov2021 <- ggarrange(labels=c("Poverty 2020","Poverty 2021"),map_Pov20, map_
 annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_Pov2021, fig.lab = "Maps of Poverty Percentages")
 
 ```
+
+# Creating the multi line graph and annotation
 
 ```{r}
 library(tidyr)
@@ -215,12 +238,3 @@ i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
 i3
 
 ```
-
-
-
-
-
-
-
-
-
