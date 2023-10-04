@@ -1,4 +1,5 @@
 ---
+layout: post
 title: "Intro_to_Spatial_Tools_and_Files"
 author: "Rasim M Musal"
 date: "10/3/2021"
@@ -18,7 +19,6 @@ knit: (function(inputFile, encoding) {
   encoding = encoding, 
   output_file=paste0(Sys.Date(), "-", sub(".Rmd", ".md",inputFile)), 
   output_dir = "C:/Users/rm84/Documents/GitHub/mmusal.github.io/_posts") })
-layout: post
 tags: [ggplot, maps]
 always_allow_html: true
 ---
