@@ -152,9 +152,14 @@ names(data_for_spatial)[1:10]
 #it is important to first write the shape file otherwise you end up with a data frame
 shapeanddata=merge(shape,data_for_spatial,by.x="COUNTYFP",by.y="ID")
 #_spatial options require ggspatial package operations on data are allowed. In this instance we used to unnormalize the poverty variable
+
+
 ```
+
 ## Using ggplot for our first maps
-```{r}
+
+```{r include=TRUE}
+
 #These variables are needed to unnormalize the poverty percentages
 meanpov=mean(poverty_for_spatial[,5])
 sdpov=sd(poverty_for_spatial[,5])
@@ -188,12 +193,14 @@ map_Pov21=ggplot() +
   labs(fill = "Pov. 21")+scale_fill_viridis(limits = c(0,22),direction=-1)
 
 plot_grid(map_Pov20,map_Pov21)
+
+
 ```
 
 ## Using the ggbupr library and annotation  
 We can do better by using the ggpubr library.Furthermore annotating the map allows us to highlight counties such as Merced which has its Poverty percentage increase from 2020 to 2021. We have hard coded the label and its coordinates which is not ideal and opens room for error.
 
-```{r}
+```{r include=TRUE}
 map_Pov20=ggplot() +
   annotation_spatial(shapeanddata) +
   layer_spatial(shapeanddata, aes(fill = (Poverty20*sdpov+meanpov)))+
@@ -211,15 +218,18 @@ map_Pov21=ggplot() +
 map_Pov2021 <- ggarrange(labels=c("Poverty 2020","Poverty 2021"),map_Pov20, map_Pov21, nrow = 1, align = "h", common.legend = TRUE)
 annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_Pov2021, fig.lab = "Maps of Poverty Percentages")
 
+
+
 ```
 
 # Creating the multi-line graph and annotation
 
-```{r}
+```{r include=TRUE}
 library(tidyr)
 library(dplyr)
 VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
-names=sort(shapeanddata$NAMELSAD)
+#Sort the name of the counties to make sure it merges to the correct counties.
+names=sort(shape$NAMELSAD)
 gvacPop1=as.data.frame(cbind(names,VacPop))
 names(gvacPop1)[1]="names"
 names(gvacPop1)[2]="fips"

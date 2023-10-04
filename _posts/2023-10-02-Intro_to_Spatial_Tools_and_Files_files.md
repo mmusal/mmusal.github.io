@@ -19,7 +19,7 @@ knit: (function(inputFile, encoding) {
   output_file=paste0(Sys.Date(), "-", sub(".Rmd", ".md",inputFile)), 
   output_dir = "C:/Users/rm84/Documents/GitHub/mmusal.github.io/_posts") })
 layout: post
-tags: [jekyll, r-markdown]
+tags: [ggplot, maps]
 always_allow_html: true
 ---
 
@@ -265,7 +265,8 @@ annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_P
 library(tidyr)
 library(dplyr)
 VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
-names=sort(shapeanddata$NAMELSAD)
+#Sort the name of the counties to make sure it merges to the correct counties.
+names=sort(shape$NAMELSAD)
 gvacPop1=as.data.frame(cbind(names,VacPop))
 names(gvacPop1)[1]="names"
 names(gvacPop1)[2]="fips"
