@@ -197,7 +197,8 @@ plot_grid(map_Pov20,map_Pov21)
 
 ```
 
-## Using the ggbupr library and annotation  
+## Using the ggbupr library and annotation
+
 We can do better by using the ggpubr library.Furthermore annotating the map allows us to highlight counties such as Merced which has its Poverty percentage increase from 2020 to 2021. We have hard coded the label and its coordinates which is not ideal and opens room for error.
 
 ```{r include=TRUE}
@@ -269,6 +270,8 @@ maxlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(
 #minlabel and maxlabel are created in order to demonstrate how to partially parameterize the annotations on the ggplot. minlabel will have the information regarding the county with the least amount of vaccination. maxlabel will have the information regarding the county with the most amount of vaccination
 
 minlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==min(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
+
+
 ```
 
 ## The final multi-line plot via ggplot
