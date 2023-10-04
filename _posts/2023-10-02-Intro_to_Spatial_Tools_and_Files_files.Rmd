@@ -19,7 +19,7 @@ knit: (function(inputFile, encoding) {
   output_file=paste0(Sys.Date(), "-", sub(".Rmd", ".md",inputFile)), 
   output_dir = "C:/Users/rm84/Documents/GitHub/mmusal.github.io/_posts") })
 layout: post
-tags: [jekyll, r-markdown]
+tags: [ggplot, maps]
 always_allow_html: true
 ---
 
@@ -74,6 +74,7 @@ library(sf)
 #We downloaded the shape zip folder, unzipped all the files in it to the data folder and read it in with the read_sf command--> 
 shape <- read_sf(dsn = "C:/Users/rm84/Desktop/research/HMM/data/tl_2021_us_county.shp")
 #as can be seen from the dim command you have 3234 observations (counties) and 18 features associated with each county
+
 ```
 
 ## Getting attributes
@@ -218,7 +219,7 @@ annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_P
 library(tidyr)
 library(dplyr)
 VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
-names=sort(shape$NAMELSAD)
+names=sort(shapeanddata$NAMELSAD)
 gvacPop1=as.data.frame(cbind(names,VacPop))
 names(gvacPop1)[1]="names"
 names(gvacPop1)[2]="fips"
@@ -242,7 +243,8 @@ head(gvacPop2)
 gvacPop2$Time=rep(c(1:T),58)
 #First 6 rows of the dataset gvacPop2
 head(gvacPop2)
-##################################
+
+
 ```
 
 ## We can parameterize aspects of the annotation to automize the labeling.
@@ -262,6 +264,7 @@ minlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==min(
 ## The final multi-line plot via ggplot
 
 ```{r}
+
 i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
   geom_line()+  
   theme(legend.position = "none")+

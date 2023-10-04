@@ -265,7 +265,7 @@ annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_P
 library(tidyr)
 library(dplyr)
 VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
-names=sort(shape$NAMELSAD)
+names=sort(shapeanddata$NAMELSAD)
 gvacPop1=as.data.frame(cbind(names,VacPop))
 names(gvacPop1)[1]="names"
 names(gvacPop1)[2]="fips"
@@ -322,10 +322,6 @@ head(gvacPop2)
     ## 4 Alameda County    4   0
     ## 5 Alameda County    5   0
     ## 6 Alameda County    6   0
-
-``` r
-##################################
-```
 
 ## We can parameterize aspects of the annotation to automize the labeling.
 
