@@ -329,30 +329,36 @@ head(gvacPop2)
 
 ## We can parameterize aspects of the annotation to automize the labeling.
 
-    maxtime=ncol(VacPop)-1
-    labels = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
+``` r
+maxtime=ncol(VacPop)-1
+labels = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
 
-    gvacPop2$Vac=as.numeric(gvacPop2$Vac)
-    maxlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1])), maxtime+1])+0.02,
-                          Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1]))]))
-    #minlabel and maxlabel are created in order to demonstrate how to partially parameterize the annotations on the ggplot. minlabel will have the information regarding the county with the least amount of vaccination. maxlabel will have the information regarding the county with the most amount of vaccination
+gvacPop2$Vac=as.numeric(gvacPop2$Vac)
+maxlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1])), maxtime+1])+0.02,
+                      Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1]))]))
+#minlabel and maxlabel are created in order to demonstrate how to partially parameterize the annotations on the ggplot. minlabel will have the information regarding the county with the least amount of vaccination. maxlabel will have the information regarding the county with the most amount of vaccination
 
-    minlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==min(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
+minlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==min(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
+```
 
 ## The final multi-line plot via ggplot
 
-    i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
-      geom_line()+  
-      theme(legend.position = "none")+
-      theme(axis.title.y =element_blank())+
-      xlab("Biweek t")+
-      annotate("text", x = maxtime-15, y = maxlabel[,1], label =maxlabel[,3])+
-      annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=maxlabel[,1], 
-               yend=maxlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
-      annotate("text", x = maxtime-15, y = minlabel[,1], label = minlabel[,3])+
-      annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=minlabel[,1], 
-               yend=minlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
-      ggtitle("Percent of Population Vaccinated")+
-      theme(plot.title = element_text(hjust = 0.5))
+``` r
+i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
+  geom_line()+  
+  theme(legend.position = "none")+
+  theme(axis.title.y =element_blank())+
+  xlab("Biweek t")+
+  annotate("text", x = maxtime-15, y = maxlabel[,1], label =maxlabel[,3])+
+  annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=maxlabel[,1], 
+           yend=maxlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
+  annotate("text", x = maxtime-15, y = minlabel[,1], label = minlabel[,3])+
+  annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=minlabel[,1], 
+           yend=minlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
+  ggtitle("Percent of Population Vaccinated")+
+  theme(plot.title = element_text(hjust = 0.5))
 
-    i3
+i3
+```
+
+![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files_files/unnamed-chunk-8-1.png)<!-- -->
