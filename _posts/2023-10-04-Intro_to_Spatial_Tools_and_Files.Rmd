@@ -2,48 +2,23 @@
 layout: post
 title: "Intro_to_Spatial_Tools_and_Files"
 author: "Rasim M Musal"
-date: "10/3/2021"
+date: "10/4/2023"
 output:
-  md_document:
-    variant: gfm
-    preserve_yaml: TRUE
   html_document:
-  toc: true
-toc_float: true
-toc_collapsed: true
-toc_depth: 3
-number_sections: true
+   toc: true
+   keep_md: yes
+   toc_float: true
+   toc_collapsed: true
+   toc_depth: 3
+   number_sections: true
 theme: lumen
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, 
-  encoding = encoding, 
-  output_file=paste0(Sys.Date(), "-", sub(".Rmd", ".md",inputFile)), 
-  output_dir = "C:/Users/rm84/Documents/GitHub/mmusal.github.io/_posts") })
 tags: [ggplot, maps]
 always_allow_html: true
+
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(stringr)
-base_dir <- "C:/Users/rm84/Documents/GitHub/mmusal.github.io" # i.e. where the jekyll blog is on the hard drive.
-base_url <- "/" # keep as is
-
-# If the document is currently being knit, do this; skip it in normal execution
-if (!is.null(knitr::current_input())){
-  
-  # Output path for figures
-  fig_path <- paste0("assets/img/", str_remove(knitr::current_input(), ".Rmd"), "/")
-  
-  # Set base directories
-  knitr::opts_knit$set(base.dir = base_dir, base.url = base_url)
-  
-  # Set figure directories
-  knitr::opts_chunk$set(fig.path = fig_path,
-                      cache.path = '../cache/',
-                      message=FALSE, warning=FALSE,
-                      cache = FALSE)
-}
+knitr::opts_chunk$set(echo = TRUE,fig.path = ('C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Files'))
 ```
 
 # What are shape files

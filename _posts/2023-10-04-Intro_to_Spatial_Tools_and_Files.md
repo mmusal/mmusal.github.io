@@ -2,35 +2,26 @@
 layout: post
 title: "Intro_to_Spatial_Tools_and_Files"
 author: "Rasim M Musal"
-date: "10/3/2021"
+date: "10/4/2023"
 output:
-  md_document:
-    variant: gfm
-    preserve_yaml: TRUE
   html_document:
-  toc: true
-toc_float: true
-toc_collapsed: true
-toc_depth: 3
-number_sections: true
+   toc: true
+   keep_md: yes
+   toc_float: true
+   toc_collapsed: true
+   toc_depth: 3
+   number_sections: true
 theme: lumen
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, 
-  encoding = encoding, 
-  output_file=paste0(Sys.Date(), "-", sub(".Rmd", ".md",inputFile)), 
-  output_dir = "C:/Users/rm84/Documents/GitHub/mmusal.github.io/_posts") })
 tags: [ggplot, maps]
 always_allow_html: true
+
 ---
+
+
 
 # What are shape files
 
-Both R and Python have libraries that can process files referred to as
-“shape files”. Details on the definition and development of the format
-can be read at \[wikipedia\]
-(<https://en.wikipedia.org/wiki/Shapefile>). An important thing to know
-is that whereas shape file refers to data that is used to represent
-geographical features, it needs 3 files to be operational.
+Both R and Python have libraries that can process files referred to as "shape files". Details on the definition and development of the format can be read at [wikipedia] (<https://en.wikipedia.org/wiki/Shapefile>). An important thing to know is that whereas shape file refers to data that is used to represent geographical features, it needs 3 files to be operational.
 
 ## .shp
 
@@ -44,24 +35,23 @@ an indexing file for geometric features.
 
 # Where you can get US county boundaries + information to visualize in ggmap
 
-data that is associated with the geometric features. The folder we are
-going to download exists within the US Census Bureau website. From the
-website we navigate to where the [shape files for all the counties in
-USA are located](https://www2.census.gov/geo/tiger/TIGER2021/COUNTY/)
+data that is associated with the geometric features. The folder we are going to download exists within the US Census Bureau website. From the website we navigate to where the [shape files for all the counties in USA are located](https://www2.census.gov/geo/tiger/TIGER2021/COUNTY/)
 
-As you can see from the download, there are additional files present
-besides the .shp, .shx and .dbf. These are files that are not required
-for R and Python to create informative maps but we will keep them in our
-folder. In this project we make use of a multitude of spatial tools and
-functions for statistical analysis but for now we will focus only on the
-mapping aspects and the simple features, [sf
-package](https://r-spatial.github.io/sf/).
+As you can see from the download, there are additional files present besides the .shp, .shx and .dbf. These are files that are not required for R and Python to create informative maps but we will keep them in our folder. In this project we make use of a multitude of spatial tools and functions for statistical analysis but for now we will focus only on the mapping aspects and the simple features, [sf package](https://r-spatial.github.io/sf/).
 
 ## Reading in shape file via sf package
 
-``` r
+
+```r
 # Loading the library, if you are using Windows you will have to make sure you have Rtools before being able to use the library -->
 library(sf)
+```
+
+```
+## Linking to GEOS 3.11.2, GDAL 3.6.2, PROJ 9.2.0; sf_use_s2() is TRUE
+```
+
+```r
 #We downloaded the shape zip folder, unzipped all the files in it to the data folder and read it in with the read_sf command--> 
 shape <- read_sf(dsn = "C:/Users/rm84/Desktop/research/HMM/data/tl_2021_us_county.shp")
 #as can be seen from the dim command you have 3234 observations (counties) and 18 features associated with each county
@@ -69,39 +59,48 @@ shape <- read_sf(dsn = "C:/Users/rm84/Desktop/research/HMM/data/tl_2021_us_count
 
 ## Getting attributes
 
-``` r
+
+```r
 dim(shape)
 ```
 
-    ## [1] 3234   18
+```
+## [1] 3234   18
+```
 
-``` r
+```r
 #In R, objects have attributes. The shape object has 5 of these
 length(attributes(shape))
 ```
 
-    ## [1] 5
+```
+## [1] 5
+```
 
-``` r
+```r
 #We will look at only the first attribute's values
 attributes(shape)[1]
 ```
 
-    ## $names
-    ##  [1] "STATEFP"  "COUNTYFP" "COUNTYNS" "GEOID"    "NAME"     "NAMELSAD"
-    ##  [7] "LSAD"     "CLASSFP"  "MTFCC"    "CSAFP"    "CBSAFP"   "METDIVFP"
-    ## [13] "FUNCSTAT" "ALAND"    "AWATER"   "INTPTLAT" "INTPTLON" "geometry"
+```
+## $names
+##  [1] "STATEFP"  "COUNTYFP" "COUNTYNS" "GEOID"    "NAME"     "NAMELSAD"
+##  [7] "LSAD"     "CLASSFP"  "MTFCC"    "CSAFP"    "CBSAFP"   "METDIVFP"
+## [13] "FUNCSTAT" "ALAND"    "AWATER"   "INTPTLAT" "INTPTLON" "geometry"
+```
 
-``` r
+```r
 #Names function will give us the values in the first attribute 
 names(shape)
 ```
 
-    ##  [1] "STATEFP"  "COUNTYFP" "COUNTYNS" "GEOID"    "NAME"     "NAMELSAD"
-    ##  [7] "LSAD"     "CLASSFP"  "MTFCC"    "CSAFP"    "CBSAFP"   "METDIVFP"
-    ## [13] "FUNCSTAT" "ALAND"    "AWATER"   "INTPTLAT" "INTPTLON" "geometry"
+```
+##  [1] "STATEFP"  "COUNTYFP" "COUNTYNS" "GEOID"    "NAME"     "NAMELSAD"
+##  [7] "LSAD"     "CLASSFP"  "MTFCC"    "CSAFP"    "CBSAFP"   "METDIVFP"
+## [13] "FUNCSTAT" "ALAND"    "AWATER"   "INTPTLAT" "INTPTLON" "geometry"
+```
 
-``` r
+```r
 #We will be working with only the Californian state 
 #selecting California via FIPS state code as you can see selection is done via base R via the %in% statement
 shape=shape[(shape$STATEFP %in% '06'),]
@@ -110,9 +109,14 @@ shape=shape[(shape$STATEFP %in% '06'),]
 plot(shape)
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-2-1.png)<!-- -->
+```
+## Warning: plotting the first 9 out of 17 attributes; use max.plot = 17 to plot
+## all
+```
 
-``` r
+![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-2-1.png)<!-- -->
+
+```r
 #The shape function has 17 attributes and R chooses to plot a smaller number of them to fit the screen. 
 
 
@@ -120,31 +124,56 @@ plot(shape)
 plot(shape[15])
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-2-2.png)<!-- -->
+![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-2-2.png)<!-- -->
 
-``` r
+```r
 #Note that if you wrote plot(shape$AWATER) you get a scatterplot.
 ```
 
 ## Further reading
 
-A good [vignette](https://r-spatial.github.io/sf/articles/) exists to
-explain the sf package.
+A good [vignette](https://r-spatial.github.io/sf/articles/) exists to explain the sf package.
 
-Before we introduce better looking plots we need to understand how to
-merge data to a shapefile.
+Before we introduce better looking plots we need to understand how to merge data to a shapefile.
 
-We created a dataframe named by wrangling through a multitude of
-datasets which will be discussed on a later post. It is important to
-look at some of the output from this dataset.
+We created a dataframe named \bold{CASummary} by wrangling through a multitude of datasets which will be discussed on a later post. It is important to look at some of the output from this dataset.
 
 ## Reading in the shape file, filtering USA to CA, merging data.frame
 
-``` r
+
+```r
 library(sf)
 library(ggpubr)
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```r
 library(cowplot)
+```
+
+```
+## 
+## Attaching package: 'cowplot'
+```
+
+```
+## The following object is masked from 'package:ggpubr':
+## 
+##     get_legend
+```
+
+```r
 library(viridis)
+```
+
+```
+## Loading required package: viridisLite
+```
+
+```r
 library(ggplot2)
 library(ggspatial)
 library(stringr)
@@ -163,18 +192,22 @@ data_for_spatial$ID=str_sub(paste0('00',data_for_spatial$ID),-3)
 dim(data_for_spatial)
 ```
 
-    ## [1]  58 244
+```
+## [1]  58 244
+```
 
-``` r
+```r
 #First 10 values in the data.frame object
 #
 names(data_for_spatial)[1:10]
 ```
 
-    ##  [1] "X"         "ID"        "Counties"  "Poverty20" "Poverty21" "Income20" 
-    ##  [7] "Income21"  "Density"   "Gini20"    "Gini21"
+```
+##  [1] "X"         "ID"        "Counties"  "Poverty20" "Poverty21" "Income20" 
+##  [7] "Income21"  "Density"   "Gini20"    "Gini21"
+```
 
-``` r
+```r
 #identify the unique keys in each object. shape and #CASUmmary has 58 unique GEOID and ID values representing #the counties in California They are 3 digit FIPS codes.
 #001 003 etc...
 #it is important to first write the shape file otherwise you end up with a data frame
@@ -184,7 +217,8 @@ shapeanddata=merge(shape,data_for_spatial,by.x="COUNTYFP",by.y="ID")
 
 ## Using ggplot for our first maps
 
-``` r
+
+```r
 #These variables are needed to unnormalize the poverty percentages
 meanpov=mean(poverty_for_spatial[,5])
 sdpov=sd(poverty_for_spatial[,5])
@@ -197,9 +231,9 @@ map_Pov20=ggplot() +
 map_Pov20
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-4-1.png)<!-- -->
+![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-4-1.png)<!-- -->
 
-``` r
+```r
 map_Pov21=ggplot() +
   annotation_spatial(shapeanddata) +
   layer_spatial(shapeanddata, aes(fill = (Poverty21*sdpov+meanpov)))+
@@ -209,9 +243,9 @@ map_Pov21=ggplot() +
 plot_grid(map_Pov20,map_Pov21)
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-4-2.png)<!-- -->
+![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-4-2.png)<!-- -->
 
-``` r
+```r
 #########################################
 #Let us hide the legend and use a common scale for these two years. Since we remove the legend from map_Pov20 the plot does not look good when put side by side even though the scales are the same. Note how the direction -1 specifies the color scale reversal. 
 map_Pov20=ggplot() +
@@ -229,16 +263,14 @@ map_Pov21=ggplot() +
 plot_grid(map_Pov20,map_Pov21)
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-4-3.png)<!-- -->
+![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-4-3.png)<!-- -->
 
 ## Using the ggbupr library and annotation
 
-We can do better by using the ggpubr library.Furthermore annotating the
-map allows us to highlight counties such as Merced which has its Poverty
-percentage increase from 2020 to 2021. We have hard coded the label and
-its coordinates which is not ideal and opens room for error.
+We can do better by using the ggpubr library.Furthermore annotating the map allows us to highlight counties such as Merced which has its Poverty percentage increase from 2020 to 2021. We have hard coded the label and its coordinates which is not ideal and opens room for error.
 
-``` r
+
+```r
 map_Pov20=ggplot() +
   annotation_spatial(shapeanddata) +
   layer_spatial(shapeanddata, aes(fill = (Poverty20*sdpov+meanpov)))+
@@ -257,13 +289,34 @@ map_Pov2021 <- ggarrange(labels=c("Poverty 2020","Poverty 2021"),map_Pov20, map_
 annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_Pov2021, fig.lab = "Maps of Poverty Percentages")
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-5-1.png)<!-- -->
+![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-5-1.png)<!-- -->
 
 # Creating the multi-line graph and annotation
 
-``` r
+
+```r
 library(tidyr)
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
 #Sort the name of the counties to make sure it merges to the correct counties.
 names=sort(shape$NAMELSAD)
@@ -285,48 +338,55 @@ gvacPop2=gvacPop1 %>%
 head(gvacPop2)
 ```
 
-    ## # A tibble: 6 × 4
-    ##   names           fips Time     Vac
-    ##   <chr>          <int> <chr>  <dbl>
-    ## 1 Alameda County     1 Time_1     0
-    ## 2 Alameda County     1 Time_2     0
-    ## 3 Alameda County     1 Time_3     0
-    ## 4 Alameda County     1 Time_4     0
-    ## 5 Alameda County     1 Time_5     0
-    ## 6 Alameda County     1 Time_6     0
+```
+## # A tibble: 6 × 4
+##   names           fips Time     Vac
+##   <chr>          <int> <chr>  <dbl>
+## 1 Alameda County     1 Time_1     0
+## 2 Alameda County     1 Time_2     0
+## 3 Alameda County     1 Time_3     0
+## 4 Alameda County     1 Time_4     0
+## 5 Alameda County     1 Time_5     0
+## 6 Alameda County     1 Time_6     0
+```
 
-``` r
+```r
 gvacPop2=select(gvacPop2, -c(fips))
 gvacPop2=as.data.frame(gvacPop2)
 head(gvacPop2)
 ```
 
-    ##            names   Time Vac
-    ## 1 Alameda County Time_1   0
-    ## 2 Alameda County Time_2   0
-    ## 3 Alameda County Time_3   0
-    ## 4 Alameda County Time_4   0
-    ## 5 Alameda County Time_5   0
-    ## 6 Alameda County Time_6   0
+```
+##            names   Time Vac
+## 1 Alameda County Time_1   0
+## 2 Alameda County Time_2   0
+## 3 Alameda County Time_3   0
+## 4 Alameda County Time_4   0
+## 5 Alameda County Time_5   0
+## 6 Alameda County Time_6   0
+```
 
-``` r
+```r
 #Create a numerical time index for the 58 counties in California, recall T is 77
 gvacPop2$Time=rep(c(1:T),58)
 #First 6 rows of the dataset gvacPop2
 head(gvacPop2)
 ```
 
-    ##            names Time Vac
-    ## 1 Alameda County    1   0
-    ## 2 Alameda County    2   0
-    ## 3 Alameda County    3   0
-    ## 4 Alameda County    4   0
-    ## 5 Alameda County    5   0
-    ## 6 Alameda County    6   0
+```
+##            names Time Vac
+## 1 Alameda County    1   0
+## 2 Alameda County    2   0
+## 3 Alameda County    3   0
+## 4 Alameda County    4   0
+## 5 Alameda County    5   0
+## 6 Alameda County    6   0
+```
 
 ## We can parameterize aspects of the annotation to automize the labeling.
 
-``` r
+
+```r
 maxtime=ncol(VacPop)-1
 labels = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
 
@@ -340,7 +400,8 @@ minlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==min(
 
 ## The final multi-line plot via ggplot
 
-``` r
+
+```r
 i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
   geom_line()+  
   theme(legend.position = "none")+
@@ -358,4 +419,4 @@ i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
 i3
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-8-1.png)<!-- -->
+![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-8-1.png)<!-- -->
