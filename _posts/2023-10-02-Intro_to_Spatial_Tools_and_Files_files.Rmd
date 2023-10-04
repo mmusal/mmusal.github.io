@@ -260,6 +260,8 @@ minlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==min(
 ```
 
 ## The final multi-line plot via ggplot
+
+```
 i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
   geom_line()+  
   theme(legend.position = "none")+

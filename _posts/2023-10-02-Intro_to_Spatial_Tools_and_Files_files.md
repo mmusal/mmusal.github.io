@@ -341,18 +341,18 @@ head(gvacPop2)
 
 ## The final multi-line plot via ggplot
 
-i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) + geom_line()+  
-theme(legend.position = “none”)+ theme(axis.title.y =element_blank())+
-xlab(“Biweek t”)+ annotate(“text”, x = maxtime-15, y = maxlabel\[,1\],
-label =maxlabel\[,3\])+ annotate(“segment”, color=“blue”, x=maxtime-2,
-xend = maxtime-7, y=maxlabel\[,1\], yend=maxlabel\[,1\],
-arrow=arrow(length=unit(0.2,“cm”)))+ annotate(“text”, x = maxtime-15, y
-= minlabel\[,1\], label = minlabel\[,3\])+ annotate(“segment”,
-color=“blue”, x=maxtime-2, xend = maxtime-7, y=minlabel\[,1\],
-yend=minlabel\[,1\], arrow=arrow(length=unit(0.2,“cm”)))+
-ggtitle(“Percent of Population Vaccinated”)+ theme(plot.title =
-element_text(hjust = 0.5))
+    i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
+      geom_line()+  
+      theme(legend.position = "none")+
+      theme(axis.title.y =element_blank())+
+      xlab("Biweek t")+
+      annotate("text", x = maxtime-15, y = maxlabel[,1], label =maxlabel[,3])+
+      annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=maxlabel[,1], 
+               yend=maxlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
+      annotate("text", x = maxtime-15, y = minlabel[,1], label = minlabel[,3])+
+      annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=minlabel[,1], 
+               yend=minlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
+      ggtitle("Percent of Population Vaccinated")+
+      theme(plot.title = element_text(hjust = 0.5))
 
-i3
-
-\`\`\`
+    i3
