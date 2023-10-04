@@ -110,7 +110,7 @@ shape=shape[(shape$STATEFP %in% '06'),]
 plot(shape)
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files_files/unnamed-chunk-2-1.png)<!-- -->
+![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 #The shape function has 17 attributes and R chooses to plot a smaller number of them to fit the screen. 
@@ -120,7 +120,7 @@ plot(shape)
 plot(shape[15])
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files_files/unnamed-chunk-2-2.png)<!-- -->
+![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-2-2.png)<!-- -->
 
 ``` r
 #Note that if you wrote plot(shape$AWATER) you get a scatterplot.
@@ -197,7 +197,7 @@ map_Pov20=ggplot() +
 map_Pov20
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files_files/unnamed-chunk-4-1.png)<!-- -->
+![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 map_Pov21=ggplot() +
@@ -209,7 +209,7 @@ map_Pov21=ggplot() +
 plot_grid(map_Pov20,map_Pov21)
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files_files/unnamed-chunk-4-2.png)<!-- -->
+![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-4-2.png)<!-- -->
 
 ``` r
 #########################################
@@ -229,7 +229,7 @@ map_Pov21=ggplot() +
 plot_grid(map_Pov20,map_Pov21)
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files_files/unnamed-chunk-4-3.png)<!-- -->
+![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-4-3.png)<!-- -->
 
 ## Using the ggbupr library and annotation
 
@@ -257,7 +257,7 @@ map_Pov2021 <- ggarrange(labels=c("Poverty 2020","Poverty 2021"),map_Pov20, map_
 annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_Pov2021, fig.lab = "Maps of Poverty Percentages")
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files_files/unnamed-chunk-5-1.png)<!-- -->
+![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-5-1.png)<!-- -->
 
 # Creating the multi-line graph and annotation
 
@@ -358,4 +358,4 @@ i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
 i3
 ```
 
-![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files_files/unnamed-chunk-8-1.png)<!-- -->
+![](/assets/img/2023-10-02-Intro_to_Spatial_Tools_and_Files/unnamed-chunk-8-1.png)<!-- -->
