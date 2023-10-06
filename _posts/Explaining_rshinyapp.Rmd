@@ -1,0 +1,26 @@
+---
+layout: post
+title: "Intro_to_Spatial_Tools_and_Files"
+author: "Rasim M Musal"
+date: "2023-10-05"
+output:
+  html_document:
+   toc: true
+   keep_md: yes
+   toc_float: true
+   toc_collapsed: true
+   toc_depth: 2
+   number_sections: true
+theme: lumen
+tags: [ggplot, maps]
+always_allow_html: true
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,fig.path = ('C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-05-Explaining_rshinyapp'))
+```
+
+
+
+
