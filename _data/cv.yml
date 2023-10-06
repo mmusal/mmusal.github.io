@@ -50,8 +50,8 @@
 
 - title: Hobbies
   type: list
-  contents:
-    - title: 
+  contents: 
+    - title: Interests 
       items: 
         - Running
         - Scrambling
