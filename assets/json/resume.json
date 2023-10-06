@@ -1,61 +1,45 @@
 {
   "basics": {
-    "name": "Albert Einstein",
-    "label": "Scientist",
+    "name": "Rasim Muzaffer Musal",
+    "label": "Associate Professor of Analytics",
     "image": "",
-    "email": "albert@einstein.de",
-    "phone": "(912) 123-4567",
-    "url": "https://alshedivat.github.io/al-folio/",
-    "summary": "A German-born theoretical physicist, widely ranked among the greatest and most influential scientists of all time",
+    "email": "mmusal@gmail.com",
+    "url": "https://mmusal.github.io",
+    "summary": "Applied Bayesian statistician interested in interesting problems",
     "location": {
-      "address": "2712 Broadway St",
-      "postalCode": "CA 94115",
-      "city": "San Francisco",
+      "address": "601 University Road",
+      "postalCode": "78666",
+      "city": "San Marcos",
       "countryCode": "US",
-      "region": "California"
+      "region": "Texas"
     },
     "profiles": [
       {
-        "network": "Twitter",
-        "username": "AlbertEinstein",
-        "url": "https://twitter.com/AlbertEinstein"
+        "network": "LinkedIn",
+        "username": "rmuzaffermusal",
+        "url": "https://www.linkedin.com/in/rmuzaffermusal/"
       }
     ]
   },
   "work": [
     {
-      "name": "Institute for Advanced Study, Princeton University",
-      "position": "Professor of Theoretical Physics",
-      "url": "https://example.com",
-      "startDate": "1933-01-01",
-      "endDate": "1955-01-01",
-      "summary": "Teaching at Palmer Physical Laboratory (now 302 Frist Campus Center). While not a professor at Princeton, I associated with the physics professors and continued to give lectures on campus.",
-      "highlights": [
-        "Relativity"
-      ]
+      "name": "Deparment of Information Systems and Analytics",
+      "position": "Associate Professor of Analytics",
+      "url": "https://faculty.txst.edu/profile/528783",
+      "startDate": "2009-01-01",
+      "endDate": "",
+      "summary": "Taught courses based on probability and data mining, research in spatial models and fraud identification"
     }
   ],
   "volunteer": [],
   "education": [
     {
-      "institution": "University of Zurich, Zurich, Switzerland",
-      "url": "https://www.uzh.ch/",
-      "area": "Software Development",
+      "institution": "George Washington University, Washington DC,USA",
+      "url": "www.gwu.edu",
+      "area": "Decision Sciences",
       "studyType": "PhD",
-      "startDate": "1905-01-01",
-      "endDate": "1905-01-01",
-      "score": "",
-      "courses": [
-        "Theory of Relativity"
-      ]
-    }
-  ],
-  "awards": [
-    {
-      "title": "Nobel Prize in Physics",
-      "date": "1921-11-01",
-      "awarder": "Royal Swedish Academy of Sciences",
-      "summary": "The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'"
+      "startDate": "2001-08-15",
+      "endDate": "2007-01-01"
     }
   ],
   "certificates": [],
@@ -63,12 +47,16 @@
   "skills": [],
   "languages": [
     {
-      "language": "German",
+      "language": "Turkish",
       "fluency": "Native speaker"
     },
     {
       "language": "English",
       "fluency": "Fluent"
+    },
+    {
+      "language": "German",
+      "fluency": "Beginner"
     }
   ],
   "interests": [],
