@@ -1,3 +1,4 @@
+---
 - title: General Information
   type: map
   contents:
@@ -26,13 +27,12 @@
       institution: McCoy Business School, Texas State University
       year: 2007 - 2008
       description:
-        - Description 1. Researched and taught classes both in undergraduate and graduate programs.
         - Description 2. Researched mainly in the areas of Spatial Models and Socio-Economic Factors and Fraud Identification.
         - Description 3. Taught Introduction to Statistics, Statistical Modeling, Data Mining, Probability and Statistical Models, Advanced Statistics.
 
     - title: Senior Statistician /Visiting Professor 
       institution: Integrity Management Services / George Washington University
-      year: '2007-2008'
+      year: 2007-2008
       description:
         - Description 1. Built models to detect fraud by reading successfully prosecuted cases and trying to create a mathematical/statistical model to replicate the described fraud.
 
@@ -41,12 +41,12 @@
   contents:
     - title: Applied Bayesian Modeling
       items: 
-        - Description 1. 'Spatial Models' 
-        - Description 2. 'Mixture Models'
+        - Description 1. Spatial Models 
+        - Description 2. Mixture Models
     - title: 'Fraud Detection'
       items:
-        - Description 1. 'Creation of algorithms to detect fraud via outlier identification.'
-        - Description 2. 'Using methods such as clustering to identify similar behaving provider groups and identifying outliers.' 
+        - Description 1. Creation of algorithms to detect fraud via outlier identification.
+        - Description 2. Using methods such as clustering to identify similar behaving provider groups and identifying outliers.
 
 - title: Other Interests
   type: list
@@ -54,3 +54,4 @@
   Hobbies: 
     - <u>Hobbies:</u> Running, Scrambling, Gym Climbing, Basketball, Mountain Biking
 
+...
