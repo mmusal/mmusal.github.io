@@ -45,13 +45,17 @@
         - Mixture Models
     - title: Fraud Detection
       items:
-        - Description 1. Creation of algorithms to detect fraud via outlier identification.
-        - Description 2. Using methods such as clustering to identify similar behaving provider groups and identifying outliers.
+        - Creation of algorithms to detect fraud via outlier identification.
+        - Using methods such as clustering to identify similar behaving provider groups and identifying outliers.
 
 - title: Other Interests
   type: list
   contents:
   Hobbies: 
-    - <u>Hobbies:</u> Running, Scrambling, Gym Climbing, Basketball, Mountain Biking
+    - Running
+    - Scrambling
+    - Gym Climbing
+    - Basketball
+    - Political Science / History
 
 ...
