@@ -51,11 +51,12 @@
 - title: Hobbies
   type: list
   contents:
-  items: 
-    - Running
-    - Scrambling
-    - Gym Climbing
-    - Basketball
-    - Political Science / History
+    - title: 
+      items: 
+        - Running
+        - Scrambling
+        - Gym Climbing
+        - Basketball
+        - Political Science / History
 
 ...
