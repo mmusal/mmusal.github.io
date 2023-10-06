@@ -2,96 +2,53 @@
   type: map
   contents:
     - name: Full Name
-      value: Albert Einstein
-    - name: Date of Birth
-      value: 14th March 1879
+      value: Rasim Muzaffer Musal
     - name: Languages
-      value: English, German
+      value: English, Turkish, German (beginner)
 
 - title: Education
   type: time_table
   contents:
-    - title: PhD
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1905
+    - title: Ph.D.
+      institution: George Washington University, USA
+      year: 2007
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Federal teaching diploma
-      institution: Eidgenössische Technische Hochschule, Zurich, Switzerland
-      year: 1900
-      description:
-        - Description 1.
-        - Description 2.
+        - Title. Bayesian modeling of group preferences and population utility estimation 
+        - We developed a probabilistic utility function of a population based on a sample of Health Utility Index values and using Multi Attribute Utility theory. The likelihood was based on Dirichlet probability distribution and each attribute's information value was calculated. 
+    - title: M.B.A.
+      institution: George Washington University, USA
+      year: 2001
 
 - title: Experience
   type: time_table
   contents:
-    - title: Professor of Theoretical Physics
-      institution: Institute for Advanced Study, Princeton University
-      year: 1933 - 1955
+    - title: Assistant-Associate Professor
+      institution: McCoy Business School, Texas State University
+      year: 2007 - 2008
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Visiting Professor
-      institution: California Institute of Technology, Pasadena, California, US
-      year: 1933
+        - Researched and taught classes both in undergraduate and graduate programs.
+        - Researched mainly in the areas of Spatial Models and Socio-Economic Factors and Fraud Identification.
+        - Taught Introduction to Statistics, Statistical Modeling, Data Mining, Probability and Statistical Models, Advanced Statistics.
+
+    - title: Senior Statistician /Visiting Professor 
+      institution: Integrity Management Services / George Washington University
+      year: 2007-2008
       description:
-        - Description 1.
-        - Description 2.
-
-    - title: Director
-      institution: Kaiser Wilhelm Institute for Physics, Berlin, Germany.
-      year: 1917-1933
-
-    - title: Professor of Theoretical Physics
-      institution: Karl-Ferdinand University, Prague, Czechoslovakia
-      year: 1911 - 1917
-      description:
-
-    - title: Associate Professor of Theoretical Physics
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1909 - 1911
-
-- title: Open Source Projects
-  type: time_table
-  contents:
-    - title: <a href="https://github.com/alshedivat/al-folio">al-folio</a>
-      year: 2015-now
-      description: A beautiful, simple, clean, and responsive Jekyll theme for academics.
-
-- title: Honors and Awards
-  type: time_table
-  contents:
-    - year: 1921
-      items: 
-        - Nobel Prize in Physics 
-        - Matteucci Medal
-    - year: 2029
-      items: 
-        - Max Planck Medal
+        - Built models to detect fraud by reading successfully prosecuted cases and trying to create a mathematical/statistical model to replicate the described fraud.
 
 - title: Academic Interests
   type: nested_list
   contents:
-    - title: Topic 1.
+    - title: Applied Bayesian Modeling
       items: 
-        - Description 1.
-        - Description 2.
-    - title: Topic 2.
+        - Spatial Models 
+        - Mixture Models
+    - title: Fraud Detection
       items:
-        - Description 1.
-        - Description 2.
+        - Creation of algorithms to detect fraud via outlier identification.
+        - Using methods such as clustering to identify similar behaving provider groups and identifying outliers.  
 
 - title: Other Interests
   type: list
   contents:
-    - <u>Hobbies:</u> Hobby 1, Hobby 2, etc.
+    - <u>Hobbies:</u> Running, Scrambling, Gym Climbing, Basketball, Mountain Biking.

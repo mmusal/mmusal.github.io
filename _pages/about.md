@@ -2,25 +2,23 @@
 layout: about
 title: about
 permalink: /
-subtitle: <a href='#'>Affiliations</a>. Address. Contacts. Moto. Etc.
+subtitle: <a href='#'>Affiliation</a>.Rasim Muzaffer Musal Texas State University mmusal@gmail.com 
 
 profile:
   align: right
-  image: prof_pic.jpg
-  image_circular: false # crops the image to make it circular
+  image: musal_profile.jpg
+  image_circular: true # crops the image to make it circular
   more_info: >
-    <p>555 your office number</p>
-    <p>123 your address street</p>
-    <p>Your City, State 12345</p>
+    <p>McCoy 463</p>
+    <p>601 University Road</p>
+    <p>San Marcos, Texas 78666</p>
 
-news: true  # includes a list of news items
+news: false  # includes a list of news items
 latest_posts: true  # includes a list of the newest posts
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
 ---
 
-Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
+I was born in Izmir, a coastal city in Turkey. Currently, I live in Texas, working on applied Bayesian models and teaching Data Mining/Statistical Modeling at Texas State University in San Marcos. I enjoy tackling complex problems, whether they're academic or in the realm of adventure. I have an affinity for the sea and mountains. Some of my favorite places to visit include Moab, Utah; Leadville, Buena Vista, Colorado; San Francisco; Bishop, California; Juneau, Talkeetna, Alaska; and Washington D.C.
 
-Put your address / P.O. box / other info right below your picture. You can also disable any of these elements by editing `profile` property of the YAML header of your `_pages/about.md`. Edit `_bibliography/papers.bib` and Jekyll will render your [publications page](/al-folio/publications/) automatically.
-
-Link to your social media connections, too. This theme is set up to use [Font Awesome icons](http://fortawesome.github.io/Font-Awesome/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
+My current focus is on merging Hidden Markov and Spatial Models using STAN. Working on this project taught me quite a few things and I would like to post about them and also communicate scientific results. I'm also working on optimizing computational processes for these models as they are computationally intense. Another area of interest for me is Fraud detection. Fraud detection is an interesting problem to tackle since it is involves unsupervised/semi supervised models.  
