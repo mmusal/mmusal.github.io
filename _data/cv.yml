@@ -48,10 +48,10 @@
         - Creation of algorithms to detect fraud via outlier identification.
         - Using methods such as clustering to identify similar behaving provider groups and identifying outliers.
 
-- title: Other Interests
+- title: Hobbies
   type: list
   contents:
-  Hobbies: 
+  items: 
     - Running
     - Scrambling
     - Gym Climbing
