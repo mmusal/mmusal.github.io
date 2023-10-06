@@ -2,7 +2,7 @@
 layout: post
 title: "Intro_to_Spatial_Tools_and_Files"
 author: "Rasim M Musal"
-date: "10/4/2023"
+date: "2023-10-04"
 output:
   html_document:
    toc: true
