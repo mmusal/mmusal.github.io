@@ -32,24 +32,28 @@
 
     - title: Senior Statistician /Visiting Professor 
       institution: Integrity Management Services / George Washington University
-      year: 2007-2008
+      year: '2007-2008'
       description:
-        - Built models to detect fraud by reading successfully prosecuted cases and trying to create a mathematical/statistical model to replicate the described fraud.
+        - 'Built models to detect fraud by reading successfully prosecuted cases and trying to create a mathematical/statistical model to replicate the described fraud.'
 
 - title: Academic Interests
   type: nested_list
   contents:
     - title: Applied Bayesian Modeling
       items: 
-        - Spatial Models 
-        - Mixture Models
-    - title: Fraud Detection
+        - 'Spatial Models' 
+        - 'Mixture Models'
+    - title: 'Fraud Detection'
       items:
-        - Creation of algorithms to detect fraud via outlier identification.
-        - Using methods such as clustering to identify similar behaving provider groups and identifying outliers.  
+        - 'Creation of algorithms to detect fraud via outlier identification.'
+        - 'Using methods such as clustering to identify similar behaving provider groups and identifying outliers.' 
 
 - title: Other Interests
   type: list
   contents:
-    - <u>Hobbies:</u> [Running, Scrambling, Gym Climbing, Basketball, Mountain Biking.]
-    
+  Hobbies: 
+    -Running 
+    -Scrambling 
+    -Gym Climbing 
+    -Basketball
+    -Mountain Biking
