@@ -21,7 +21,7 @@ always_allow_html: true
 
 # What are shape files
 
-Both R and Python have libraries that can process files referred to as "shape files". Details on the definition and development of the format can be read at [wikipedia] (<https://en.wikipedia.org/wiki/Shapefile>). An important thing to know is that whereas shape file refers to data that is used to represent geographical features, it needs 3 files to be operational.
+Both R and Python have libraries that can process files referred to as "shape files". Details on the definition and development of the format can be read at [wikipedia] (https://en.wikipedia.org/wiki/Shapefile). An important thing to know is that whereas shape file refers to data that is used to represent geographical features, it needs 3 files to be operational.
 
 ## .shp
 
@@ -116,7 +116,7 @@ plot(shape)
 ## all
 ```
 
-![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-2-1.png)<!-- -->
+![](./assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-2-1.png)<!-- -->
 
 ```r
 #The shape function has 17 attributes and R chooses to plot a smaller number of them to fit the screen. 
@@ -126,7 +126,7 @@ plot(shape)
 plot(shape[15])
 ```
 
-![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-2-2.png)<!-- -->
+![](./assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-2-2.png)<!-- -->
 
 ```r
 #Note that if you wrote plot(shape$AWATER) you get a scatterplot.
@@ -233,7 +233,7 @@ map_Pov20=ggplot() +
 map_Pov20
 ```
 
-![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-4-1.png)<!-- -->
+![](./assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-4-1.png)<!-- -->
 
 ```r
 map_Pov21=ggplot() +
@@ -245,7 +245,7 @@ map_Pov21=ggplot() +
 plot_grid(map_Pov20,map_Pov21)
 ```
 
-![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-4-2.png)<!-- -->
+![](./assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-4-2.png)<!-- -->
 
 ```r
 #########################################
@@ -265,7 +265,7 @@ map_Pov21=ggplot() +
 plot_grid(map_Pov20,map_Pov21)
 ```
 
-![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-4-3.png)<!-- -->
+![](./assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-4-3.png)<!-- -->
 
 ## Using the ggbupr library and annotation
 
@@ -291,7 +291,7 @@ map_Pov2021 <- ggarrange(labels=c("Poverty 2020","Poverty 2021"),map_Pov20, map_
 annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_Pov2021, fig.lab = "Maps of Poverty Percentages")
 ```
 
-![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-5-1.png)<!-- -->
+![](./assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-5-1.png)<!-- -->
 
 # Creating the multi-line graph and annotation
 
@@ -421,4 +421,4 @@ i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
 i3
 ```
 
-![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-8-1.png)<!-- -->
+![](./assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-8-1.png)<!-- -->
