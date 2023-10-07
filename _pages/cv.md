@@ -1,7 +1,7 @@
 ---
 layout: cv
 permalink: /cv/
-title: Summarized Resume
+title: Resume
 nav: true
 nav_order: 4
 cv_pdf: Musal_CV.pdf

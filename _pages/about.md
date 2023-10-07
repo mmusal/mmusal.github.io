@@ -1,8 +1,8 @@
 ---
 layout: about
-title: about
+title: Me
 permalink: /
-subtitle: <a href='#'>Affiliation</a>.Rasim Muzaffer Musal Texas State University mmusal@gmail.com 
+subtitle: <a href='#'></a>.Rasim Muzaffer Musal Texas State University mmusal@gmail.com 
 
 profile:
   align: right
