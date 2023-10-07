@@ -25,10 +25,10 @@
   contents:
     - title: Assistant-Associate Professor
       institution: McCoy Business School, Texas State University
-      year: 2007 - 2008
+      year: 2009 - 
       description:
-        - Researched mainly in the areas of Spatial Models and Socio-Economic Factors and Fraud Identification.
-        - Taught Introduction to Statistics, Statistical Modeling, Data Mining, Probability and Statistical Models, Advanced Statistics.
+        - Research mainly in the areas of Spatial Models and Socio-Economic Factors and Fraud Identification.
+        - Teach Introduction to Statistics, Statistical Modeling, Data Mining, Probability and Statistical Models, Advanced Statistics.
 
     - title: Senior Statistician /Visiting Professor 
       institution: Integrity Management Services / George Washington University
@@ -49,14 +49,18 @@
         - Using methods such as clustering to identify similar behaving provider groups and identifying outliers.
 
 - title: Hobbies
-  type: list
+  type: nested_list
   contents: 
-    - title: Interests 
+    - title: Physical 
       items: 
         - Running
         - Scrambling
         - Gym Climbing
         - Basketball
-        - Political Science / History
+        - Flint Knapping
+    - title: Intellectual
+      items:
+        - Political Science 
+        - History
 
 ...
