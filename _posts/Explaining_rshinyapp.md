@@ -144,7 +144,7 @@ shinyApp(ui = ui, server = server)
 The application itself resides in the [shiny server](https://mmusal.shinyapps.io/timeseriesofSMR/)
 and shows 77 biweeks (t=1,...T=77) of Covid-19 Standardized Mortality Ratio (SMR) in the 58 counties of California. The SMR in this application is calculated for a given time period "t".
 Below $Pop_{i}$ is population of county "i". We used the 2020 and 2021 population (there will be more explanation when I document the data work).
-$omega$ represents the population weight of county "i" among N (58) counties in California.
+$\omega$ represents the population weight of county "i" among N (58) counties in California.
 \[\omega_{i}=\frac{Pop_{i}}{\sum_{i}^{N}Pop_{i}}\]
 In other applications expected mortality at time period $t$, county $i$, is adjusted by age/sex but we prefer to use these solely as model variables and therefore $E_{t,i}$ is, 
 \[E_{t,i}=(\sum_{i}y_{t,i})*\omega_{i}\]
@@ -160,7 +160,7 @@ There are a few things to note about SMR among these 58 counties across 77 biwee
 
 0. One of the first things people note is that we are not using SIR models where population changes at every time period with deaths and births. The main reason we are not using SIR models is that we do not have such data directly available. On the other hand since we are working with ratios the main assumption we make is that the county population ratios $\omega$ do not change.     
 
-1. Each SMR value is calculated based on the total observed deaths in a biweek. Especially in the first set of biweeks most of the counties have no recorded deaths. This means a single death occurring in a  county with an $E_{t,i}$  of 0.05 lead to an $SMR_{t,i}$  of 20. Drawing inferences based on a few biweeks of data would be an example of [the law of small numbers](https://en.wikipedia.org/wiki/Law_of_small_numbers). We can not draw healthy inferences on what affects SMR (our main goal) based on few weeks of data. 
+1. Each SMR value is calculated based on the total observed deaths in a biweek. Especially in the first set of biweeks most of the counties have no recorded deaths. This means a single death occurring in a  county with an $E_{t,i}$ of 0.05 lead to an $SMR_{t,i}$ of 20. Drawing inferences based on a few biweeks of data would be an example of [the law of small numbers](https://en.wikipedia.org/wiki/Law_of_small_numbers). We can not draw healthy inferences on what affects SMR (our main goal) based on few weeks of data. 
 
 2. Connected to 1, we have to remember smaller counties will have higher variances. 
 
