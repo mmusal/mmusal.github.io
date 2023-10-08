@@ -16,9 +16,9 @@ In this project we would like to investigate the affect of socio-demographic and
 # Spatial Models
 
 # STAN Models
-    ## Besag York Mollie
 
-    ## Hidden Markov Models
+## Besag York Mollie
 
-    ## Combining the Models
-    
+## Hidden Markov Models
+
+## Combining the Models
