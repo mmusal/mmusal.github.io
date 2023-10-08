@@ -161,7 +161,7 @@ There are a few things to note about SMR among these 58 counties across 77 biwee
 
 0. One of the first things people note is that we are not using SIR models where population changes at every time period with deaths and births. The main reason we are not using SIR models is that we do not have such data directly available. On the other hand since we are working with ratios the main assumption we make is that the county population ratios $\omega$ do not change.     
 
-1. Each SMR value is calculated based on the total observed deaths in a biweek. Especially in the first set of biweeks most of the counties have no recorded deaths. This means a single death occurring in a  county with an $E_{t,i} $ of 0.05 lead to an $SMR_{t,i} $ of 20. Drawing inferences based on a few biweeks of data would be an example of [the law of small numbers](https://en.wikipedia.org/wiki/Law_of_small_numbers). We can not draw healthy inferences on what affects SMR (our main goal) based on few weeks of data. 
+1. Each SMR value is calculated based on the total observed deaths in a biweek. Especially in the first set of biweeks most of the counties have no recorded deaths. This means a single death occurring in a  county with an $E_{t,i}$  of 0.05 lead to an $SMR_{t,i}$  of 20. Drawing inferences based on a few biweeks of data would be an example of [the law of small numbers](https://en.wikipedia.org/wiki/Law_of_small_numbers). We can not draw healthy inferences on what affects SMR (our main goal) based on few weeks of data. 
 
 2. Connected to 1, we have to remember smaller counties will have higher variances. 
 
