@@ -148,7 +148,9 @@ Below $Pop_{i}$ is population of county "i". We used the 2020 and 2021 populatio
 $\omega$ represents the population weight of county "i" among N (58) counties in California.
 \[\omega_{i}=\frac{Pop_{i}}{\sum_{i}^{N}Pop_{i}}\]
 In other applications expected mortality at time period $t$, county $i$, is adjusted by age/sex but we prefer to use these solely as model variables and therefore $E_{t,i}$ is, 
+
 \[E_{t,i}=(\sum_{i}y_{t,i})*\omega_{i}\]
+
 Therefore you can think about $E_{t,i}$ as the expected number of people who would die of Covid-19 if mortality risk was uniformly distributed across the population (death from Covid-19 was equally likely).
 
 In conclusion SMR is calculated as
