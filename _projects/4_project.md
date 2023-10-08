@@ -2,6 +2,7 @@
 layout: page
 title: Hidden Markov Models and Spatial Models
 description: another without an image
+toc: true
 img:
 importance: 1
 category: fun
@@ -15,9 +16,9 @@ In this project we would like to investigate the affect of socio-demographic and
 
 # Spatial Models
 
-# STAN Models
+# STAN Programming Language
 
-## Besag York Mollie
+## Besag York Mollie Models
 
 ## Hidden Markov Models
 
