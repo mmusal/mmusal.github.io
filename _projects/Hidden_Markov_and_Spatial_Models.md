@@ -2,14 +2,12 @@
 layout: page
 title: Hidden Markov and Spatial Models
 description: This project explores the multiple neccessary components to create a composite of Bayesian Spatial and Hidden Markov Models. Furthermore the project is useful to see more of STAN programming language applications.
-output:
-html_document:
- toc: true
- keep_md: no
- toc_float: true
- toc_collapsed: true
- toc_depth: 2
- number_sections: true
+toc: true
+keep_md: no
+toc_float: true
+toc_collapsed: true
+toc_depth: 2
+number_sections: true
 img:
 importance: 1
 category: work
@@ -17,7 +15,7 @@ category: work
 
 In this project we would like to investigate the affect of socio-demographic and other variables on Covid-19 mortality in the counties of California. As we can see from the [application created by rshiny, authored by Anjali Goel,](https://mmusal.shinyapps.io/timeseriesofSMR/) counties seem to be following a degree of spatial structure where counties with low/high SMR values have counties with similar SMR characteristics. We discuss the [details](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/) of this application. We conduct Moran's I as we describe the data. However before doing so we should learn about [some of the capabilities](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/) that R has in visualizing maps using SHP data. The questions we would like to eventually answer are listed below:
 
-# Project Questions
+## Project Questions
 0. Can we represent the spatial dependence in the counties of California.
 
 1. Among the available socio-demographic and other factors recorded for each county in California, which of them affected Covid-19 mortality.
@@ -34,18 +32,18 @@ In this project we would like to investigate the affect of socio-demographic and
 To accomplish this we will need to discuss a set of concepts outlined [below](#set_of_concepts). 
 We need to have an understanding of the scripting language R to represent the problem visually and prepare spatial neighborhood structures. We will  
 
-# <a name="set_of_concepts"></a> Set of concepts 
+## <a name="set_of_concepts"></a> Set of concepts 
 
-## Mapping/Spatial Tools    
+### [Mapping/Spatial Tools](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/)    
 
-## Hidden Markov Models
+### Hidden Markov Models
 
-### Introduction to some neccessary probabilty concepts
+#### Introduction to some neccessary probabilty concepts
 
-## STAN Programming Language
+### STAN Programming Language
 
-### Besag York Mollie Spatial Models with STAN
+#### Besag York Mollie Spatial Models with STAN
 
-### Hidden Markov Models with STAN
+#### Hidden Markov Models with STAN
 
-## Combining the Models
+### Combining the Models
