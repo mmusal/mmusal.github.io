@@ -8,7 +8,7 @@ importance: 1
 category: fun
 ---
 
-In this project we would like to investigate the affect of socio-demographic and other variables on Covid-19 mortality in the counties of California. As we cab see from the application created by rshiny The questions we would like to answer are listed below:
+In this project we would like to investigate the affect of socio-demographic and other variables on Covid-19 mortality in the counties of California. As we can see from the [application created by rshiny](https://mmusal.shinyapps.io/timeseriesofSMR/) counties seem to be following a degree of spatial structure where counties with low/high SMR values have counties with similar SMR characteristics. We discuss the [details](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/) of this application. We conduct Moran's I as we describe the data. However before doing so we should learn about [some of the capabilities](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/) that R has in visualizing maps using SHP data. The questions we would like to eventually answer are listed below:
 
 # Project Questions
 0. Can we represent the spatial dependence in the counties of California.
@@ -32,6 +32,10 @@ We need to have an understanding of the scripting language R to represent the pr
 ## Mapping/Spatial Tools    
 
 ## Hidden Markov Models
+
+### Introduction to some neccessary probabilty concepts
+
+### Hidden Markov Models
 
 ## Spatial Models
 
