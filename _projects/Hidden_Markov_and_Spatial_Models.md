@@ -1,11 +1,12 @@
 ---
 layout: page
-title: Hidden Markov Models and Spatial Models
-description: another without an image
+title: Hidden Markov and Spatial Models
+description: This project explores the multiple neccessary components to create a composite of Bayesian Spatial and Hidden Markov Models. Furthermore the project is useful to see more of STAN programming language applications.
+
 toc: true
 img:
 importance: 1
-category: fun
+category: work
 ---
 
 In this project we would like to investigate the affect of socio-demographic and other variables on Covid-19 mortality in the counties of California. As we can see from the [application created by rshiny, authored by Anjali Goel](https://mmusal.shinyapps.io/timeseriesofSMR/) counties seem to be following a degree of spatial structure where counties with low/high SMR values have counties with similar SMR characteristics. We discuss the [details](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/) of this application. We conduct Moran's I as we describe the data. However before doing so we should learn about [some of the capabilities](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/) that R has in visualizing maps using SHP data. The questions we would like to eventually answer are listed below:
