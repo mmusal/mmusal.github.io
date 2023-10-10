@@ -36,7 +36,9 @@ We need to have an understanding of the scripting language R to represent the pr
 
 ### [Mapping/Spatial Tools](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/)    
 
-### Hidden Markov Models
+### Hidden Markov Model
+
+### Besag York Mollie Model
 
 #### Introduction to some neccessary probabilty concepts
 
