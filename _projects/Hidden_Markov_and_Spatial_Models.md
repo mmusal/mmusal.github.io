@@ -36,11 +36,13 @@ We need to have an understanding of the scripting language R to represent the pr
 
 ### [Mapping/Spatial Tools](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/)    
 
-### Hidden Markov Model
+### Hidden Markov Model (HMM)
+
+#### Introduction to some probabilty concepts
+
+#### Using probability concepts to describe HMM
 
 ### Besag York Mollie Model
-
-#### Introduction to some neccessary probabilty concepts
 
 ### STAN Programming Language
 
