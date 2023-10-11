@@ -52,11 +52,17 @@ In an order 1 Markov model the only thing that matters to inform the uncertainty
 In addition 
 $P(Y_{tki}|k_{t})=P(Y_{tki}|k_{t},Y_{(t-1),k,i},\ldots Y_{0,k,i} )$
 
+The matrix created from the probabilities between the states is called the transition matrix. The format of the matrix ensures that it is a stochastic matrix such that the rows sum to 1. 
+                                                  
+
+| From/To |    $k_{t}=1$ |    $k_{t}=2$ | 
+|:-------:|:------:|:-----------:|
+| $k_{t-1}=1$ | $\pi_{11}$ | 1-$\pi_{11}$ |
+| $k_{t-1}=2$ | $\pi_{21}$ | 1-$\pi_{21}$ |
 
 
 
-
-
+                                             
 
 
 
