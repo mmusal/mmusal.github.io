@@ -32,4 +32,33 @@ To obtain this joint probability we will need to make assumptions.
 3) For the purposes of this post we will assume that at time $t$ the distribution of Covid-19 mortality follows a Poisson distribution.
 \[P(Y_{t}|\lambda_{tk},k_{t})=Poisson(Y_{t}|\lambda_{tk})\]
 
+If we did not have different regimes across a time component we could have used mixture models due to their [close relationship](https://www.utstat.toronto.edu/~rsalakhu/sta4273/notes/Lecture11.pdf) with hidden markov models. Assuming we had a mixture of 2 Poisson distributions (K=2) we could write the mixture distribution of Covid-19 mortality at time period $t$ county $i$ as 
+
+\[P(Y_{ti}) \sim \omega_{k=1}*Pois.(\lambda_{t1i})+\omega_{k=2}*Pois.(\lambda_{t2i}) \]
+
+This setup assumes that $Y_{ti}$ is independent and identically distributed both across $t$ and $i$. If we wrote the likelihood for this model it would look like
+\[P(Y_{0,1},Y_{0,2},\ldots Y_{0,N},Y_{1,1} \ldots Y_{T-1,N}|\lambda_{0,1}\ldots\lambda_{T-1,N},\omega_{1},\omega_{2})\]
+\[\Pi_{i=1}^{i=N}\Pi_{t=0}^{t=T-1}  (\omega_{m=1}*Pois.(\lambda_{t1i})+\omega_{m=2}*Pois.(\lambda_{t2i})),\]
+
+where $\lambda_{tki}$ represents the mean/variance of Covid-19 mortality at time $t$, regime k, county i.
+
+We would like to relax this assumption about $t$ and instead make the claim that the previous observations inform us as to $Y_{t}$ and build Hidden Markov Models (HMM).
+
+In formulating the HMM we again assume K=2, however we will assume an order 1 Markov model (markov property). Below, k_{t} is 1 or 2.
+\[P(k_{t}|k_{t-1})=P(k_{t}|k_{t-1},\ldots,k_{0}).\]
+In an order 1 Markov model the only thing that matters to inform the uncertainty of $k_{t}$ is at  $t-1$.
+In addition 
+$P(Y_{tki}|k_{t})=P(Y_{tki}|k_{t},Y_{(t-1),k,i},\ldots Y_{0,k,i} )$
+
+
+
+
+
+
+
+
+
+
+
+
 
