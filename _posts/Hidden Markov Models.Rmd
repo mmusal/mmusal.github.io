@@ -30,8 +30,8 @@ In order to make inferences via our HMM model we would need to obtain the joint 
 To obtain this joint probability we will need to make assumptions.
 1) A regime determines the parameters of the uncertainty distribution.
 2) Given the parameters the regime does not provide additional information about $Y_{t}$.  
-\[P(Y_{t}|\lambda_{k})=P(Y_{t}|\lambda_{k},k_{t})=P(Y_{t}|k_{t})\]
+\[P(Y_{t}|\lambda_{tk})=P(Y_{t}|\lambda_{tk},k_{t})=P(Y_{t}|k_{t})\]
 3) For the purposes of this post we will assume that at time $t$ the distribution of Covid-19 mortality follows a Poisson distribution.
-\[P(Y_{t}|\lambda_{k},k_{t})=Poisson(Y_{t}|\lambda_{k})\]
+\[P(Y_{t}|\lambda_{tk},k_{t})=Poisson(Y_{t}|\lambda_{tk})\]
 
 
