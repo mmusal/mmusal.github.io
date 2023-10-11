@@ -30,7 +30,7 @@ In this project we would like to investigate the affect of socio-demographic and
 
 
 To accomplish this we will need to discuss a set of concepts outlined [below](#set_of_concepts). 
-We need to have an understanding of the scripting language R to represent the problem visually and prepare spatial neighborhood structures. We will  
+First we need to have an understanding of the scripting language R to represent the problem visually and prepare spatial neighborhood structures. We will discuss Hidden Markov Models and Spatial models separately, and give necessary details and background to understand each necessary to create the combination.   
 
 ## <a name="set_of_concepts"></a> Set of concepts 
 
