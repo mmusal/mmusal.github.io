@@ -1703,7 +1703,7 @@ server</a>.</p>
 <span id="cb1-105"><a href="#cb1-105" tabindex="-1"></a><span class="co"># shinyApp()</span></span>
 <span id="cb1-106"><a href="#cb1-106" tabindex="-1"></a><span class="fu">shinyApp</span>(<span class="at">ui =</span> ui, <span class="at">server =</span> server)</span></code></pre></div>
 </div>
-<div id="discussing-the-calculation-for-smr" class="section level1" number="3">
+<div id="SMR" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Discussing the
 calculation for SMR</h1>
 <p>The application itself resides in the <a href="https://mmusal.shinyapps.io/timeseriesofSMR/">shiny server</a> and
@@ -1711,12 +1711,13 @@ shows 77 biweeks (t=1,…T=77) of Covid-19 Standardized Mortality Ratio
 (SMR) in the 58 counties of California. The SMR in this application is
 calculated for a given time period “t”. Below <span class="math inline">\(Pop_{i}\)</span> is population of county “i”. We
 used the 2020 and 2021 population (there will be more explanation when I
-document the data work). <span class="math inline">\(\omega\)</span>
+document the data work). <span class="math inline">\(\omicron\)</span>
 represents the population weight of county “i” among N (58) counties in
-California. <span class="math display">\[\omega_{i}=\frac{Pop_{i}}{\sum_{i}^{N}Pop_{i}}\]</span>
+California. <span class="math display">\[\omicron_{i}=\frac{Pop_{i}}{\sum_{i}^{N}Pop_{i}}\]</span>
 In other applications expected mortality at time period <span class="math inline">\(t\)</span>, county <span class="math inline">\(i\)</span>, is adjusted by age/sex but we prefer
-to use these solely as model variables and therefore <span class="math inline">\(E_{t,i}\)</span> is, <span class="math display">\[E_{t,i}=(\sum_{i}y_{t,i})*\omega_{i}\]</span>
-Therefore you can think about <span class="math inline">\(E_{t,i}\)</span> as the expected number of people
+to use these solely as model variables and therefore <span class="math inline">\(E_{t,i}\)</span> is,</p>
+<p><span class="math display">\[E_{t,i}=(\sum_{i}y_{t,i})*\omicron_{i}\]</span></p>
+<p>Therefore you can think about <span class="math inline">\(E_{t,i}\)</span> as the expected number of people
 who would die of Covid-19 if mortality risk was uniformly distributed
 across the population (death from Covid-19 was equally likely).</p>
 <p>In conclusion SMR is calculated as</p>

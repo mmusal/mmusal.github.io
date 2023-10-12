@@ -18,9 +18,7 @@ always_allow_html: true
 
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,fig.path = ('./assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Files'))
-```
+
 
 # Discussing Rshiny
 
@@ -31,7 +29,8 @@ The application is at [shiny server](https://mmusal.shinyapps.io/timeseriesofSMR
 
 # Application code 
 
-```{r, eval = FALSE}
+
+```r
 knitr::opts_chunk$set(eval = FALSE)
 library(shiny)
 library(rgdal)
