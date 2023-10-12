@@ -36,7 +36,7 @@ First we need to have an understanding of the scripting language R to represent 
 
 ### [Mapping/Spatial Tools](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/)    
 
-### Hidden Markov Model (HMM)
+### [Hidden Markov Model (HMM)](https://mmusal.github.io/blog/2023/Hidden-Markov-Models/)
 
 #### Introduction to some probabilty concepts
 
