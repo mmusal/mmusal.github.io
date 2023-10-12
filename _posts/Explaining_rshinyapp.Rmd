@@ -140,7 +140,7 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
-# Discussing the calculation for SMR {#SMR}
+# Discussing the calculation for SMR {SMR}
 
 The application itself resides in the [shiny server](https://mmusal.shinyapps.io/timeseriesofSMR/)
 and shows 77 biweeks (t=1,...T=77) of Covid-19 Standardized Mortality Ratio (SMR) in the 58 counties of California. The SMR in this application is calculated for a given time period "t".

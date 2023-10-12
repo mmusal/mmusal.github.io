@@ -139,6 +139,7 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
+
 # Discussing the calculation for SMR {#SMR}
 
 The application itself resides in the [shiny server](https://mmusal.shinyapps.io/timeseriesofSMR/)
