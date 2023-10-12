@@ -111,8 +111,7 @@ Putting it all together for the project and including the county index, for the 
 
 As we have discussed in \eqref{eq:Poisson} we assume that $Y_{tk}$ and therefore $Y_{tki}$ has a Poisson distribution with parameter $\lambda_{tki}$. We will be modeling this parameter, which represents the mean/variance of the distribution. Additionally, given that each county has varying populations, it's important that we account for this factor with
 
-
-([E_{ti}](./2023-10-07-Explaining_rshinyapp.html#SMR)).
+([$E_{ti}$](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR)).
 
 
 
