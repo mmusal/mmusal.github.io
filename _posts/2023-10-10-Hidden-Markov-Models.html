@@ -1562,11 +1562,16 @@ the model</p>
 <p>Assume T=2 and ignore for the moment county index i. <span class="math display">\[P(Y_{0}|k_{0}) \times P(k_{0}) \times
 P({k_{1}|k_{0}}) \times P(Y_{1}|k_{1})\]</span> This is equivalent to
 <span class="math display">\[P(Y_{0}|k_{0}) \times P(Y_{1}|k_{1}) \times
-P(k_{1},k_{0}) \]</span></p>
+P(k_{0},k_{1}) \]</span></p>
 <p><span class="math display">\[P(Y_{0},Y_{1}|k_{0},k_{1}) \times
-P(k_{1},k_{0}) \]</span> The first component <span class="math inline">\(P(Y_{0},Y_{1}|k_{0},k_{1})\)</span> is calculated
+P(k_{0},k_{1}) \]</span> The first component <span class="math inline">\(P(Y_{0},Y_{1}|k_{0},k_{1})\)</span> is calculated
 by the first multiplication due to the conditional independence of the
 observations given the states.</p>
+<p>Putting it all together for the project and including the county
+index we get <span class="math display">\[\Pi_{i=1}^{i=58} P(k_{0})
+\times P(k_{1}|k_{0}) \ldots \times P(k_{76}|k_{75}) \times P(Y_{0
+i}|k_{0}) \times P(Y_{1 i}|k_{1}) \ldots P(Y_{76 i}|k_{76})
+\]</span></p>
 
 
 

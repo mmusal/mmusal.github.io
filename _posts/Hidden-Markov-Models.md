@@ -68,10 +68,17 @@ In order to make inferences we will need to obtain the likelihood of the model
 Assume T=2 and ignore for the moment county index i.
 \[P(Y_{0}|k_{0}) \times P(k_{0}) \times P({k_{1}|k_{0}}) \times P(Y_{1}|k_{1})\]
 This is equivalent to 
-\[P(Y_{0}|k_{0}) \times P(Y_{1}|k_{1}) \times P(k_{1},k_{0}) \]
+\[P(Y_{0}|k_{0}) \times P(Y_{1}|k_{1}) \times P(k_{0},k_{1}) \]
 
-\[P(Y_{0},Y_{1}|k_{0},k_{1}) \times P(k_{1},k_{0}) \]
+\[P(Y_{0},Y_{1}|k_{0},k_{1}) \times P(k_{0},k_{1}) \]
 The first component $P(Y_{0},Y_{1}|k_{0},k_{1})$ is calculated by the first multiplication due to the conditional independence of the observations given the states. 
+
+
+Putting it all together for the project and including the county index we get
+\[\Pi_{i=1}^{i=58} P(k_{0}) \times P(k_{1}|k_{0}) \ldots \times P(k_{76}|k_{75}) \times P(Y_{0 i}|k_{0}) \times P(Y_{1 i}|k_{1}) \ldots P(Y_{76 i}|k_{76}) \]
+
+
+
 
                                              
 
