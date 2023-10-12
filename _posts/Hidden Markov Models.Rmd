@@ -1,14 +1,3 @@
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  TeX: { 
-      equationNumbers: {
- 
-            autoNumber: "all",
-            formatNumber: function (n) {return +n}
-      } 
-  }
-});
-</script>
 ---
 layout: post
 title: "Hidden Markov Models"
@@ -24,9 +13,21 @@ output:
    toc_collapsed: true
    toc_depth: 3
    number_sections: true
+   usemathjax: true
 tags: [rshiny, maps,SMR]
 always_allow_html: true
 ---
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { 
+      equationNumbers: {
+ 
+            autoNumber: "all",
+            formatNumber: function (n) {return +n}
+      } 
+  }
+});
+</script>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,fig.path = ('./assets/img/2023-10-07-Hidden_Markov_Models'))
