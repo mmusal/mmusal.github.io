@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = TRUE,fig.path = ('./assets/img/2023-10-07-Hidden_Ma
 
 ## Introduction
 A good introduction to Hidden Markov Models is [illustrated here](https://nipunbatra.github.io/hmm/). In this post we will explain the application of the model we are developing using notation that will be consistent across the project.
-We would like to make inferences about effects on $Y_{ti}$, the number of Covid-19 mortality recorded at time $t$ in county $i$. The time index $t$ is between $(t=0, \ldots ,(T-1)=76)$. There are 58 counties in California $(i=1, \ldots ,58)$ For the moment we will ignore covariates and focus on "regime" $k$ that define the characteristics of the uncertainty that defines the uncertainty of $Y_{ti}$. In the discussion below we are going to ignore hyper-priors for clarity. These will be made explicit in the post explaining the STAN code. 
+We would like to make inferences about effects on $Y_{ti}$, the number of Covid-19 mortality recorded at time $t$ in county $i$. The time index $t$ is between $(t=0, \ldots ,(T-1)=76)$. There are 58 counties in California $(i=1, \ldots ,58)$ For the moment we will ignore covariates and focus on "regime" $k$ that define the characteristics of the uncertainty that defines the uncertainty of $Y_{ti}$. In the discussion below we are going to ignore hyper-priors some additional details for clarity. These will be made explicit in the post explaining the STAN code for Hidden Markov Models. 
 
 Assume $i=1$
 In order to make inferences via our HMM model we would need to obtain the joint probability density of mortality through the observed time period.   
@@ -115,7 +115,16 @@ As we have discussed in \eqref{eq:Poisson} we assume that $Y_{tk}$ and therefore
 
 ([$E_{ti}$](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR)).
 
+We model the parameter $\lambda_{tki}$ by constructing a function in the form of 
+\[\lambda_{tki}=E_{ti}*exp(\mu_{k})\]
+We could have modified $\mu$ to include the county index $i$ or time index $t$. 
+In fitting the parameter we will use the the standard log transformation.  
 
+\[
+log(\lambda_{ti})=log(E_{ti})+\mu_{k}
+\]
+
+Naturally this model's fit will not be the best. Further, important details of the model will be discusssed in the programming with STAN post.
 
 
 

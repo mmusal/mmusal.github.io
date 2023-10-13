@@ -113,7 +113,16 @@ As we have discussed in \eqref{eq:Poisson} we assume that $Y_{tk}$ and therefore
 
 ([$E_{ti}$](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR)).
 
+We model the parameter $\lambda_{tki}$ by constructing a function in the form of 
+\[\lambda_{tki}=E_{ti}*exp(\mu_{k})\]
+We could have modified $\mu$ to include the county index $i$ or time index $t$. 
+In fitting the parameter we will use the the standard log transformation.  
 
+\[
+log(\lambda_{ti})=log(E_{ti})+\mu_{k}
+\]
+
+Naturally this model's fit will not be the best. Further, important details of the model will be discusssed in the programming with STAN post.
 
 
 
