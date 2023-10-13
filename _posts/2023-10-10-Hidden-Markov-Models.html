@@ -1618,6 +1618,18 @@ modeling this parameter, which represents the mean/variance of the
 distribution. Additionally, given that each county has varying
 populations, it’s important that we account for this factor with</p>
 <p>(<a href="https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR"><span class="math inline">\(E_{ti}\)</span></a>).</p>
+<p>We model the parameter <span class="math inline">\(\lambda_{tki}\)</span> by constructing a function
+in the form of <span class="math display">\[\lambda_{tki}=E_{ti}*exp(\mu_{k})\]</span> We
+could have modified <span class="math inline">\(\mu\)</span> to include
+the county index <span class="math inline">\(i\)</span> or time index
+<span class="math inline">\(t\)</span>. In fitting the parameter we will
+use the the standard log transformation.</p>
+<p><span class="math display">\[
+log(\lambda_{ti})=log(E_{ti})+\mu_{k}
+\]</span></p>
+<p>Naturally this model’s fit will not be the best. Further, important
+details of the model will be discusssed in the programming with STAN
+post.</p>
 </div>
 
 
