@@ -38,10 +38,6 @@ First we need to have an understanding of the scripting language R to represent 
 
 ### [Hidden Markov Model (HMM)](https://mmusal.github.io/blog/2023/Hidden-Markov-Models/)
 
-#### Introduction to some probabilty concepts
-
-#### Using probability concepts to describe HMM
-
 ### Besag York Mollie Model
 
 ### STAN Programming Language
