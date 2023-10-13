@@ -1492,9 +1492,9 @@ MathJax.Hub.Config({
   }
 });
 </script>
-<div id="introduction" class="section level2" number="0.1">
-<h2><span class="header-section-number">0.1</span> Introduction</h2>
-<p>A good introduction to Hidden Markov Models is <a href="https://nipunbatra.github.io/hmm/">illustrated here</a>. In this
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>A good presentation to Hidden Markov Models is <a href="https://nipunbatra.github.io/hmm/">illustrated here</a>. In this
 post we will explain the application of the model we are developing
 using notation that will be consistent across the project. We would like
 to make inferences about effects on <span class="math inline">\(Y_{ti}\)</span>, the number of Covid-19 mortality
@@ -1503,11 +1503,17 @@ counties in California <span class="math inline">\((i=1, \ldots
 ,58)\)</span> For the moment we will ignore covariates and focus on
 “regime” <span class="math inline">\(k\)</span> that define the
 characteristics of the uncertainty that defines the uncertainty of <span class="math inline">\(Y_{ti}\)</span>. In the discussion below we are
-going to ignore hyper-priors for clarity. These will be made explicit in
-the post explaining the STAN code.</p>
-<p>Assume <span class="math inline">\(i=1\)</span> In order to make
+going to ignore hyper-priors some additional details for clarity. These
+will be made explicit in the post explaining the STAN code for Hidden
+Markov Models.</p>
+</div>
+<div id="hmm-basic-example-with-k2-t2" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> HMM Basic Example with
+K=2, T=2</h1>
+<p>In this section we will suppress the county index. In order to make
 inferences via our HMM model we would need to obtain the joint
-probability density of mortality through the observed time period.<br />
+probability distribution of mortality through the observed time
+period.<br />
 <span class="math display">\[P(Y_{1:(T-1)},k_{1:(T-1)})
 \label{eq:likelihood}
 \]</span> To obtain this joint probability we will need to make
@@ -1681,7 +1687,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3",
+      selectors: "h1,h2",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {

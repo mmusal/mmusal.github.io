@@ -11,7 +11,7 @@ output:
    keep_md: yes
    toc_float: true
    toc_collapsed: true
-   toc_depth: 3
+   toc_depth: 2
    number_sections: true
    usemathjax: true
 tags: [rshiny, maps,SMR]
@@ -31,12 +31,13 @@ MathJax.Hub.Config({
 
 
 
-## Introduction
-A good introduction to Hidden Markov Models is [illustrated here](https://nipunbatra.github.io/hmm/). In this post we will explain the application of the model we are developing using notation that will be consistent across the project.
-We would like to make inferences about effects on $Y_{ti}$, the number of Covid-19 mortality recorded at time $t$ in county $i$. The time index $t$ is between $(t=0, \ldots ,(T-1)=76)$. There are 58 counties in California $(i=1, \ldots ,58)$ For the moment we will ignore covariates and focus on "regime" $k$ that define the characteristics of the uncertainty that defines the uncertainty of $Y_{ti}$. In the discussion below we are going to ignore hyper-priors for clarity. These will be made explicit in the post explaining the STAN code. 
+# Introduction
+A good presentation to Hidden Markov Models is [illustrated here](https://nipunbatra.github.io/hmm/). In this post we will explain the application of the model we are developing using notation that will be consistent across the project.
+We would like to make inferences about effects on $Y_{ti}$, the number of Covid-19 mortality recorded at time $t$ in county $i$. The time index $t$ is between $(t=0, \ldots ,(T-1)=76)$. There are 58 counties in California $(i=1, \ldots ,58)$ For the moment we will ignore covariates and focus on "regime" $k$ that define the characteristics of the uncertainty that defines the uncertainty of $Y_{ti}$. In the discussion below we are going to ignore hyper-priors some additional details for clarity. These will be made explicit in the post explaining the STAN code for Hidden Markov Models. 
 
-Assume $i=1$
-In order to make inferences via our HMM model we would need to obtain the joint probability density of mortality through the observed time period.   
+# HMM Basic Example with K=2, T=2
+In this section we will suppress the county index.
+In order to make inferences via our HMM model we would need to obtain the joint probability distribution of mortality through the observed time period.   
 \[P(Y_{1:(T-1)},k_{1:(T-1)})
 \label{eq:likelihood}
 \]
@@ -123,6 +124,7 @@ log(\lambda_{ti})=log(E_{ti})+\mu_{k}
 \]
 
 Naturally this model's fit will not be the best. Further, important details of the model will be discusssed in the programming with STAN post.
+
 
 
 
