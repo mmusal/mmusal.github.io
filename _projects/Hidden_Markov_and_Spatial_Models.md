@@ -44,6 +44,6 @@ First we need to have an understanding of the scripting language R to represent 
 
 #### Besag York Mollie Spatial Models with STAN
 
-#### [Hidden Markov Models with STAN](https://mmusal.github.io/blog/2023/Hidden-Markov -Models-with-STAN/)
+#### [Hidden Markov Models with STAN](https://mmusal.github.io/blog/2023/Hidden-Markov-Models-with-STAN/)
 
 ### Combining the Models
