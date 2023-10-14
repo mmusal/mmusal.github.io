@@ -2,7 +2,7 @@
 layout: post
 title: "Hidden Markov Models"
 author: "Rasim M Musal"
-date: "2023-10-10"
+date: "2023-10-14"
 output:
   html_document:
    theme: darkly
@@ -74,3 +74,82 @@ geom_line()+
 ```
 
 ![](./assets/img/2023-10-14-Hidden_Markov_Models_with_STANunnamed-chunk-1-1.png)<!-- -->
+
+In this 
+
+```stan
+data { 
+  int<lower=1> T;//number of time periods 77
+  int K; //This will be fixed to 2
+  int<lower=0> N;//number of spatial areas 58 counties in CA
+  int<lower=0>  y[T,N];              // count outcomes
+  matrix [T,N] log_E;
+}
+```
+
+
+```stan
+transformed data {
+  int ITER=END-START+1;
+}
+```
+
+
+
+```stan
+parameters {
+ordered[K] mu[N]; 
+  simplex[K] pi1[1];
+  simplex[K] A[K,N];
+
+  real epsilon[T];
+}
+```
+
+
+```stan
+transformed parameters {
+matrix[K,N] lambda [T] ;
+real logalpha[T,K,N];
+real accumulator[K];
+    for(t in 1:T){
+  for(k in 1:K){     
+    for(n in 1:N){
+      lambda[t][k,n]=exp(
+        log_E[t,n]+mu[n,k]+epsilon[t]); 
+                }
+                        }
+                }
+for(k in 1:K){
+  for(n in 1:N){
+logalpha[1,k,n] = log(pi1[1,k]) + poisson_lpmf(y[1,n] | lambda[1,k,n]);
+}
+}
+
+for (t in 2:T) {
+for (j in 1:K) {
+for (n in 1:N){
+accumulator[1] = logalpha[t-1, 1,n] + log(A[1, n,j]) + poisson_lpmf(y[t,n] | lambda[t,j,n]);
+accumulator[2] = logalpha[t-1, 2,n] + log(A[2, n,j]) + poisson_lpmf(y[t,n] | lambda[t,j,n]);
+
+logalpha[t, j,n] = log_sum_exp(to_vector(accumulator));}
+}
+}
+} 
+```
+
+```stan
+model {
+
+for(n in 1:N){  
+ target += log_sum_exp(to_vector(logalpha[T,1:K,n]));
+
+
+  mu[n]~normal(0,3);
+}
+
+epsilon~normal(0,3);
+}
+
+```
+
