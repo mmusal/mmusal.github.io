@@ -13,7 +13,7 @@
 
 <meta name="date" content="2023-10-14" />
 
-<title>Hidden Markov Models</title>
+<title>Hidden Markov Models with STAN</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1574,7 +1574,7 @@ border-radius: 0px;
 
 
 
-<h1 class="title toc-ignore">Hidden Markov Models</h1>
+<h1 class="title toc-ignore">Hidden Markov Models with STAN</h1>
 <h4 class="author">Rasim M Musal</h4>
 <h4 class="date">2023-10-14</h4>
 
@@ -1592,9 +1592,20 @@ MathJax.Hub.Config({
   }
 });
 </script>
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
 <p>We had already discussed the <a href="https://mmusal.github.io/blog/2023/Hidden-Markov-Models/">Hidden
 Markov Models</a>. In this post we will discuss the details of the STAN
 model as well as the details we skipped in the above post.</p>
+<p>We make use of two main sources and apply it to our context.<br />
+</p>
+<ol style="list-style-type: decimal">
+<li><p>Luis Damiano <a href="https://luisdamiano.github.io/stancon18/hmm_stan_tutorial.pdf\" class="uri">https://luisdamiano.github.io/stancon18/hmm_stan_tutorial.pdf\</a></p></li>
+<li><p>Jim Savage <a href="https://khakieconomics.github.io/2018/02/24/Regime-switching-models.html\" class="uri">https://khakieconomics.github.io/2018/02/24/Regime-switching-models.html\</a></p></li>
+</ol>
+<div id="describing-the-variable-of-interest" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Describing the
+variable of interest</h2>
 <p>Load the libraries, and read in the <a href="https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR">SMR
 data</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
@@ -1627,63 +1638,120 @@ data</a>.</p>
 <span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;SMR Values of 6 Counties&quot;</span>)<span class="sc">+</span></span>
 <span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>In this</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="kw">data</span> { </span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">1</span>&gt; T;<span class="co">//number of time periods 77</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="dt">int</span> K; <span class="co">//This will be fixed to 2</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; N;<span class="co">//number of spatial areas 58 counties in CA</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt;  y[T,N];              <span class="co">// count outcomes</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="dt">matrix</span> [T,N] log_E;</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="kw">transformed data</span> {</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="dt">int</span> ITER=END-START+<span class="dv">1</span>;</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="kw">parameters</span> {</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="dt">ordered</span>[K] mu[N]; </span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="dt">simplex</span>[K] pi1[<span class="dv">1</span>];</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="dt">simplex</span>[K] A[K,N];</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="dt">real</span> epsilon[T];</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="kw">transformed parameters</span> {</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="dt">matrix</span>[K,N] lambda [T] ;</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="dt">real</span> logalpha[T,K,N];</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="dt">real</span> accumulator[K];</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span>:T){</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span>:K){     </span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span>:N){</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>      lambda[t][k,n]=exp(</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>        log_E[t,n]+mu[n,k]+epsilon[t]); </span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>                }</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>                        }</span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>                }</span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span>:K){</span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span>:N){</span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>logalpha[<span class="dv">1</span>,k,n] = log(pi1[<span class="dv">1</span>,k]) + poisson_lpmf(y[<span class="dv">1</span>,n] | lambda[<span class="dv">1</span>,k,n]);</span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>}</span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>}</span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span>:T) {</span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span>:K) {</span>
-<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="cf">for</span> (n <span class="cf">in</span> <span class="dv">1</span>:N){</span>
-<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>accumulator[<span class="dv">1</span>] = logalpha[t<span class="dv">-1</span>, <span class="dv">1</span>,n] + log(A[<span class="dv">1</span>, n,j]) + poisson_lpmf(y[t,n] | lambda[t,j,n]);</span>
-<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>accumulator[<span class="dv">2</span>] = logalpha[t<span class="dv">-1</span>, <span class="dv">2</span>,n] + log(A[<span class="dv">2</span>, n,j]) + poisson_lpmf(y[t,n] | lambda[t,j,n]);</span>
-<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a></span>
-<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>logalpha[t, j,n] = log_sum_exp(to_vector(accumulator));}</span>
-<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>}</span>
-<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>}</span>
-<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>} </span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="kw">model</span> {</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span>:N){  </span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a> <span class="kw">target +=</span> log_sum_exp(to_vector(logalpha[T,<span class="dv">1</span>:K,n]));</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  mu[n]~normal(<span class="dv">0</span>,<span class="dv">3</span>);</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>}</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>epsilon~normal(<span class="dv">0</span>,<span class="dv">3</span>);</span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="stan-components" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> STAN components</h2>
+<p>In this section we go over each line of code and explain the
+statistical components behind them.</p>
+<div id="data" class="section level3" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span> Data</h3>
+<p>In this snippet we provide the data structure for compilation by
+STAN.</p>
+</div>
+<div id="parameters" class="section level3" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Parameters</h3>
+<p>The parameters of the model is defined here including the priors. We
+will have 2 mu values for each County such that mu_{i,1}&lt;mu_{i,2},
+the ordering is neccessary for the identifiability of the parameters.
+Othwerise the distribution of <span class="math inline">\(\mu\)</span>
+would create problems of convergence. simplex assigns a dirichlet
+distribution with fixed values of 1 as hyper-priors.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="kw">parameters</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="dt">ordered</span>[K] mu[N]; </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="dt">simplex</span>[K] pi1[<span class="dv">1</span>]; <span class="co">//pi1 is the prior distribution on K regimes common to all the counties. </span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="dt">simplex</span>[K] A[K,N]; <span class="co">//transition probability matrix of N counties. First K component is the given</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="dt">real</span> epsilon[T];<span class="co">//biweekly random effect common to all counties this will be extended in its dimension T,N</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="transformed-parameters" class="section level3" number="1.2.3">
+<h3><span class="header-section-number">1.2.3</span> Transformed
+Parameters</h3>
+<p>This is where we define the steps to calculate the joint
+probabilities note the dimensions of the objects. Logalpha contains
+joint probabilities of data and regime.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="kw">transformed parameters</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="dt">matrix</span>[K,N] lambda [T] ;</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="dt">real</span> logalpha[T,K,N];</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="dt">real</span> accumulator[K];</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span>:T){</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span>:K){     </span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span>:N){</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>      lambda[t][k,n]=exp( <span class="co">//Covid-19 mean and variance of k&#39;th regime n&#39;th county at time t.</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>        log_E[t,n]+mu[n,k]+epsilon[t]); <span class="co">//since lambda is the exponential of the linear equation lambda is  E[t,n]*exp(mu[n,k]+epsilon[t])</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>                }</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>              }</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>                }</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span>:K){</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  <span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span>:N){</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>logalpha[<span class="dv">1</span>,k,n] = log(pi1[<span class="dv">1</span>,k]) + poisson_lpmf(y[<span class="dv">1</span>,n] | lambda[<span class="dv">1</span>,k,n]);</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>}</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>}</span></code></pre></div>
+<p><span class="math inline">\(\lambda\)</span> contains the information
+of regime but also other parameters which we will ignore for clarity.
+<span class="math inline">\(logalpha_{1,k=1,n}=log(P(k_{1})=1)*P(y_{1,n}|\lambda_{1,1,n})\)</span>
+<span class="math inline">\(=P(y_{1,n},k_{1}=1)\)</span> <span class="math inline">\(logalpha_{1,k=2,n}=log(P(k_{1})=2)*P(y_{1,n}|\lambda{1,2,n})\)</span>
+<span class="math inline">\(=P(y_{1,n},k_{1}=2)\)</span></p>
+<p>Continuing with the transformed parameters. Let us focus on an
+iteration at t=2, j=1 within the loop for n</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span>:T) {</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span>:K) {</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="cf">for</span> (n <span class="cf">in</span> <span class="dv">1</span>:N){</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>accumulator[<span class="dv">1</span>] = logalpha[t<span class="dv">-1</span>, <span class="dv">1</span>,n] + log(A[<span class="dv">1</span>, n,j]) + poisson_lpmf(y[t,n] | lambda[t,j,n]);</span></code></pre></div>
+<p>This is evaluating: <span class="math inline">\(accumulator_{1}=\)</span><br />
+<span class="math inline">\(log(P(y_{1,n},k_{1}=1)*P(k_{2}=1|k_{1}=1)*P(y_{2,n}|\lambda_{2,1,n}))\)</span><br />
+This is equivalent to<br />
+<span class="math inline">\(log(P(y_{1,n},k_{1}=1,k_{2}=1)*P(y_{2,n}|\lambda_{2,1,n}))\)</span><br />
+<span class="math inline">\(P(y_{1,n},k_{1}=1,k_{2}=1,y_{2,n})\)</span><br />
+</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>accumulator[<span class="dv">2</span>] = logalpha[t<span class="dv">-1</span>, <span class="dv">2</span>,n]+log(A[<span class="dv">2</span>, n,j])+poisson_lpmf(y[t,n] |lambda[t,j,n]);</span></code></pre></div>
+<p>using the same set of operations we calculate the other other joint
+probability.<br />
+<span class="math inline">\(accumulator_{2}=\)</span><br />
+<span class="math inline">\(log(P(y_{1,n},k_{1}=2,k_{2}=1,y_{2,n}))\)</span><br />
+</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>logalpha[t, j,n] = log_sum_exp(to_vector(accumulator))</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>}</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>}</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>}</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>;</span></code></pre></div>
+<p>Once you take the exp and sum the operations that occur:<br />
+<span class="math inline">\(P(y_{1,n},k_{1}=1,k_{2}=1,y_{2,n})+\)</span><br />
+<span class="math inline">\(P(y_{1,n},k_{1}=2,k_{2}=1,y_{2,n})\)</span><br />
+and therefore you obtain in logalpha[2, 1,n]<br />
+<span class="math inline">\(=P(y_{1,n},k_{2}=1,y_{2,n})\)</span> After
+j=1 is complete and when j=2 and t is still at 2 <span class="math inline">\(=P(y_{1,n},k_{2}=2,y_{2,n})\)</span> so in general
+at time T <span class="math inline">\(P(y_{1,n},...,y_{T,n},k_{T}=1)\)</span> and <span class="math inline">\(P(y_{1,n},...,y_{T,n},k_{T}=2)\)</span></p>
+</div>
+<div id="model" class="section level3" number="1.2.4">
+<h3><span class="header-section-number">1.2.4</span> Model</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="kw">model</span> {</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span>:N){  </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a> <span class="kw">target +=</span> log_sum_exp(to_vector(logalpha[T,<span class="dv">1</span>:K,n]));</span></code></pre></div>
+<p>This is going to evaluate the last joint probability the rest being
+evaluated in the transformed parameters. According to Luis Damio’s
+conference paper the above is enough to compute the likelihood I am
+testing it out right now <span class="math inline">\(P(y_{1,n},...,y_{T,n},k_{T}=1)\)</span> and<br />
+<span class="math inline">\(P(y_{1,n},...,y_{T,n},k_{T}=2)\)</span><br />
+<span class="math inline">\(log(P(y_{1,n},...,y_{T,n},k_{T}=1)+P(y_{1,n},...,y_{T,n},k_{T}=2))\)</span><br />
+<span class="math inline">\(log(P(y_{1,n},...,y_{T,n}))\)</span><br />
+</p>
+<p>The priors are listed below</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>  mu[n]~normal(<span class="dv">0</span>,<span class="dv">3</span>);</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>}</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>epsilon~normal(<span class="dv">0</span>,<span class="dv">3</span>);</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="notes" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Notes</h2>
+<p>The priors given by simplex is Dirichlet [1,1] <a href="https://discourse.mc-stan.org/t/default-prior-for-simplex/9748" class="uri">https://discourse.mc-stan.org/t/default-prior-for-simplex/9748</a>
+ordered parameters are discussed <a href="https://betanalpha.github.io/assets/case_studies/identifying_mixture_models.html#43_breaking_the_labeling_degeneracy_by_enforcing_an_ordering" class="uri">https://betanalpha.github.io/assets/case_studies/identifying_mixture_models.html#43_breaking_the_labeling_degeneracy_by_enforcing_an_ordering</a>
+log likelihood is listed on table 1 <a href="https://luisdamiano.github.io/stancon18/hmm_stan_tutorial.pdf" class="uri">https://luisdamiano.github.io/stancon18/hmm_stan_tutorial.pdf</a></p>
+</div>
+</div>
 
 
 

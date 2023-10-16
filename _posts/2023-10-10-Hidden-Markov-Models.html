@@ -1513,9 +1513,11 @@ Hidden Markov Models.</p>
 structure</h1>
 <p>In this section we will suppress the county index. In order to make
 inferences via our HMM model we would need to obtain the joint
-probability distribution of mortality and the regimes through the
-observed time period.<br />
-<span class="math display">\[P(Y_{1:(T-1)},k_{1:(T-1)})
+probability distribution of mortality through the observed time period
+given the parameters which we suppress here for brevity. As is listed in
+table 1, the paper by <a href="Luis%20Damiano%20https://luisdamiano.github.io/stancon18/hmm_stan_tutorial.pdf">Luis
+Damiano</a> the likelihood is:</p>
+<p><span class="math display">\[P(Y_{0:(T-1)})
 \label{eq:likelihood}
 \]</span> To obtain this joint probability we will need to make
 assumptions.<br />

@@ -10,7 +10,7 @@ output:
    toc: true
    keep_md: yes
    toc_float: true
-   toc_collapsed: false
+   toc_collapsed: true
    toc_depth: 3
    number_sections: true
    usemathjax: true
@@ -29,9 +29,9 @@ MathJax.Hub.Config({
 });
 </script>
 
-
-
-# Introduction
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE,fig.path = ('./assets/img/2023-10-14-Hidden_Markov_Models_with_STAN'))
+```
 
 We had already discussed the [Hidden Markov Models](https://mmusal.github.io/blog/2023/Hidden-Markov-Models/). In this post we will discuss the details of the STAN model as well as the details we skipped in the above post.
 
@@ -41,10 +41,9 @@ We make use of two main sources and apply it to our context.\
 
 2) Jim Savage https://khakieconomics.github.io/2018/02/24/Regime-switching-models.html\
 
-## Describing the variable of interest
-Load the libraries, and read in the [SMR data](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR). 
 
-```r
+Load the libraries, and read in the [SMR data](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR). 
+```{r}
 library(ggplot2)
 library(tidyr)
 library(dplyr)
@@ -53,19 +52,7 @@ library(dplyr)
 SMR=read.csv(file='SMR.csv',header = TRUE)[,-1]
 #First 6 rows
 head(SMR)
-```
 
-```
-##   Time    County SMR
-## 1    1   Alameda   0
-## 2    1    Alpine   0
-## 3    1    Amador   0
-## 4    1     Butte   0
-## 5    1 Calaveras   0
-## 6    1    Colusa   0
-```
-
-```r
 #Subset the data using dplyr
 SMRSubset=SMR %>% filter(County %in% 
 c("Alameda","Lassen","Kern","Los Angeles",
@@ -80,36 +67,38 @@ geom_line()+
   xlab("Biweek t")+
   ggtitle("SMR Values of 6 Counties")+
   theme(plot.title = element_text(hjust = 0.5))
+
+
 ```
 
-![](./assets/img/2023-10-14-Hidden_Markov_Models_with_STANunnamed-chunk-1-1.png)<!-- -->
-
-## STAN components
-In this section we go over each line of code and explain the statistical components behind them.
-
-### Data
 In this snippet we provide the data structure for compilation by STAN.
-
-
-### Parameters
-
-The parameters of the model is defined here including the priors. 
-We will have 2 mu values for each County such that mu_{i,1}<mu_{i,2}, the ordering is neccessary for the identifiability of the parameters. Othwerise the distribution of $\mu$ would create problems of convergence. simplex assigns a dirichlet distribution with fixed values of 1 as hyper-priors.
-
-
-```stan
-parameters {
-ordered[K] mu[N]; 
-simplex[K] pi1[1]; //pi1 is the prior distribution on K regimes common to all the counties. 
-simplex[K] A[K,N]; //transition probability matrix of N counties. First K component is the given
-real epsilon[T];//biweekly random effect common to all counties this will be extended in its dimension T,N
+```{stan,echo=FALSE,output.var="model",eval=FALSE }
+data { 
+  int<lower=1> T;//number of time periods 77
+  int K; //This will be fixed to 2
+  int<lower=0> N;//number of spatial areas 58 counties in CA
+  int<lower=0>  y[T,N]; //observed covid
+  matrix [T,N] log_E; // The logarithm of E_{ti} 
 }
 ```
-### Transformed Parameters
+
+The parameters of the model is defined here including the priors. 
+```{stan,output.var="model",eval=FALSE }
+parameters {
+ordered[K] mu[N]; 
+```
+We will have 2 mu values for each County such that mu_{i,1}<mu_{i,2}, the ordering is neccessary for the identifiability of the parameters. Othwerise the distribution of $\mu$ would create problems of convergence. 
+
+```{stan,echo=FALSE,output.var="model",eval=FALSE }
+  simplex[K] pi1[1]; //pi1 is the prior distribution on K regimes common to all the counties. 
+  simplex[K] A[K,N]; //transition probability matrix of N counties.
+
+  real epsilon[T];//biweekly random effect common to all counties.
+}
+```
 
 This is where we define the steps to calculate the joint probabilities note the dimensions of the objects. Logalpha contains joint probabilities of data and regime.
-
-```stan
+```{stan,output.var="model",eval=FALSE }
 transformed parameters {
 matrix[K,N] lambda [T] ;
 real logalpha[T,K,N];
@@ -128,9 +117,8 @@ logalpha[1,k,n] = log(pi1[1,k]) + poisson_lpmf(y[1,n] | lambda[1,k,n]);
 }
 }
 ```
-
-$\lambda$ contains the information of regime but also other parameters
-which we will ignore for clarity.
+lambda contains the information of regime but also other information
+we will ignore that notation for brevity
 $logalpha_{1,k=1,n}=log(P(k_{1})=1)*P(y_{1,n}|\lambda_{1,1,n})$
 $=P(y_{1,n},k_{1}=1)$
 $logalpha_{1,k=2,n}=log(P(k_{1})=2)*P(y_{1,n}|\lambda{1,2,n})$
@@ -138,8 +126,7 @@ $=P(y_{1,n},k_{1}=2)$
 
 Continuing with the transformed parameters.
 Let us focus on an iteration at t=2, j=1 within the loop for n
-
-```stan
+```{stan,output.var="model",eval=FALSE }
 for (t in 2:T) {
 for (j in 1:K) {
 for (n in 1:N){
@@ -153,8 +140,7 @@ This is equivalent to \
 $log(P(y_{1,n},k_{1}=1,k_{2}=1)*P(y_{2,n}|\lambda_{2,1,n}))$\
 $P(y_{1,n},k_{1}=1,k_{2}=1,y_{2,n})$\
 
-
-```stan
+```{stan,output.var="model",eval=FALSE }
 accumulator[2] = logalpha[t-1, 2,n]+log(A[2, n,j])+poisson_lpmf(y[t,n] |lambda[t,j,n]);
 ```
 using the same set of operations we calculate the other other joint probability.\
@@ -162,8 +148,7 @@ $accumulator_{2}=$\
 $log(P(y_{1,n},k_{1}=2,k_{2}=1,y_{2,n}))$\
 
 
-
-```stan
+```{stan,output.var="model",eval=FALSE }
 logalpha[t, j,n] = log_sum_exp(to_vector(accumulator))
 }
 }
@@ -182,10 +167,7 @@ so in general at time T
 $P(y_{1,n},...,y_{T,n},k_{T}=1)$ and 
 $P(y_{1,n},...,y_{T,n},k_{T}=2)$
 
-### Model
-
-
-```stan
+```{stan,output.var="model",eval=FALSE }
 model {
 
 for(n in 1:N){  
@@ -203,8 +185,7 @@ $log(P(y_{1,n},...,y_{T,n}))$\
 
 The priors are listed below
 
-
-```stan
+```{stan,output.var="model",eval=FALSE }
   mu[n]~normal(0,3);
 
 }
@@ -214,7 +195,6 @@ epsilon~normal(0,3);
 
 ```
 
-## Notes
 The priors given by simplex is Dirichlet [1,1]
 https://discourse.mc-stan.org/t/default-prior-for-simplex/9748
 ordered parameters are discussed

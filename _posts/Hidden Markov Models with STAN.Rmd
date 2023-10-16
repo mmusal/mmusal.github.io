@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Hidden Markov Models"
+title: "Hidden Markov Models with STAN"
 author: "Rasim M Musal"
 date: "2023-10-14"
 output:
@@ -10,7 +10,7 @@ output:
    toc: true
    keep_md: yes
    toc_float: true
-   toc_collapsed: true
+   toc_collapsed: false
    toc_depth: 3
    number_sections: true
    usemathjax: true
@@ -33,8 +33,17 @@ MathJax.Hub.Config({
 knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE,fig.path = ('./assets/img/2023-10-14-Hidden_Markov_Models_with_STAN'))
 ```
 
+# Introduction
+
 We had already discussed the [Hidden Markov Models](https://mmusal.github.io/blog/2023/Hidden-Markov-Models/). In this post we will discuss the details of the STAN model as well as the details we skipped in the above post.
 
+We make use of two main sources and apply it to our context.\
+
+1) Luis Damiano https://luisdamiano.github.io/stancon18/hmm_stan_tutorial.pdf\
+
+2) Jim Savage https://khakieconomics.github.io/2018/02/24/Regime-switching-models.html\
+
+## Describing the variable of interest
 Load the libraries, and read in the [SMR data](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR). 
 ```{r}
 library(ggplot2)
@@ -64,35 +73,38 @@ geom_line()+
 
 ```
 
-In this 
-```{STAN}
+## STAN components
+In this section we go over each line of code and explain the statistical components behind them.
+
+### Data
+In this snippet we provide the data structure for compilation by STAN.
+```{stan,echo=FALSE,output.var="model",eval=FALSE }
 data { 
   int<lower=1> T;//number of time periods 77
   int K; //This will be fixed to 2
   int<lower=0> N;//number of spatial areas 58 counties in CA
   int<lower=0>  y[T,N]; //observed covid
-  matrix [T,N] log_E;
+  matrix [T,N] log_E; // The logarithm of E_{ti} 
 }
 ```
 
-```{STAN}
-transformed data {
-  int ITER=END-START+1;
-}
-```
+### Parameters
 
+The parameters of the model is defined here including the priors. 
+We will have 2 mu values for each County such that mu_{i,1}<mu_{i,2}, the ordering is neccessary for the identifiability of the parameters. Othwerise the distribution of $\mu$ would create problems of convergence. simplex assigns a dirichlet distribution with fixed values of 1 as hyper-priors.
 
-```{STAN}
+```{stan,output.var="model",eval=FALSE }
 parameters {
 ordered[K] mu[N]; 
-  simplex[K] pi1[1];
-  simplex[K] A[K,N];
-
-  real epsilon[T];
+simplex[K] pi1[1]; //pi1 is the prior distribution on K regimes common to all the counties. 
+simplex[K] A[K,N]; //transition probability matrix of N counties. First K component is the given
+real epsilon[T];//biweekly random effect common to all counties this will be extended in its dimension T,N
 }
 ```
+### Transformed Parameters
 
-```{STAN}
+This is where we define the steps to calculate the joint probabilities note the dimensions of the objects. Logalpha contains joint probabilities of data and regime.
+```{stan,output.var="model",eval=FALSE }
 transformed parameters {
 matrix[K,N] lambda [T] ;
 real logalpha[T,K,N];
@@ -100,36 +112,91 @@ real accumulator[K];
     for(t in 1:T){
   for(k in 1:K){     
     for(n in 1:N){
-      lambda[t][k,n]=exp(
-        log_E[t,n]+mu[n,k]+epsilon[t]); 
+      lambda[t][k,n]=exp( //Covid-19 mean and variance of k'th regime n'th county at time t.
+        log_E[t,n]+mu[n,k]+epsilon[t]); //since lambda is the exponential of the linear equation lambda is  E[t,n]*exp(mu[n,k]+epsilon[t])
                 }
-                        }
+              }
                 }
 for(k in 1:K){
   for(n in 1:N){
 logalpha[1,k,n] = log(pi1[1,k]) + poisson_lpmf(y[1,n] | lambda[1,k,n]);
 }
 }
+```
 
+$\lambda$ contains the information of regime but also other parameters
+which we will ignore for clarity.
+$logalpha_{1,k=1,n}=log(P(k_{1})=1)*P(y_{1,n}|\lambda_{1,1,n})$
+$=P(y_{1,n},k_{1}=1)$
+$logalpha_{1,k=2,n}=log(P(k_{1})=2)*P(y_{1,n}|\lambda{1,2,n})$
+$=P(y_{1,n},k_{1}=2)$
+
+Continuing with the transformed parameters.
+Let us focus on an iteration at t=2, j=1 within the loop for n
+```{stan,output.var="model",eval=FALSE }
 for (t in 2:T) {
 for (j in 1:K) {
 for (n in 1:N){
 accumulator[1] = logalpha[t-1, 1,n] + log(A[1, n,j]) + poisson_lpmf(y[t,n] | lambda[t,j,n]);
-accumulator[2] = logalpha[t-1, 2,n] + log(A[2, n,j]) + poisson_lpmf(y[t,n] | lambda[t,j,n]);
-
-logalpha[t, j,n] = log_sum_exp(to_vector(accumulator));}
-}
-}
-} 
 ```
-```{STAN}
+
+This is evaluating:
+$accumulator_{1}=$\
+$log(P(y_{1,n},k_{1}=1)*P(k_{2}=1|k_{1}=1)*P(y_{2,n}|\lambda_{2,1,n}))$\
+This is equivalent to \
+$log(P(y_{1,n},k_{1}=1,k_{2}=1)*P(y_{2,n}|\lambda_{2,1,n}))$\
+$P(y_{1,n},k_{1}=1,k_{2}=1,y_{2,n})$\
+
+```{stan,output.var="model",eval=FALSE }
+accumulator[2] = logalpha[t-1, 2,n]+log(A[2, n,j])+poisson_lpmf(y[t,n] |lambda[t,j,n]);
+```
+using the same set of operations we calculate the other other joint probability.\
+$accumulator_{2}=$\
+$log(P(y_{1,n},k_{1}=2,k_{2}=1,y_{2,n}))$\
+
+
+```{stan,output.var="model",eval=FALSE }
+logalpha[t, j,n] = log_sum_exp(to_vector(accumulator))
+}
+}
+}
+;
+```
+
+Once you take the exp and sum the operations that occur:\
+$P(y_{1,n},k_{1}=1,k_{2}=1,y_{2,n})+$\
+$P(y_{1,n},k_{1}=2,k_{2}=1,y_{2,n})$\
+and therefore you obtain in logalpha[2, 1,n]\
+$=P(y_{1,n},k_{2}=1,y_{2,n})$
+After j=1 is complete and when j=2 and t is still at 2
+$=P(y_{1,n},k_{2}=2,y_{2,n})$
+so in general at time T
+$P(y_{1,n},...,y_{T,n},k_{T}=1)$ and 
+$P(y_{1,n},...,y_{T,n},k_{T}=2)$
+
+### Model
+
+```{stan,output.var="model",eval=FALSE }
 model {
 
 for(n in 1:N){  
  target += log_sum_exp(to_vector(logalpha[T,1:K,n]));
+```
+This is going to evaluate the last joint probability
+the rest being evaluated in the transformed parameters.
+According to Luis Damio's conference paper the above is enough
+to compute the likelihood I am testing it out right now
+$P(y_{1,n},...,y_{T,n},k_{T}=1)$ and \
+$P(y_{1,n},...,y_{T,n},k_{T}=2)$\
+$log(P(y_{1,n},...,y_{T,n},k_{T}=1)+P(y_{1,n},...,y_{T,n},k_{T}=2))$\
+$log(P(y_{1,n},...,y_{T,n}))$\
 
 
+The priors are listed below
+
+```{stan,output.var="model",eval=FALSE }
   mu[n]~normal(0,3);
+
 }
 
 epsilon~normal(0,3);
@@ -137,3 +204,10 @@ epsilon~normal(0,3);
 
 ```
 
+## Notes
+The priors given by simplex is Dirichlet [1,1]
+https://discourse.mc-stan.org/t/default-prior-for-simplex/9748
+ordered parameters are discussed
+https://betanalpha.github.io/assets/case_studies/identifying_mixture_models.html#43_breaking_the_labeling_degeneracy_by_enforcing_an_ordering
+log likelihood is listed on table 1
+https://luisdamiano.github.io/stancon18/hmm_stan_tutorial.pdf

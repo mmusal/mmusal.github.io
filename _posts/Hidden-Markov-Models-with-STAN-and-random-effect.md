@@ -10,7 +10,7 @@ output:
    toc: true
    keep_md: yes
    toc_float: true
-   toc_collapsed: false
+   toc_collapsed: true
    toc_depth: 3
    number_sections: true
    usemathjax: true
@@ -31,8 +31,6 @@ MathJax.Hub.Config({
 
 
 
-# Introduction
-
 We had already discussed the [Hidden Markov Models](https://mmusal.github.io/blog/2023/Hidden-Markov-Models/). In this post we will discuss the details of the STAN model as well as the details we skipped in the above post.
 
 We make use of two main sources and apply it to our context.\
@@ -41,7 +39,7 @@ We make use of two main sources and apply it to our context.\
 
 2) Jim Savage https://khakieconomics.github.io/2018/02/24/Regime-switching-models.html\
 
-## Describing the variable of interest
+
 Load the libraries, and read in the [SMR data](https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR). 
 
 ```r
@@ -84,28 +82,18 @@ geom_line()+
 
 ![](./assets/img/2023-10-14-Hidden_Markov_Models_with_STANunnamed-chunk-1-1.png)<!-- -->
 
-## STAN components
-In this section we go over each line of code and explain the statistical components behind them.
-
-### Data
 In this snippet we provide the data structure for compilation by STAN.
 
 
-### Parameters
-
 The parameters of the model is defined here including the priors. 
-We will have 2 mu values for each County such that mu_{i,1}<mu_{i,2}, the ordering is neccessary for the identifiability of the parameters. Othwerise the distribution of $\mu$ would create problems of convergence. simplex assigns a dirichlet distribution with fixed values of 1 as hyper-priors.
-
 
 ```stan
 parameters {
 ordered[K] mu[N]; 
-simplex[K] pi1[1]; //pi1 is the prior distribution on K regimes common to all the counties. 
-simplex[K] A[K,N]; //transition probability matrix of N counties. First K component is the given
-real epsilon[T];//biweekly random effect common to all counties this will be extended in its dimension T,N
-}
 ```
-### Transformed Parameters
+We will have 2 mu values for each County such that mu_{i,1}<mu_{i,2}, the ordering is neccessary for the identifiability of the parameters. Othwerise the distribution of $\mu$ would create problems of convergence. 
+
+
 
 This is where we define the steps to calculate the joint probabilities note the dimensions of the objects. Logalpha contains joint probabilities of data and regime.
 
@@ -128,9 +116,8 @@ logalpha[1,k,n] = log(pi1[1,k]) + poisson_lpmf(y[1,n] | lambda[1,k,n]);
 }
 }
 ```
-
-$\lambda$ contains the information of regime but also other parameters
-which we will ignore for clarity.
+lambda contains the information of regime but also other information
+we will ignore that notation for brevity
 $logalpha_{1,k=1,n}=log(P(k_{1})=1)*P(y_{1,n}|\lambda_{1,1,n})$
 $=P(y_{1,n},k_{1}=1)$
 $logalpha_{1,k=2,n}=log(P(k_{1})=2)*P(y_{1,n}|\lambda{1,2,n})$
@@ -182,8 +169,6 @@ so in general at time T
 $P(y_{1,n},...,y_{T,n},k_{T}=1)$ and 
 $P(y_{1,n},...,y_{T,n},k_{T}=2)$
 
-### Model
-
 
 ```stan
 model {
@@ -214,7 +199,6 @@ epsilon~normal(0,3);
 
 ```
 
-## Notes
 The priors given by simplex is Dirichlet [1,1]
 https://discourse.mc-stan.org/t/default-prior-for-simplex/9748
 ordered parameters are discussed
