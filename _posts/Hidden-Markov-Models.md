@@ -121,7 +121,10 @@ In general
 
 ### HMM with T=77, K=2
 Putting it all together for the project and including the county index, for the 77 observed time periods in the 58 counties of CA we get; 
-\[\Pi_{i=1}^{i=58} P(k_{0}) \times P(k_{1}|k_{0}) \ldots \times P(k_{76}|k_{75}) \times P(Y_{0 i}|k_{0}) \times P(Y_{1 i}|k_{1}) \ldots \times P(Y_{76 i}|k_{76}) \]
+\begin{equation}
+\Pi_{i=1}^{i=58} P(k_{0}) \times P(k_{1}|k_{0}) \ldots \times P(k_{76}|k_{75}) \times P(Y_{0 i}|k_{0}) \times P(Y_{1 i}|k_{1}) \ldots \times P(Y_{76 i}|k_{76}) \label{eq:likespec77} 
+\end{equation}
+It also must be noted here that there are multiple ways we could extend this equation. For instance in our first model output analysis we will be include a county index for the conditional probabilities.  
 
 ### Modeling the Poisson Parameter
 As we have discussed in \eqref{eq:Poisson} we assume that $Y_{tk}$ and therefore $Y_{tki}$ has a Poisson distribution with parameter $\lambda_{tki}$. We will be modeling this parameter, which represents the mean/variance of the distribution. Additionally, given that each county has varying populations, it's important that we account for this factor with

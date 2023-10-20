@@ -11,9 +11,9 @@
 
 <meta name="author" content="Rasim M Musal" />
 
-<meta name="date" content="2023-10-10" />
+<meta name="date" content="2023-10-14" />
 
-<title>Hidden Markov Models</title>
+<title>Hidden Markov Models Output</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1313,6 +1313,106 @@ ul.task-list{list-style: none;}
 
 
 
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+background-color: #2a211c;
+color: #bdae9d;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #bdae9d; padding-left: 4px; }
+div.sourceCode
+{ color: #bdae9d; background-color: #2a211c; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ffff00; } 
+code span.an { color: #0066ff; font-weight: bold; font-style: italic; } 
+code span.at { } 
+code span.bn { color: #44aa43; } 
+code span.bu { } 
+code span.cf { color: #43a8ed; font-weight: bold; } 
+code span.ch { color: #049b0a; } 
+code span.cn { } 
+code span.co { color: #0066ff; font-weight: bold; font-style: italic; } 
+code span.do { color: #0066ff; font-style: italic; } 
+code span.dt { text-decoration: underline; } 
+code span.dv { color: #44aa43; } 
+code span.er { color: #ffff00; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #44aa43; } 
+code span.fu { color: #ff9358; font-weight: bold; } 
+code span.im { } 
+code span.in { color: #0066ff; font-weight: bold; font-style: italic; } 
+code span.kw { color: #43a8ed; font-weight: bold; } 
+code span.op { } 
+code span.pp { font-weight: bold; } 
+code span.sc { color: #049b0a; } 
+code span.ss { color: #049b0a; } 
+code span.st { color: #049b0a; } 
+code span.va { } 
+code span.vs { color: #049b0a; } 
+code span.wa { color: #ffff00; font-weight: bold; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -1474,9 +1574,9 @@ border-radius: 0px;
 
 
 
-<h1 class="title toc-ignore">Hidden Markov Models</h1>
+<h1 class="title toc-ignore">Hidden Markov Models Output</h1>
 <h4 class="author">Rasim M Musal</h4>
-<h4 class="date">2023-10-10</h4>
+<h4 class="date">2023-10-14</h4>
 
 </div>
 
@@ -1492,189 +1592,135 @@ MathJax.Hub.Config({
   }
 });
 </script>
-<div id="introduction" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> Introduction</h1>
-<p>A good presentation to Hidden Markov Models is <a href="https://nipunbatra.github.io/hmm/">illustrated here</a>. In this
-post we will explain the application of the model we are developing
-using notation that will be consistent across the project. We would like
-to make inferences about effects on <span class="math inline">\(Y_{ti}\)</span>, the number of Covid-19 mortality
-recorded at time <span class="math inline">\(t\)</span> in county <span class="math inline">\(i\)</span>. The time index <span class="math inline">\(t\)</span> is between <span class="math inline">\((t=0, \ldots ,(T-1)=76)\)</span>. There are 58
-counties in California <span class="math inline">\((i=1, \ldots
-,58)\)</span> For the moment we will ignore covariates and focus on
-“regime” <span class="math inline">\(k\)</span> that define properties
-(ex: mean/variance) of the uncertainty that defines the uncertainty of
-<span class="math inline">\(Y_{ti}\)</span>. In the discussion below we
-are going to ignore hyper-priors some additional details for clarity.
-These will be made explicit in the post explaining the STAN code for
-Hidden Markov Models.</p>
+<div id="description-of-output" class="section level2" number="0.1">
+<h2><span class="header-section-number">0.1</span> Description of
+Output</h2>
+<p>Reading in the three chains, each one containing 10,000 samples for
+each parameters. Each row represents a joint density of 18,294
+parameters. Some of these parameters are calculated based on the others.
+For instance the T length array of K rows and N columns matrix has a
+total of 77<em>2</em>58=8,932 parameters recorded. Logalpha has the same
+number of parameters. Since both Lambda and Logalpha are calculated
+based on other parameters in the model itself we do not necessarily need
+to read them into R but it will allow us to ascertain convergence of all
+the parameters.</p>
 </div>
-<div id="setting-up-the-structure" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Setting up the
-structure</h1>
-<p>In this section we will suppress the county index. In order to make
-inferences via our HMM model we would need to obtain the joint
-probability distribution of mortality through the observed time period
-given the parameters which we suppress here for brevity. As is listed in
-table 1, the paper by <a href="Luis%20Damiano%20https://luisdamiano.github.io/stancon18/hmm_stan_tutorial.pdf">Luis
-Damiano</a> the likelihood is:</p>
-<p><span class="math display">\[P(Y_{0:(T-1)})
-\label{eq:likelihood}
-\]</span> To obtain this joint probability we will need to make
-assumptions.<br />
-</p>
-<ol style="list-style-type: decimal">
-<li><p>A regime determines the parameters of the uncertainty
-distribution.<br />
-</p></li>
-<li><p>Given the parameters the regime does not provide additional
-information about <span class="math inline">\(Y_{t}\)</span>.<br />
-<span class="math display">\[\begin{equation*}P(Y_{t}|\lambda_{tk})=P(Y_{t}|\lambda_{tk},k_{t})=P(Y_{t}|k_{t})
-\end{equation*}\]</span></p></li>
-<li><p>For the purposes of this post we will assume that at time <span class="math inline">\(t\)</span> the distribution of Covid-19 mortality
-follows a Poisson distribution.</p></li>
-</ol>
-<p><span class="math display">\[P(Y_{t}|\lambda_{tk},k_{t})=Poisson(Y_{t}|\lambda_{tk})
-\label{eq:Poisson}
-\]</span></p>
-</div>
-<div id="mixture-distributions" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Mixture
-Distributions</h1>
-<p>If we did not have different regimes across a time component we could
-have used mixture models due to their <a href="https://www.utstat.toronto.edu/~rsalakhu/sta4273/notes/Lecture11.pdf">close
-relationship</a> with hidden markov models. Assuming we had a mixture of
-2 Poisson distributions (K=2) we could write the mixture distribution of
-Covid-19 mortality at time period <span class="math inline">\(t\)</span>
-county <span class="math inline">\(i\)</span> as</p>
-<p><span class="math display">\[\begin{equation}
-P(Y_{ti}) \sim \big( \omega_{k=1} \times
-Pois.(\lambda_{t1i})+\omega_{k=2} \times Pois.(\lambda_{t2i}) \big)
-\label{eq:mixtureK2}
-\end{equation}\]</span></p>
-<p>In <span class="math inline">\(\eqref{eq:mixtureK2}\)</span> we
-assume that <span class="math inline">\(Y_{ti}\)</span> is independent
-and identically distributed across <span class="math inline">\(t\)</span> and <span class="math inline">\(i\)</span> given the parameters. If we wrote the
-likelihood for this model it would look like</p>
-<div id="likelihood-of-mixture-k2" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Likelihood of
-Mixture, K=2</h2>
-<p><span class="math display">\[P(Y_{0,1},Y_{0,2},\ldots Y_{0,N},Y_{1,1}
-\ldots
-Y_{T-1,N}|\lambda_{0,1}\ldots\lambda_{T-1,N},\omega_{1},\omega_{2})=\]</span>
-<span class="math display">\[\Pi_{i=1}^{i=N}\Pi_{t=0}^{t=T-1}  (\omega_{k=1}
-\times Pois.(\lambda_{t1i})+\omega_{k=2} \times
-Pois.(\lambda_{t2i})),\]</span></p>
-<p>where <span class="math inline">\(\lambda_{tki}\)</span> represents
-the mean/variance of Covid-19 mortality at time <span class="math inline">\(t\)</span>, regime k, county i.</p>
-</div>
-</div>
-<div id="extending-mixture-models-to-hmm" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Extending Mixture
-Models to HMM</h1>
-<p>We would like to relax the assumption about <span class="math inline">\(t\)</span> and instead make the claim that the
-previous observations inform us as to <span class="math inline">\(Y_{t}\)</span> and build Hidden Markov Models
-(HMM).</p>
-<div id="assumptions-and-illstration-of-hmm-with-k2" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Assumptions and
-illstration of HMM with K=2</h2>
-<p>In formulating the HMM we again assume K=2, however we will assume
-first order Markov model (markov property) indicating that if you have
-information on the previous time period, the rest of the history does
-not matter. Below, <span class="math inline">\(k_{t}\)</span> is 1 or 2.
-<span class="math display">\[P(k_{t}|k_{t-1})=P(k_{t}|k_{t-1},\ldots,k_{0}).\]</span>
-Specifically, in an order one Markov model the only thing that matters
-to inform the uncertainty of <span class="math inline">\(k_{t}\)</span>
-is the regime of the model at <span class="math inline">\(k_{t-1}\)</span> regardless of the other previous
-regimes. In addition;</p>
-<p><span class="math display">\[P(Y_{tki}|k_{t})=P(Y_{tki}|k_{t},Y_{(t-1),k,i},\ldots
-Y_{0,k,i} )\]</span></p>
-<p>The matrix created from the probabilities between the states is
-called the transition matrix. The format of the matrix ensures that it
-is a stochastic matrix such that the rows sum to 1.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="left">From/To</th>
-<th align="left"><span class="math inline">\(k_{t}=1\)</span></th>
-<th align="left"><span class="math inline">\(k_{t}=2\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left"><span class="math inline">\(k_{t-1}=1\)</span></td>
-<td align="left"><span class="math inline">\(\pi_{11}\)</span></td>
-<td align="left">1-<span class="math inline">\(\pi_{11}\)</span></td>
-</tr>
-<tr class="even">
-<td align="left"><span class="math inline">\(k_{t-1}=2\)</span></td>
-<td align="left"><span class="math inline">\(\pi_{21}\)</span></td>
-<td align="left">1-<span class="math inline">\(\pi_{21}\)</span></td>
-</tr>
-</tbody>
-</table>
-<p>We assume that the transition matrix is time invariant, regardless of
-the value <span class="math inline">\(t\)</span>, the value of <span class="math inline">\(P(k_{t}|k_{t-1})\)</span> does not change. There
-are models which relax this assumption.</p>
-<p>In order to make inferences we will need to obtain the likelihood of
-the model. Modifying equation <span class="math inline">\(\eqref{eq:likelihood}\)</span> with the
-Californian Data.</p>
-<p><span class="math display">\[\begin{equation}
-P(Y_{01},\ldots,Y_{(76)58},k_{0},\ldots k_{76})
-\label{eq:likespec}
-\end{equation}\]</span></p>
-<p>As can be seen from <span class="math inline">\(\eqref{eq:likespec}\)</span> we are assuming <span class="math inline">\(k_{t}\)</span> is the same across all the
-counties. If this simplifying assumption was not made we would be
-creating <span class="math inline">\(N\)</span> HMM models.</p>
-<p>Before we write the general model, it is a good idea to demonstrate
-how this likelihood would work out if we first made some simplifying
-assumptions. Assume T=2 and ignore for the moment county index i. <span class="math display">\[P(Y_{0}|k_{0}) \times P(k_{0}) \times
-P({k_{1}|k_{0}}) \times P(Y_{1}|k_{1})\]</span> This is equivalent to
-<span class="math display">\[P(Y_{0}|k_{0}) \times P(Y_{1}|k_{1}) \times
-P(k_{0},k_{1}) \]</span></p>
-<p><span class="math display">\[P(Y_{0},Y_{1}|k_{0},k_{1}) \times
-P(k_{0},k_{1}) \]</span> The first component <span class="math inline">\(P(Y_{0},Y_{1}|k_{0},k_{1})\)</span>, is calculated
-by the first multiplication of conditionals due to the conditional
-independence of the observations given the states.</p>
-<p>In general</p>
-<p><span class="math display">\[P(k_{0}) \Pi_{t=1}^{t=T-1}
-P({k_{t}|k_{t-1}}) \Pi_{0}^{T-1} P(Y_{t}|k_{t})\]</span></p>
-<div id="hmm-with-t77-k2" class="section level3" number="4.1.1">
-<h3><span class="header-section-number">4.1.1</span> HMM with T=77,
-K=2</h3>
-<p>Putting it all together for the project and including the county
-index, for the 77 observed time periods in the 58 counties of CA we get;
-<span class="math display">\[\begin{equation}
-\Pi_{i=1}^{i=58} P(k_{0}) \times P(k_{1}|k_{0}) \ldots \times
-P(k_{76}|k_{75}) \times P(Y_{0 i}|k_{0}) \times P(Y_{1 i}|k_{1}) \ldots
-\times P(Y_{76 i}|k_{76}) \label{eq:likespec77}
-\end{equation}\]</span> It also must be noted here that there are
-multiple ways we could extend this equation. For instance in our first
-model output analysis we will be include a county index for the
-conditional probabilities.</p>
-</div>
-<div id="modeling-the-poisson-parameter" class="section level3" number="4.1.2">
-<h3><span class="header-section-number">4.1.2</span> Modeling the
-Poisson Parameter</h3>
-<p>As we have discussed in <span class="math inline">\(\eqref{eq:Poisson}\)</span> we assume that <span class="math inline">\(Y_{tk}\)</span> and therefore <span class="math inline">\(Y_{tki}\)</span> has a Poisson distribution with
-parameter <span class="math inline">\(\lambda_{tki}\)</span>. We will be
-modeling this parameter, which represents the mean/variance of the
-distribution. Additionally, given that each county has varying
-populations, it’s important that we account for this factor with</p>
-<p>(<a href="https://mmusal.github.io/blog/2023/Explaining_rshinyapp/#SMR"><span class="math inline">\(E_{ti}\)</span></a>).</p>
-<p>We model the parameter <span class="math inline">\(\lambda_{tki}\)</span> by constructing a function
-in the form of <span class="math display">\[\lambda_{tki}=E_{ti}*exp(\mu_{k})\]</span> We
-could have modified <span class="math inline">\(\mu\)</span> to include
-the county index <span class="math inline">\(i\)</span> or time index
-<span class="math inline">\(t\)</span>. In fitting the parameter we will
-use the the standard log transformation.</p>
+<div id="reading-in-the-data-and-checking-for-convergence" class="section level2" number="0.2">
+<h2><span class="header-section-number">0.2</span> Reading in the data
+and checking for convergence</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">mc.cores=</span>parallel<span class="sc">::</span><span class="fu">detectCores</span>(),<span class="at">auto_write =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(rstan)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(xtable)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(ggspatial)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#Specify the locations for the 3 separate chains and record them in strings</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>chain1<span class="ot">=</span><span class="st">&#39;C:/Users/rm84/Documents/w2to77mcs_1.csv&#39;</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>chain2<span class="ot">=</span><span class="st">&#39;C:/Users/rm84/Documents/w2to77mcs_2.csv&#39;</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>chain3<span class="ot">=</span><span class="st">&#39;C:/Users/rm84/Documents/w2to77mcs_3.csv&#39;</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># create a vector of strings</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>csvfiles<span class="ot">=</span><span class="fu">c</span>(chain1,chain2,chain3)</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#create a stan object to query </span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>fit<span class="ot">=</span><span class="fu">read_stan_csv</span>(csvfiles)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#Summary statistics for all the parameters in the object fitsummary</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>fitsummary<span class="ot">=</span><span class="fu">summary</span>(fit)<span class="sc">$</span>summary</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#Find out whether any of the Rhat convergence measures are over 1.1 which will flag non-convergence </span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>Rhats<span class="ot">=</span>fitsummary[,<span class="st">&quot;Rhat&quot;</span>]</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#How many parameters did not converge?</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="fu">sum</span>(Rhats<span class="sc">&gt;</span><span class="fl">1.01</span>,<span class="at">na.rm=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## [1] 0</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#Which Rhats did not converge</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>Rhats[Rhats<span class="sc">&gt;</span><span class="fl">1.01</span>]</span></code></pre></div>
+<pre><code>## named numeric(0)</code></pre>
+<p>A couple of things to note here regarding the parameters convergence.
+First, just because there are no Rhats less than 1.01 does not
+necessarily mean the posterior distribution that MCMC elicited converged
+to the correct posterior distribution. Second is that even though it is
+tempting to ignore convergence results of parameters that you are not
+interested, this is not suggested. Also note that the new <a href="https://projecteuclid.org/journals/bayesian-analysis/volume-16/issue-2/Rank-Normalization-Folding-and-Localization--An-Improved-R%cb%86-for/10.1214/20-BA1221.full">Rhat
+convergence limit is now tightened to 1.01</a> unlike previous
+suggestions of 1.1.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">#Create a dataframe from the stan object by extracting the parameters.</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>listofdraws<span class="ot">=</span><span class="fu">as.data.frame</span>(rstan<span class="sc">::</span><span class="fu">extract</span>(fit))</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#Remove the stan object</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="fu">rm</span>(fit)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#Garbage collection.</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">gc</span>()</span></code></pre></div>
+<pre><code>##             used   (Mb) gc trigger    (Mb)   max used    (Mb)
+## Ncells   1359328   72.6    2558345   136.7    2558345   136.7
+## Vcells 551427459 4207.1 1725874928 13167.4 1725862315 13167.3</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#attach the dataframe to use the parameter names</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">attach</span>(listofdraws)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#Number of counties in CA</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>N<span class="ot">=</span><span class="dv">58</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>t<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#This is the R object lambda not to be confused with the STAN simulation values</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>lambda<span class="ot">=</span><span class="fu">array</span>(<span class="at">dim=</span><span class="fu">c</span>(T,N,<span class="fu">nrow</span>(listofdraws)))</span></code></pre></div>
+<p>For the first time period we only need to use marginal
+probabilities.</p>
+<p><span class="math inline">\(E(Y_{1,n})=\lambda_{1,n}=P(k=1)*\lambda_{1,1,n}+P(k=2)*\lambda_{1,2,n}\)</span></p>
+<p>The eval, parse and paste “trick” is <a href="https://yihui.org/en/2023/02/eval-parse/">not necessarily a good
+option</a>. However in this instance it serves our needs, we are able to
+loop over the parameter names explicitly.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="cf">if</span>(t<span class="sc">==</span><span class="dv">1</span>){</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>lambda[<span class="dv">1</span>,n,]<span class="ot">=</span> <span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;lambda.&quot;</span>,t,<span class="st">&quot;.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.&quot;</span>,n))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;pi1.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.1&quot;</span>))))<span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;lambda.&quot;</span>,t,<span class="st">&quot;.&quot;</span>,<span class="dv">2</span>,<span class="st">&quot;.&quot;</span>,n))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;pi1.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.2&quot;</span>))))  </span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>}}</span></code></pre></div>
 <p><span class="math display">\[
-log(\lambda_{ti})=log(E_{ti})+\mu_{k}
+\begin{aligned}
+E(Y_{t,n})= &amp; (P(k_{t}=1|k_{t-1}=1)*P(k_{t-1}=1))*\lambda_{t,1,n}+\\
+&amp; (P(k_{t}=2|k_{t-1}=1)*P(k_{t-1}=1))*\lambda_{t,2,n}+\\
+&amp; (P(k_{t}=1|k_{t-1}=2)*P(k_{t-1}=2))*\lambda_{t,1,n}+\\
+&amp;(P(k_{t}=2|k_{t-1}=2)*P(k_{t-1}=2))*\lambda_{t,2,n}
+\end{aligned}
 \]</span></p>
-<p>Naturally this model’s fit will not be the best. Further, important
-details of the model will be discusssed in the programming with STAN
-post.</p>
-</div>
-</div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>T){</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>lambda[t,n,]<span class="ot">=</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>      </span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>      <span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;lambda.&quot;</span>,t,<span class="st">&quot;.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.&quot;</span>,n))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;A.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.&quot;</span>,n,<span class="st">&quot;.&quot;</span>,<span class="dv">1</span>))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;pi1.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.1&quot;</span>))))<span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>        <span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;lambda.&quot;</span>,t,<span class="st">&quot;.&quot;</span>,<span class="dv">2</span>,<span class="st">&quot;.&quot;</span>,n))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;A.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.&quot;</span>,n,<span class="st">&quot;.&quot;</span>,<span class="dv">2</span>))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;pi1.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.1&quot;</span>))))<span class="sc">+</span> </span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>        <span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;lambda.&quot;</span>,t,<span class="st">&quot;.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.&quot;</span>,n))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;A.&quot;</span>,<span class="dv">2</span>,<span class="st">&quot;.&quot;</span>,n,<span class="st">&quot;.&quot;</span>,<span class="dv">1</span>))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;pi1.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.2&quot;</span>))))<span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>        <span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;lambda.&quot;</span>,t,<span class="st">&quot;.&quot;</span>,<span class="dv">2</span>,<span class="st">&quot;.&quot;</span>,n))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;A.&quot;</span>,<span class="dv">2</span>,<span class="st">&quot;.&quot;</span>,n,<span class="st">&quot;.&quot;</span>,<span class="dv">2</span>))))<span class="sc">*</span><span class="fu">eval</span>(<span class="fu">parse</span>(<span class="at">text=</span>(<span class="fu">paste0</span>(<span class="st">&quot;pi1.&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;.2&quot;</span>))))</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    )</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  }}</span></code></pre></div>
+<p>Now that we calculated the posterior mean of Covid-19 mortality in
+each time period and county for each simulated posterior distribution
+value, we will average them out in order to use in the root mean square
+error calculation.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>meansoflambda<span class="ot">=</span><span class="fu">array</span>(<span class="at">dim=</span><span class="fu">c</span>(T,N))</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>T){</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>meansoflambda[t,n]<span class="ot">=</span><span class="fu">mean</span>(lambda[t,n,])</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>}</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  }</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">&#39;C:/Users/rm84/Desktop/research/HMM/data/&#39;</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>o<span class="ot">=</span><span class="fu">source</span>(<span class="at">file=</span><span class="st">&#39;R2023noICUcoviddata1.r&#39;</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>cadata<span class="ot">=</span><span class="fu">as.list</span>(o<span class="sc">$</span>value)</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="fu">names</span>(cadata)<span class="ot">=</span><span class="fu">c</span>(<span class="st">&#39;K&#39;</span>,<span class="st">&#39;R&#39;</span>,<span class="st">&#39;T&#39;</span>,<span class="st">&#39;N&#39;</span>,<span class="st">&#39;N_edges&#39;</span>,<span class="st">&#39;node1&#39;</span>,</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>                <span class="st">&#39;node2&#39;</span>,<span class="st">&#39;log_E&#39;</span>,<span class="st">&#39;y&#39;</span>,<span class="st">&#39;x&#39;</span>,</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>                <span class="st">&#39;VacPop&#39;</span>,<span class="st">&#39;medage&#39;</span>,<span class="st">&#39;medsex&#39;</span>,<span class="st">&#39;race&#39;</span>,</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>                <span class="st">&#39;scaling_factor&#39;</span>,<span class="st">&#39;START&#39;</span>,<span class="st">&#39;END&#39;</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="fu">print</span>(meansoflambda[<span class="dv">1</span>,])</span></code></pre></div>
+<pre><code>##  [1] 3.067203e-02 1.475992e-05 1.150977e-03 6.519284e-03 1.411355e-03
+##  [6] 4.372385e-04 2.113913e-02 8.363753e-04 1.200759e-03 4.038168e-02
+## [11] 5.987910e-04 2.004447e-03 1.433597e-02 7.876607e-04 3.329927e-02
+## [16] 6.536105e-03 2.079092e-03 9.623964e-04 4.015781e-01 4.726630e-03
+## [21] 4.536395e-03 3.507588e-04 1.650067e-03 1.129069e-02 1.306685e-04
+## [26] 1.426345e-04 8.107381e-03 1.909962e-03 1.269306e-03 8.585135e-02
+## [31] 7.157347e-03 1.870238e-04 6.518520e-02 4.010567e-02 1.595545e-03
+## [36] 8.939659e-02 6.955137e-02 1.799225e-02 3.017880e-02 4.142631e-03
+## [41] 8.848652e-03 7.421953e-03 2.737208e-02 2.507848e-03 8.372591e-03
+## [46] 9.242664e-05 9.298740e-04 5.933132e-03 7.579390e-03 2.306701e-02
+## [51] 2.686078e-03 3.087017e-03 2.833474e-04 2.194817e-02 2.589200e-03
+## [56] 1.673767e-02 6.047600e-03 1.624215e-03</code></pre>
 </div>
 
 
