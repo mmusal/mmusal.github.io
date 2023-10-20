@@ -90,8 +90,8 @@ gc()
 
 ```
 ##             used   (Mb) gc trigger    (Mb)   max used    (Mb)
-## Ncells   1359347   72.6    2558191   136.7    2558191   136.7
-## Vcells 551427670 4207.1 1725876306 13167.4 1725862531 13167.3
+## Ncells   1359415   72.7    2558258   136.7    2558258   136.7
+## Vcells 551428166 4207.1 1725880731 13167.5 1725878027 13167.5
 ```
 
 ```r
@@ -108,10 +108,10 @@ lambda=array(dim=c(T,N,nrow(listofdraws)))
 ```
 
 In order to assess whether the model can make any claim of model validity we will compare the actual values to the predicted averages.    
-For the first time period we only need to use marginal probabilities of regime 1 or 2. The marginal and conditional probabilities are time invariant so that P(k_{t}) = P(k=1) and P(k_{t}|k_{t-1}) is the same for all t. This property is also referred to as time invariance. 
+For the first time period we only need to use marginal probabilities of regime 1 or 2. The marginal and conditional probabilities are time invariant so that $P(k_{t})$ = $P(k=1)$ and $P(k_{t}|k_{t-1})$ is the same for all t. This property is also referred to as time invariance. 
 
 
-\[E(Y_{1,n})=\lambda_{1,n}=P(k=1)*\lambda_{1,1,n}+P(k=2)*\lambda_{1,2,n}\]
+\[E(Y_{1,n})=\lambda_{1,n}=(P(k=1)*\lambda_{1,1,n}+P(k=2)*\lambda_{1,2,n})\]
 
 The eval, parse and paste "trick" is [not necessarily a good option](https://yihui.org/en/2023/02/eval-parse/). However in this instance it serves our needs, we are able to loop over the parameter names explicitly. 
 
@@ -123,13 +123,19 @@ lambda[1,n,]= eval(parse(text=(paste0("lambda.",t,".",1,".",n))))*eval(parse(tex
 eval(parse(text=(paste0("lambda.",t,".",2,".",n))))*eval(parse(text=(paste0("pi1.",1,".2"))))  
 }}
 ```
+Note that in this particular model we have added a county index to the conditional probabilities to the likelihood we [introduced in the earlier post](https://mmusal.github.io/blog/2023/Hidden-Markov-Models/#mjx-eqn-eqlikespec77). Therefore the new likelihood will be
+\begin{equation}
+\Pi_{i=1}^{i=58} P(k_{0}) \times P(k_{1,i}|k_{0,i}) \ldots \times P(k_{76,i}|k_{75,i}) \times P(Y_{0,i}|k_{0,i}) \times P(Y_{1,i}|k_{1,i}) \ldots \times P(Y_{76,i}|k_{76,i}) \label{eq:likespec77wa} 
+\end{equation}
+
+Therefore the expected value can be calculated via;
 
 \[
 \begin{aligned}
-E(Y_{t,n})= & (P(k_{t}=1|k_{t-1}=1)*P(k_{t-1}=1))*\lambda_{t,1,n}+\\
-& (P(k_{t}=2|k_{t-1}=1)*P(k_{t-1}=1))*\lambda_{t,2,n}+\\
-& (P(k_{t}=1|k_{t-1}=2)*P(k_{t-1}=2))*\lambda_{t,1,n}+\\
-&(P(k_{t}=2|k_{t-1}=2)*P(k_{t-1}=2))*\lambda_{t,2,n}
+E(Y_{t,n})= & (P(k_{t,n}=1|k_{t-1,n}=1)*P(k_{t-1}=1))*\lambda_{t,1,n}+\\
+& (P(k_{t,n}=2|k_{t-1,n}=1)*P(k_{t-1}=1))*\lambda_{t,2,n}+\\
+& (P(k_{t,n}=1|k_{t-1,n}=2)*P(k_{t-1}=2))*\lambda_{t,1,n}+\\
+&(P(k_{t,n}=2|k_{t-1,n}=2)*P(k_{t-1}=2))*\lambda_{t,2,n}
 \end{aligned}
 \]
 
@@ -146,6 +152,11 @@ lambda[t,n,]=(
     )
   }}
 ```
+where $\lambda_{t,k,n}$ is equal to 
+\begin{equation}
+E_{t,i}\times exp(\mu_{i,k}+\epsilon_t)
+\label{eq:lambda1} 
+\end{equation}
 
 Now that we calculated the posterior mean of Covid-19 mortality in each time period and county for each simulated posterior distribution value, we will average them out in order to use in the root mean square error calculation. 
 
@@ -181,5 +192,58 @@ rMSE
 ```
 ## [1] 38.9525
 ```
+As we can see from the Root Mean Square value the fit is not good however this is due to the \eqref{eq:lambda1} having only $\mu_{k}$ HMM component and $\epsilon_{t}$ which can be conceptualized as a time variant intercept. 
+We can leave a serious discussion of output interpretation to a later post when we have more variables that explain the variation in Covid-19 mortality. We will still present some results. 
 
 
+```r
+mean(pi1.1.1)
+```
+
+```
+## [1] 0.8963761
+```
+
+```r
+mean(pi1.1.2)
+```
+
+```
+## [1] 0.1036239
+```
+The pi1.1.1 and pi1.1.2 shows the posterior mean probability of a county being in regime 1 or 2 respectively. 
+
+
+```r
+mean(A.1.1.1)
+```
+
+```
+## [1] 0.8352265
+```
+
+```r
+mean(A.1.1.1)
+```
+
+```
+## [1] 0.8352265
+```
+
+```r
+mean(A.1.1.1)
+```
+
+```
+## [1] 0.8352265
+```
+
+```r
+mean(A.1.1.1)
+```
+
+```
+## [1] 0.8352265
+```
+
+Shows the posterior mean transition probabilities of Alameda (county 1).  

@@ -14,7 +14,7 @@ output:
    toc_depth: 3
    number_sections: true
    usemathjax: true
-tags: [rshiny, maps,SMR]
+tags: [HMM,STAN]
 always_allow_html: true
 ---
 <script type="text/x-mathjax-config">
@@ -84,7 +84,7 @@ geom_line()+
 
 ![](./assets/img/2023-10-14-Hidden_Markov_Models_with_STANunnamed-chunk-1-1.png)<!-- -->
 
-## STAN components
+## STAN components 
 In this section we go over each line of code and explain the statistical components behind them.
 
 ### Data
@@ -105,7 +105,7 @@ simplex[K] A[K,N]; //transition probability matrix of N counties. First K compon
 real epsilon[T];//biweekly random effect common to all counties this will be extended in its dimension T,N
 }
 ```
-### Transformed Parameters
+### Transformed Parameters {#trpr} 
 
 This is where we define the steps to calculate the joint probabilities note the dimensions of the objects. Logalpha contains joint probabilities of data and regime.
 

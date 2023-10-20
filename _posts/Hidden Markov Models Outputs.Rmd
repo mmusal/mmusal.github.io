@@ -34,7 +34,7 @@ knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE,fig.path = ('
 ```
 
 # Description of MCMC Output for Analysis
-Reading in the three chains, each one containing 10,000 samples for each parameters. Each row represents a joint density of 18,294 parameters. Some of these parameters are calculated based on the others. For instance the T (77) length array of K (2) rows and N (58) columns matrix has a total of 77*2*58=8,932 parameters recorded. Logalpha has the same number of parameters. Since both Lambda and Logalpha are calculated based on other parameters in the model itself we do not necessarily need to read them into R but it will allow us to ascertain convergence of all the parameters. 
+Reading in the three chains, each one containing 10,000 samples for each parameters. Each row represents a joint density of 18,294 parameters. Some of these parameters are calculated based on the others. [The two STAN objects Lambda and Logalpha]() will have the majority of these parameters.  For instance the T (77) length array of K (2) rows and N (58) columns matrix of Lambda has a total of 77*2*58=8,932 parameters recorded. Logalpha has the same number of parameters. Since both Lambda and Logalpha are calculated based on other parameters in the model itself we do not necessarily need to read them into R but it will allow us to ascertain convergence of all the parameters. 
 
 # Reading in the data and checking for convergence
 
@@ -89,7 +89,7 @@ lambda=array(dim=c(T,N,nrow(listofdraws)))
 ```
 
 In order to assess whether the model can make any claim of model validity we will compare the actual values to the predicted averages.    
-For the first time period we only need to use marginal probabilities of regime 1 or 2. The marginal and conditional probabilities are time invariant so that P(k_{t}) = P(k=1) and P(k_{t}|k_{t-1}) is the same for all t. This property is also referred to as time invariance. 
+For the first time period we only need to use marginal probabilities of regime 1 or 2. The marginal and conditional probabilities are time invariant so that $P(k_{t})$ = $P(k=1)$ and $P(k_{t}|k_{t-1})$ is the same for all t. This property is also referred to as time invariance. 
 
 
 \[E(Y_{1,n})=\lambda_{1,n}=(P(k=1)*\lambda_{1,1,n}+P(k=2)*\lambda_{1,2,n})\]
@@ -103,13 +103,19 @@ lambda[1,n,]= eval(parse(text=(paste0("lambda.",t,".",1,".",n))))*eval(parse(tex
 eval(parse(text=(paste0("lambda.",t,".",2,".",n))))*eval(parse(text=(paste0("pi1.",1,".2"))))  
 }}
 ```
+Note that in this particular model we have added a county index to the conditional probabilities to the likelihood we [introduced in the earlier post](https://mmusal.github.io/blog/2023/Hidden-Markov-Models/#mjx-eqn-eqlikespec77). Therefore the new likelihood will be
+\begin{equation}
+\Pi_{i=1}^{i=58} P(k_{0}) \times P(k_{1,i}|k_{0,i}) \ldots \times P(k_{76,i}|k_{75,i}) \times P(Y_{0,i}|k_{0,i}) \times P(Y_{1,i}|k_{1,i}) \ldots \times P(Y_{76,i}|k_{76,i}) \label{eq:likespec77wa} 
+\end{equation}
+
+Therefore the expected value can be calculated via;
 
 \[
 \begin{aligned}
-E(Y_{t,n})= & (P(k_{t}=1|k_{t-1}=1)*P(k_{t-1}=1))*\lambda_{t,1,n}+\\
-& (P(k_{t}=2|k_{t-1}=1)*P(k_{t-1}=1))*\lambda_{t,2,n}+\\
-& (P(k_{t}=1|k_{t-1}=2)*P(k_{t-1}=2))*\lambda_{t,1,n}+\\
-&(P(k_{t}=2|k_{t-1}=2)*P(k_{t-1}=2))*\lambda_{t,2,n}
+E(Y_{t,n})= & (P(k_{t,n}=1|k_{t-1,n}=1)*P(k_{t-1}=1))*\lambda_{t,1,n}+\\
+& (P(k_{t,n}=2|k_{t-1,n}=1)*P(k_{t-1}=1))*\lambda_{t,2,n}+\\
+& (P(k_{t,n}=1|k_{t-1,n}=2)*P(k_{t-1}=2))*\lambda_{t,1,n}+\\
+&(P(k_{t,n}=2|k_{t-1,n}=2)*P(k_{t-1}=2))*\lambda_{t,2,n}
 \end{aligned}
 \]
 
@@ -125,6 +131,11 @@ lambda[t,n,]=(
     )
   }}
 ```
+where $\lambda_{t,k,n}$ is equal to 
+\begin{equation}
+E_{t,i}\times exp(\mu_{i,k}+\epsilon_t)
+\label{eq:lambda1} 
+\end{equation}
 
 Now that we calculated the posterior mean of Covid-19 mortality in each time period and county for each simulated posterior distribution value, we will average them out in order to use in the root mean square error calculation. 
 
@@ -157,5 +168,21 @@ rMSE=sqrt(MSE)
 rMSE
 
 ```
+As we can see from the Root Mean Square value the fit is not good however this is due to the \eqref{eq:lambda1} having only $\mu_{k}$ HMM component and $\epsilon_{t}$ which can be conceptualized as a time variant intercept. 
+We can leave a serious discussion of output interpretation to a later post when we have more variables that explain the variation in Covid-19 mortality. We will still present some results. 
 
+```{r}
+mean(pi1.1.1)
+mean(pi1.1.2)
+```
+The pi1.1.1 and pi1.1.2 shows the posterior mean probability of a county being in regime 1 or 2 respectively. 
 
+```{r}
+mean(A.1.1.1)
+mean(A.1.1.2)
+mean(A.2.1.1)
+mean(A.2.1.2)
+
+```
+
+Shows the posterior mean transition probabilities of Alameda (county 1). It would be interesting to model these transition probabilities. Furthermore it will be important to relax the time invariance assumption.  
