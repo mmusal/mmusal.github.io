@@ -46,4 +46,6 @@ First we need to have an understanding of the scripting language R to represent 
 
 #### [Hidden Markov Models with STAN](https://mmusal.github.io/blog/2023/Hidden-Markov-Models-with-STAN/)
 
+#### [Hidden Markov Models STAN Output](https://mmusal.github.io/blog/2023/Hidden-Markov-Models-Outputs)
+
 ### Combining the Models

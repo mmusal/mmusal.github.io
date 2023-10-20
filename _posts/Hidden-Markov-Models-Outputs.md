@@ -32,7 +32,7 @@ MathJax.Hub.Config({
 
 
 # Description of MCMC Output for Analysis
-Reading in the three chains, each one containing 10,000 samples for each parameters. Each row represents a joint density of 18,294 parameters. Some of these parameters are calculated based on the others. For instance the T (77) length array of K (2) rows and N (58) columns matrix has a total of 77*2*58=8,932 parameters recorded. Logalpha has the same number of parameters. Since both Lambda and Logalpha are calculated based on other parameters in the model itself we do not necessarily need to read them into R but it will allow us to ascertain convergence of all the parameters. 
+Reading in the three chains, each one containing 10,000 samples for each parameters. Each row represents a joint density of 18,294 parameters. Some of these parameters are calculated based on the others. [The two STAN objects Lambda and Logalpha](https://mmusal.github.io/blog/2023/Hidden-Markov-Models-with-STAN/#trpr) will have the majority of these parameters.  For instance the T (77) length array of K (2) rows and N (58) columns matrix of Lambda has a total of 77*2*58=8,932 parameters recorded. Logalpha has the same number of parameters. Since both Lambda and Logalpha are calculated based on other parameters in the model itself we do not necessarily need to read them into R but it will allow us to ascertain convergence of all the parameters. 
 
 # Reading in the data and checking for convergence
 
@@ -90,8 +90,8 @@ gc()
 
 ```
 ##             used   (Mb) gc trigger    (Mb)   max used    (Mb)
-## Ncells   1359415   72.7    2558258   136.7    2558258   136.7
-## Vcells 551428166 4207.1 1725880731 13167.5 1725878027 13167.5
+## Ncells   1359418   72.7    2558270   136.7    2558270   136.7
+## Vcells 551428238 4207.1 1725881378 13167.5 1725878099 13167.5
 ```
 
 ```r
@@ -223,27 +223,27 @@ mean(A.1.1.1)
 ```
 
 ```r
-mean(A.1.1.1)
+mean(A.1.1.2)
 ```
 
 ```
-## [1] 0.8352265
-```
-
-```r
-mean(A.1.1.1)
-```
-
-```
-## [1] 0.8352265
+## [1] 0.1647735
 ```
 
 ```r
-mean(A.1.1.1)
+mean(A.2.1.1)
 ```
 
 ```
-## [1] 0.8352265
+## [1] 0.1972098
 ```
 
-Shows the posterior mean transition probabilities of Alameda (county 1).  
+```r
+mean(A.2.1.2)
+```
+
+```
+## [1] 0.8027902
+```
+
+Shows the posterior mean transition probabilities of Alameda (county 1). It would be interesting to model these transition probabilities. Furthermore it will be important to relax the time invariance assumption.  

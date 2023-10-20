@@ -1598,12 +1598,14 @@ Output for Analysis</h1>
 <p>Reading in the three chains, each one containing 10,000 samples for
 each parameters. Each row represents a joint density of 18,294
 parameters. Some of these parameters are calculated based on the others.
-For instance the T (77) length array of K (2) rows and N (58) columns
-matrix has a total of 77<em>2</em>58=8,932 parameters recorded. Logalpha
-has the same number of parameters. Since both Lambda and Logalpha are
-calculated based on other parameters in the model itself we do not
-necessarily need to read them into R but it will allow us to ascertain
-convergence of all the parameters.</p>
+<a href="https://mmusal.github.io/blog/2023/Hidden-Markov-Models-with-STAN/#trpr">The
+two STAN objects Lambda and Logalpha</a> will have the majority of these
+parameters. For instance the T (77) length array of K (2) rows and N
+(58) columns matrix of Lambda has a total of 77<em>2</em>58=8,932
+parameters recorded. Logalpha has the same number of parameters. Since
+both Lambda and Logalpha are calculated based on other parameters in the
+model itself we do not necessarily need to read them into R but it will
+allow us to ascertain convergence of all the parameters.</p>
 </div>
 <div id="reading-in-the-data-and-checking-for-convergence" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> Reading in the data and
@@ -1648,8 +1650,8 @@ suggestions of 1.1.</p>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#Garbage collection.</span></span>
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">gc</span>()</span></code></pre></div>
 <pre><code>##             used   (Mb) gc trigger    (Mb)   max used    (Mb)
-## Ncells   1359415   72.7    2558258   136.7    2558258   136.7
-## Vcells 551428166 4207.1 1725880731 13167.5 1725878027 13167.5</code></pre>
+## Ncells   1359418   72.7    2558270   136.7    2558270   136.7
+## Vcells 551428238 4207.1 1725881378 13167.5 1725878099 13167.5</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#attach the dataframe to use the parameter names</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">attach</span>(listofdraws)</span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
@@ -1752,14 +1754,16 @@ results.</p>
 county being in regime 1 or 2 respectively.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">mean</span>(A.<span class="dv">1</span>.<span class="fl">1.1</span>)</span></code></pre></div>
 <pre><code>## [1] 0.8352265</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">mean</span>(A.<span class="dv">1</span>.<span class="fl">1.1</span>)</span></code></pre></div>
-<pre><code>## [1] 0.8352265</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">mean</span>(A.<span class="dv">1</span>.<span class="fl">1.1</span>)</span></code></pre></div>
-<pre><code>## [1] 0.8352265</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">mean</span>(A.<span class="dv">1</span>.<span class="fl">1.1</span>)</span></code></pre></div>
-<pre><code>## [1] 0.8352265</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">mean</span>(A.<span class="dv">1</span>.<span class="fl">1.2</span>)</span></code></pre></div>
+<pre><code>## [1] 0.1647735</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">mean</span>(A.<span class="dv">2</span>.<span class="fl">1.1</span>)</span></code></pre></div>
+<pre><code>## [1] 0.1972098</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">mean</span>(A.<span class="dv">2</span>.<span class="fl">1.2</span>)</span></code></pre></div>
+<pre><code>## [1] 0.8027902</code></pre>
 <p>Shows the posterior mean transition probabilities of Alameda (county
-1).</p>
+1). It would be interesting to model these transition probabilities.
+Furthermore it will be important to relax the time invariance
+assumption.</p>
 </div>
 
 
