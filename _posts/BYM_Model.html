@@ -1618,6 +1618,9 @@ MathJax.Hub.Config({
 <div id="models-using-areal-data" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Models Using Areal
 Data</h1>
+<p>An in depth introduction to many of the R related concepts we will
+discuss here is in <a href="https://maczokni.github.io/crime_mapping_textbook/">Crime Mapping
+Textbook</a></p>
 <p>When determining the presence of spatial relationships, a first step
 will be to determine whether there is reason to suspect that data that
 is in close proximity shows a recognizable pattern such that data which
@@ -1677,17 +1680,25 @@ Under the null hypothesis that there is no spatial correlation the
 expected Moran’s I value would be equal to <span class="math display">\[E(I)=\frac{-1}{n-1}
 \label{eq:EI}
 \]</span> Once we have <span class="math inline">\(\eqref{eq:I}\)</span>, <span class="math inline">\(\eqref{eq:VarI}\)</span>, and <span class="math inline">\(\eqref{eq:EI}\)</span> we can calculate a z score
-via <span class="math display">\[z=\frac{(I-E(I))}{\sqrt{(Var(I))}}\]</span></p>
+via <span class="math display">\[z=\frac{(I-E(I))}{\sqrt{(Var(I))}}
+\label{eq:z}\]</span></p>
 <p>and assuming Central Limit Theorem applies a hypothesis test can be
-performed. On the other hand a set of permutations involving areal units
-can have more robust results.</p>
+performed. Per <span class="citation">Banerjee, Carlin, and Gelfand
+(2003)</span> as convergence to normal distribution is harder for ratio
+of quadratic values, a large set of permutations involving areal units
+that lead to simulated Moran’s I values can be obtained for more robust
+results. A new I value would be calculated for each areal permutation
+and the original I value can be compared against the randomly permuted
+areal units’ I values.</p>
 <p>In understanding how this all works we need to look at some r
 code.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(spdep)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(spatialreg)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(spatial)</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">&quot;C:/Users/rm84/Desktop/research/HMM/data&quot;</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;workspacewithbasedata.RData&quot;</span>)</span></code></pre></div>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">&quot;C:/Users/rm84/Desktop/research/HMM/data&quot;</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;workspacewithbasedata.RData&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#shapeanddata is a simple features class object that contains </span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#spatial information and county level feature information. </span></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#The poly2nb function creates the neighbor indexes </span></span>
@@ -1706,6 +1717,83 @@ code.</p>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>colw<span class="sc">$</span>weights[<span class="dv">1</span>]</span></code></pre></div>
 <pre><code>## [[1]]
 ## [1] 0.1666667 0.1666667 0.1666667 0.1666667 0.1666667 0.1666667</code></pre>
+<p>We are going to set up some objects to calculate not just the I value
+but p value via</p>
+<ol style="list-style-type: decimal">
+<li>Hypothesis testing based on Central Limit Theorem.</li>
+<li>Areal Unit Permutation.</li>
+</ol>
+<p>Note that the quantity of interest in our application is SMR of
+Covid-19 mortality rather than Covid-19 mortality itself. We find that
+this is more realistic to determine whether spatial structure exists as
+there are large fluctuations in Covid-19 mortality due to differences in
+population size.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#Number of permutations for 2.</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>nsim <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#Random number seed</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># Number of Biweeks below N is the total number of counties in CA 58.</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>NumBiWeeks<span class="ot">=</span><span class="dv">77</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#SMR is standardized mortality ratio observed/expected</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>SMR<span class="ot">=</span><span class="fu">array</span>(<span class="at">dim=</span><span class="fu">c</span>(NumBiWeeks,N))</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#Since E is calculated based on aggregate mortality in California and population size of each county SMR is better for investigating whether there is a spatial structure.</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>SMR<span class="ot">=</span>y<span class="sc">/</span><span class="fu">exp</span>(log_E)</span></code></pre></div>
+<p>We already discussed how to calculate I in <span class="math inline">\(\eqref{eq:I}\)</span>. Z score can be calculated
+via <span class="math inline">\(\eqref{eq:z}\)</span>. We have 77
+biweeks and for each biweek we are going to calculate 2 sets of p values
+associated with the Moran’s I scores and visualize them across this time
+series. The objects, sim_pvalue and asympt_pvalue are going to contain
+the p values associated with permuted spatial neighborhoods and central
+limit theorem is assumed to hold, respectively. Since we hypothesize
+that like values are clustered together the p values are going to be
+calculated via <span class="math inline">\(P(Z&gt;z)\)</span>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#Object where p values are calculated based on spatial neighborhood permutations</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>sim_pvalue<span class="ot">=</span><span class="fu">array</span>(<span class="at">dim=</span><span class="fu">c</span>(NumBiWeeks))</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#Object where p values are calculated based on assuming Central Limit Theorem applies</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>asympt_pvalue<span class="ot">=</span><span class="fu">array</span>(<span class="at">dim=</span><span class="fu">c</span>(NumBiWeeks))</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#Object that holds Moran&#39;s I values.</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>Ivalue<span class="ot">=</span><span class="fu">array</span>(<span class="at">dim=</span><span class="fu">c</span>(NumBiWeeks))</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#Hypothesis tests are directional as discussed above. The hardcoded values 58 can be parameterized to generalize. n stands for number of units S0 stands for total weight in the neighbourhood matrix. W and S_0 will have the same values.</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>NumBiWeeks){</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>sim_pvalue[i]<span class="ot">&lt;-</span><span class="fu">moran.mc</span>(SMR[i,], <span class="at">listw=</span>colw, <span class="at">nsim=</span>nsim, <span class="at">alternative=</span><span class="st">&quot;greater&quot;</span>)<span class="sc">$</span>p.value</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>asympt_pvalue[i]<span class="ot">&lt;-</span><span class="fu">moran.test</span>(SMR[i,],colw, <span class="at">alternative=</span><span class="st">&quot;greater&quot;</span>, <span class="at">zero.policy=</span><span class="cn">TRUE</span>)<span class="sc">$</span>p.value</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>Ivalue[i]<span class="ot">&lt;-</span><span class="fu">moran</span>(SMR[i,],colw,<span class="at">n=</span><span class="dv">58</span>,<span class="at">S0=</span><span class="dv">58</span>)<span class="sc">$</span>I</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>}</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#Number of hypothesis tests that have p values less than 0.05 (our pick of alpha)</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="fu">sum</span>(sim_pvalue<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div>
+<pre><code>## [1] 28</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">sum</span>(asympt_pvalue<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div>
+<pre><code>## [1] 31</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">#Create a data frame to contain the created values </span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>moransdf<span class="ot">=</span><span class="fu">as.data.frame</span>(<span class="fu">matrix</span>(<span class="at">nrow=</span>NumBiWeeks,<span class="at">ncol=</span><span class="dv">4</span>))</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>moransdf[,<span class="dv">1</span>]<span class="ot">=</span>sim_pvalue</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>moransdf[,<span class="dv">2</span>]<span class="ot">=</span>asympt_pvalue</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>moransdf[,<span class="dv">3</span>]<span class="ot">=</span>Ivalue</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>moransdf[,<span class="dv">4</span>]<span class="ot">=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>NumBiWeeks)  </span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#Name each column</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="fu">names</span>(moransdf)<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;p_value_mc&quot;</span>,<span class="st">&quot;p_value_asymp&quot;</span>,<span class="st">&quot;I_Value&quot;</span>,<span class="st">&quot;Biweek&quot;</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#Create a data frame which will have 3 columns</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#Biweek, the names which has the labels in quotes and the numbers recorded under #value </span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>moransdf_long <span class="ot">&lt;-</span>moransdf <span class="sc">%&gt;%</span> <span class="fu">pivot_longer</span>(<span class="fu">c</span>(<span class="st">&quot;p_value_mc&quot;</span>,<span class="st">&quot;p_value_asymp&quot;</span>,<span class="st">&quot;I_Value&quot;</span>),<span class="at">names_to =</span> <span class="st">&quot;names&quot;</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#Visualizing the values</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="fu">ggplot</span>(moransdf_long, <span class="fu">aes</span>(<span class="at">x=</span>Biweek, <span class="at">y=</span>value))<span class="sc">+</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="fu">geom_point</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>)<span class="sc">+</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="fu">facet_wrap</span>(<span class="sc">~</span>names,  <span class="at">ncol=</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="fu">scale_x_discrete</span>(<span class="at">limits=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">10</span>,<span class="dv">15</span>,<span class="dv">20</span>,<span class="dv">25</span>,<span class="dv">30</span>,<span class="dv">35</span>,<span class="dv">40</span>,<span class="dv">45</span>,<span class="dv">50</span>,<span class="dv">55</span>,<span class="dv">60</span>,<span class="dv">65</span>,<span class="dv">70</span>,<span class="dv">75</span>,<span class="dv">77</span>))<span class="sc">+</span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="fu">xlab</span>(<span class="st">&quot;Biweek t&quot;</span>)</span></code></pre></div>
+<figure>
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAABUFBMVEUAAAAAADoAAGYAOpAAZmYAZrYZGT8ZGWIZP2IZP4EZYp8aGhozMzM6AAA6ADo6AGY6Ojo6OpA6kNs/GRk/GT8/GWI/P4E/Yp8/gYE/gb1NTU1NTW5NTY5NbqtNjshiGRliGT9iGWJiPxliP4FiYj9iYmJin9lmAABmADpmAGZmtttmtv9uTU1uTW5uTY5ubo5ubqtuq+SBPxmBPz+BP2KBgT+BgWKBn4GBvZ+BvdmOTU2OTW6OTY6Obk2ObquOyP+QOgCQOjqQZgCQkGaQtpCQ29uQ2/+fYhmfYj+fvYGf2dmrbk2rbm6rbo6rjk2ryKur5OSr5P+2ZgC22/+2//+9gT+92Z+92b292dnIjk3I///Zn2LZvYHZ2Z/Z2b3Z2dnbkDrb/7bb///kq27k///r6+v/tmb/yI7/25D/27b/5Kv//7b//8j//9v//+T///+d7CcOAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAgAElEQVR4nO2d/X/VRnbGnU0JCTfJtiShsYEaslmzLaSNw77UpF3Tt9ACaYobb+zFL+ySYGrA/v9/q0Yavd/ROZJmRmc0z/PB3Bede2aO9L1nZiTNnZVzCBKslakrAEFdAqCQaAFQSLQAKCRaABQSLQAKidZgQI8hyKEAKCRaABQSLQAKiRYAhUQLgEKiBUAh0QKgkGgBUEi0AKg7HXzyMHty9NWGenllr/E+RAuAulMJ4u5q/l/9fYgUAHWnEkSVPI/ubh0ffLRYbKj31Sb1d7i+uAhauwRA3akENIXzyt7hjS1NZw7og9Xj3UuTVlK6AKg7VZrypHnXLfzhzQqgitjkjclqGIAAqDtVAD248kOSRI+PHyySJr0C6PpisXhna8I6ihcAdacKoEe//q+kG3q4vlFv4pE9SQFQd6qO1nd/uZq9cfDxlm7bdy+mfdCn7+1NWEfxAqDuVAU04TL5f3exePezDfV+8uzTm+koHi18pwAoJFoA1KXUeU8Mg0YJgEKiBUAh0QKgkGiNBvQnpex/o4jNfe3smsl2F3MQ6UsWoKd//8f08fW9tes/Fg8A1IO7mINgA3qydi0F9OzR9vnzv8kfAKgPdzEHwQV0/+p3WQZ9/U9/VMlUPwBQH+5iDqJ3E3/65Y/nr79+oh+SN95P1PU5CLIlDqAn11My9YPexvmKBPW9leUu5iDGZ1AA6txdzEH0BhR9UP/uYg6iN6BnjzazUfwmRvG+3MUcRD9A1R/Og3p3F3MQfEC7xKlBULtFlruYgwCgAbiLOQgAGoC7mIMAoAG4izkIABqAu5iDsAMoBPkQMqhMdzEHgSY+AHcxBwFAA3AXcxAANAB3MQcBQANwF3MQADQAdzEHAUADcBdzEAA0AHcxB8EFtLi77vma0nb6eA03LHtxF3MQTEDrs4zVhKT9bWRQX+5iDoIJaG2Gh5qLdPb4SWUzpwZB7RZZ7mIOgglobY6cSqVJk68a+nNMO4b8yQxodZZx+nj6RTWLcr4iQX1vZbmLOYgBGfSkmItU9EM5NQhqt8hyF3MQA/qg+5v5uwDUj7uYg2CP4otZxlnDrtLo2bc4zeTFXcxB9DsPmk47zlr652trV4uBPKcGQe0WWe5iDoILaLc4NQhqt8hyF3MQADQAdzEHAUADcBdzEAA0AHcxBwFAA3AXcxAANAB3MQdhB9C5amUFu0SSkEHrWlGy5861mWx3aOLtlwpApy8VgHbYAdDpSwWgXXZNPoMMQog7AGqz1BaZ49z5MZPtDoBaLLXdto9y58lMtjsAarFUAGrfHQC1WCoAte/OMaDlqjN6Qvy8l6FBH9S6O7eAVubFZ/M8sBy3R3cxB8EEtJyTpKdyYilEj+5iDoIJaDmrU0+Ix3LckH9x5sXrCfEzXY7b1Pcc6M6vmWx3vjJoqv3teS7HbRy9D3Pn2Uy2O199UA3oPPugANSdO9ej+HxevJ4QP8/luAGoO3dezoOqnKknxM/zPCj6oM7cOQa0W5waBLVbZLmLOQgAGoC7mIMAoAG4izkIAJqK6nv2dCfj2MpyFyqgQ29at2pGjt57lirj2MpyNymgw5Wi4b9YkbWAKE2QQQfPS0MGDcxdoE28DECpPmixOahjK8tdoIDK6IMSduW3aJJjyx3BAVAXgA61iwdQdv8DgNoE1LjTReyWugDodKVOBah5r4vYLQ1N2gcFoABUtjv0QeMFtG9qDOrYynLnGNDy7rrTO+kinWOX4xbRB+3duQzq2Mpy5xbQcpaxmueh5iXNYjluAOrPnVtAyxkeJwrT/e15LMcNQP25cwtofY5c8mwmy3HjEnxQ4i3HnU5Qsr4ct6PhSszJR5Y7fxn09b18uWOLqx0PbWxlTiIa6U7G7zoHBWhllvHpnWJ4ND2gQqdhjnNXBDXpHQBhAVrOMtZ82l6OG4CWyoMqggsxCFul9jsPmiRRdf5TDY9sL8c9rA8aJaA9TyGH/UP7XEC7xamB3d2S7/U590ENgLIvwjUw71u5SAElLyy3jsay18JvgbfkbnmvhwuotjMC2vNIeDKbGlCarJqbpnmr9aMUNKANM/LL2QvQnkfCl1mogDYOToyAtgb3JnftfdXpzk7tbJkFA2gdxBaYTD4d9XxtFTtuQEiR151oPQHad/DrHdBmBZk9n8bXv73Tp0h5/K+HD0AHt90++6BlZSYF1Ky0guM/N9RN5fOdr/tVqlWbcZXjumkXurQWY/eVVdmtjIMM2vsbZBgJGJozUv2SD123pT1grjsiCGPq6z5d2nptqemeUwY116BvBW3vZauAdnx7OO4os56ANs8F053KbndD7cb1QanM470PSmjoXjZ9yi6ghu7bRIA2PuYZ0J4HltkMLD8P7hJQooJ0hVnuqGPb3Dqux9ASzx3Jcfe3zCR2o8Nz17QzeCVLZfd6uuz0ZkGADtzLA5NPb7tx7sivyaBSe3fzegVhApHK26335wLosL0cBqAN2WqTmY1t3za5DqiplzQSUKLxmQ2g3NbRSETIgPLseifabkCpoRkX0OWlNkqZAaA8MzMSEQNKfGkJEEf2QU2l1l8yAC3nxetnfZeh4fa3YgA0r4SbUY250KWAcvfJRI0PE9ByXrx+1nc5bna2iADQFirUrnF6XsjXPnELaDknST9rL4XYvZd9AzqsORtbKllMvrVWO3LfTDO+dAsodSRqu4gGtJzVqZ+1luNO46x+pP6ytdmtPBfXr/TmZv/7pvO1r0p0Frt8O2devH7WWo67+CIaOtWe+qDN0icZmlEpsdHY+s2gY9uy1qed5O36AaQB7cigDUCbj33jGIdKq/RJTm5VatFl5rkP2qjcQHftj4sAlN8HlQHoT/UHR6Ua9zLxXR1X6kg7GYDa7oOW8+L1M+Ny3E1E+sZhCdClL22XSpAnE1DyS9vogLS3urihwFhqv/OgKmdS50FHHgw7fdDyFQDtaVbWtl8ftNGC2iqVC2i3GDWYZLjiGFDmRRhZF1jHAmpwR30biX0RKaC+r191t46uSrXkrpUCbQLK4DdKQINIPrbM7I4vBwJqyAlkd8eUYQGoRXfzALTyRh933eZ0f9xQCwBq0d2sAGX33/t1tginjgCFMq3Ime/bXyvErGZflegoFRlUprupxpc2MyjXDH3QAN1NU6rbM3RcOwAagLuYgwCgAbiLOQgAGoC7mIPAKB4KRwAUEi0ACokWAIVEC4BCogVAIdECoJBoDQb0GIIcCoBCogVAIdECoJBoAVBItAAoJFoAFBItAAqJFgCFRAuAOtXBJw+nrkLgAqBOBUDHCoBa0OHN3yze2dIvDq7sHR/d3Tr4aLHYUIAqRtXf4friYklrtvn46UK9+SAxvPLD3d8uFqvJG6t1f5ELgFrQ4fp7e09z+hI4E9z+cGNL05kD+mD1ePdS8Yls8+HNh+rNp6vJv6OvLiXYXkrfrvqLXADUgg7XN1IuM+2uqn/q7ZsVQBWSisfKp26mb6pnv9j7zy3lQP0l79X9xS0AakEpZ0k7nUm11uq1ar0rgK4vFtV2O92sWvp3FJf/+Iu9KqA1f3ELgFqQAqrMeEd3f3dlTyXBWhPfyJ7ZZvX06Xt7x7u/XD1uAIoMmgmAWtDh+qWUM63dZJyTYvnxlm7bdy+mfdDSRm9Wb6i/5GkN0Lq/qAVALejwxufV1lvhllC6ePezDQVi8uzTm+kovmKTbdYN/fHRrx/WM+jnGMVrAVAL0mOd4Tr4a7v+ZiQAakEZUOrUZn0g1NZym93GawBaCoBCogVAIdECoJBoAVBItFiA5kvHUkshWv59SD9mst3FHAT790FP1q6lgJ492s4Wk91evpis7Qr6MZPtLuYguIDuX/0uy6DG5bgBqDN3MQfB/4VljePplz+ev/76iX5I3ng/UdfnIMiWOICeXE/J1A96G+crEtT3Vpa7mIMYn0EBqHN305Qa2jpJp+iDRhXERCvNjQb07NFmNorfxCjel7ugADV9ygug6g/nQb27CwlQ48ecA9olTg0iOrbzCGJYHxSAOjGT7S6kIACoEzPZ7oIKYrI+KAClzYqDE3IQjtwN7FgAUIvuyuYtxCBaqW+KIFo9BABq0V3QgLY7jzMCFEqV7t2pKzFUMirfXQtk0JFmIfdBZWRQ9EFDdBdRHxSj+BDdzSEI7ml/ABqguxkEUXQgSFABaHjuZhBEDih9hR+AhucuiCC6wQOgokqNMAiKvLKFX25mOgHCBbS4u+75mtJ2+ngNNyx7cRdCEGRq7E60xmscTEDrs4zVhKT9bWRQX+5CCIILqEFjAa3N8FBzkc4eP6ls1kUw4qAV37EVWqrVPqhrQGtz5FQqTZp81dCfF9OOZVwpg0IVix6zSXWWcfp4+kU1i/40OsX3tptT8pFVqqzrtQMy6EkxF6noh/4kFdCh1y9Gmsk4tsPMhN2SNaAPur+Zv1sFVGQflD3xSyQq05QaJqCVWcZZw67S6Nm30k8zAdD+ZmECqs+DptOOs5b++dra1WIgz6lBxIAaKyER0DD7oIQ4NYiwD0pdPZEJqCN3AFRQqT/lvXLi+nMAQUxdqn1ALU879WM20F132w1ALZRqHVDjjX9B7RaeGUEefQ+khCB8uZMG6PLpefYCkXAwqNTY9+bckWay3QHQMWZuAHVT6sTuHE9dcgNoVfqi6kTX5v0WGuHtB5Pec2F1FD9JH1RI3p5xBm23GiFkUE4NAGhgpYoH9NnKyu1nb/8ZgE7uTlQQYvqgO2//6dbtN/cvBAWokJNbcwbUc6lGQF/dup38O3/xs++DAlRGqaKDmOjyLwAVVKrkIKa6gcZ6E/9MNfGvbl1m8AlA3boDoMsAPX+hImHxCUDdugOgSwGtqVx1Rk+IxzI0/tzNsQ/KvT+BCWhlXnw2z0P6ctw97wqPCVARQbCvEncMklIfK9kgqZyTpKdyCl8KsYh/moMh4j5+Ye56AlrLMOYM+upX36SP5axOPSFe+HLck14xxm8E0KJ20fLtSz7xIruUVM6L1xPihS/HPW0GZY9DRKe8Sfug9QPYBWjWxNdX3076odKX4560DwpAR5fKBnQny6D1LmcCqPA+6MSlog86ulSyD6oHSW9lfdByXryeEI/luD26izmIfudBVc7UE+JxHtSeOyrhBhGEo1K5gHaLU4OgdotXd2SXNYQgXJW6HND8JGhxHhSAOnQHQDvskEGndwdAO+wA6ATuCh7RByXtzIC+/ABNvBt3ZcYMOAhfpRoBfXP/8pv76T3LkGUJuxIqqjLdatxRf75zOb/USYjxFZFxk5cId7IyKPu+Iqulsu2MGVQB+uyCtSkfgd0m69Zdsw/qp1SDWaiAnu+kdPLmHdM1AKBSSw0W0KQTer6TX+oEoFO6c1sq9952u6Vy7bydZkIfNLRSZQSB86ABuIs5iI5BEm9CJwB17y7mIMwZ9FnSKHNPgnJqIGK3eOpvyTi2sty5aOJ3ivtBK3fXnd5JF+kMcjluXyNWGce2ob4nt2QEQfVBd7LzoOUsYzXPQ81LCnI57pgB7X15QEYQVAbV5+nLGR4nCtP97fZy3ADUmTsAugzQSvvenDSXPGstxx2GArrubFvC7gAYpOalzlK1WcZqPlJrOe4gMmig7tAHXQJoXdUM+vpevtxxbbVjAOrMXcxBMAGtzDI+vVMMjwDoODvLV39l7xO3gJazjDWfYSzHLfvY2v59B7dBTHQKmQloOe1Ynf9Uw6MgluMWcmwNCgpQY2VNMTTfdwxotzg1AKBNzQJQ9vsAVFCpc+qDrnQveg9AeWYjT8DL5n3KIArQzC08AKXNjK0lAB3pjuyHoA/KMQOgrtzRgyMP5w4AqGxUJPRBm/IzNVWXMhrQ6RX+debAZOvSfreXRinhZlBhpUYQhKUM2m76nGRQTkVFHdtWuyUaFaaZ37NWdvqgBKCz6YNSZo29QO2WsaWaj8Ygd+yzqpLP+w8DdC6jeMKsuRvGAtr8NI88stRxJ3ODBJTcdQC0jzvDVRWmO0ZzNuZUhExA+/YEAGj+xgB3uRshgJJ53CCfR6L3WCpUQEd238hj5wNQKoiegBpLpYIFoI0a1goehkoRp52x40C7di3KDYOK7dcHNY30GvuEbOqtfmmlAFrOi9fPmMvQNCtId5SW7r5W7pqmOeOWamngYNh1jZ6wcRebdlXPIzEwCC1PfdByXrx+xl2Om9p7psfK3m+87AcqsVvoWtTe9tM6Lgl22dvtIdv5so+begKeAO1rNhDQck6SfsZdCpHYe9QjlTXIvUx+vTmlN4OgZRNQKuZW7er7Kg5Ay1md+hl7Oe6VxrVW/TrdPfRj/pL6+EAxSx9ZyshaFaU3Yq/ad7gxVt5rTHZkrnA5L14/G7scN5G78jRg/JrXswT7+9j2IjCDNnoWrRiNIS8fc7XMRZ2op+zGZ9BhgFK9v6aZyd3IZoqoRatSkxxbKkY3pYYF6OA+6OgK+jGT7S7mINij+M1iFL+ZjeKxHLc3dzEH0e88qMqZ/c6Djq6gHzPZ7mIOggtotzg1CGq3yHIXcxAANAB3MQcBQANwF3MQADQAdzEHAUADcBdzEHYAhSAfQgaV6S7mINDEB+Au5iAAaADuYg4CgAbgLuYgAGgA7mIOAqN4KBwBUEi0ACgkWgAUEi0ACokWAIVEC4BCojUY0GMIcigACokWAIVEC4BCogVAIdECoJBoAVBItAAoJFoAFBItAOpJB588nLoKQQqAehIAHSYAalWHN3+zeGdLvzi4snd8dHfr4KPFYkMBqhhVf4fri4sFrUd3f7tYrD5N/o7VhuLDUCYAalWH6+/tPc3pS+BMIP3DjS1NZw7og9Xj3Uv5J46+unR88NElteHoq43jp+/tTVR1oQKgVnW4vpFymWl3Vf1Tb9+sAHqYEJu8oW2UtfpL3kUvYIkAqFUp+I4fbOhXB1d+ULA+WCRNegXQ9cWibMqrgF5B9mwJgFqVArTMoEd3f3dlTyXVWhNfZs/MBhm0SwDUqg7XL1W7kbvJ0CfF8uMt3bbvXkz7oKVNBVDVBwWkDQFQqzq88Xl1IJ6AqShdvPvZhiIvefbpzXQUX9pUAD3GKL4tAGpVaR8UsigAalUZoOrMZ3UgtEwcGwiAQsIFQCHRAqCQaAFQSLRYgOZLx2IpRO/uYg6C/fugJ2vXUkDPHm1ni8luYzFZX+5iDoIL6P7V77IMiuW4/buLOQj+LyxrHE+//PH89ddP9EPyxvuJuj4HBaqVFXG/1cUB9OR6SqZ+0Ns4X5Ggvrey3E1S6oqS91IdZFAA6txdUICaPuULUPRB/bsLCVDjx3wBevZoMxvFb2IU78vdNKUy+RQFqPrDeVDv7kIKYjpAu8SpQQzHtjg2IQcx0t1kfVAASpqV2SPgIFy5A6DTlwpAx5s1EzAAtegOgI42a3VhAahNd0H3QVudRwA6xk7UsXXszkup7eH3jACFwleKxtSVIO4AQAaV6S6iDOphFG/5PJgfM9nu5tAH5V6XcgeoroHtKwl+zGS7m0EQ7Cv7zgDNawBA7bubQRAFFiSnADQ8dzMIgsTD5M46oOiD2nc3hyCoHqDJnfU+6Mg4cGzFlNrTHe/4OwO0uLvu+ZrSdvp4DTcse3EXQhAkeUyOBwJan2WsJiTtbzcyKAB15i6EILiAmmS6SswEtDbDQ81FOnv8pLKZUwMc28BK9Qqo8T4bJqC1OXIqlSZNvmrozzHtGMo07kIp70Kr2aI6yzh9PP2imkU5Xzgkn0BKneSWLJsZ9KSYi1T0QzkVjeHYOnLntdSJbmq12Afd38zf7QR04K0HIR9bV+5iANRkxx7FF7OMs4ZdpdGzbztOMy2/sc9eIBKPrSt3AJQEVJ8HTacdZy3987W1q8VAfolnGYAOvYdmpJmMYzvQTNa0AC6g3VriWQSgg++hGWkm49jKcicNUBF9UAAqx504QC1VcJQZAJXjDoAuk4w+qLEWookCoKPsRB+Mup05jwcUxFSlAtAx7ojUSN4DKSIIT+4mBTRSEReQ881CJvTOQMig/cyI1EjPw5EQhC93aOJTeT25xQXUbqmBugOgSp4vD/D6oLZLDdMdAFUScf3KujtRQbS+dQC0hxkAde2u3W8BoH3MJFxgte5OUhAAdL7HNrBSAegouwCPbWClhtUHLVed0RPisQyNP3cxB8EEtDIvPpvngeW4PbqLOQgmoOWcJD2VE0shenRnt9SJ7vByC2g5q1NPiJe+HDeufpsU8p0BnHnxekK88OW4i7EmMmhTU93E7SuDptrfFr4cNwA1KhBAa1NLaUDrXc4EUOF9UABqlow+KH0bQ+UA0oCW8+L1hHjpy3H3nNtt+WDMYiaUU0Cpm7j7AlqZF68nxOM8qFnsVlRyEIEB2i1ORSXsFk/uAChpRk6D6dkHBaB9zAAobcadZQBAXbhDH9RaqQA0AHcxBwFAA3AXcxAAVIA7S3PrZO+TSQGFxijkq+N+hQzqx12RMRvn/NyWajLzNGsfTbygUrvtSiAlAOrrh3mkAyrjCrAId01Ap+2DAtBUgdxD48VdC1AvpZrMAGgqAFpRow/qqVSTGfqgSgA0uFJlBIE+aADuYg6CC2h5d93pnXSRTizH7c9dzEEwAS1nGat5HmpeUpjLcXvqb8k4trLcuQW0nOFxojDd3w5zOW5fI1YZx7ahvkMzGUEwAa3PkUuehbkcd8wXFecQO2857nSCUpjLccecQXuffZURxIAM+vpevtxxeMtxR9wHnTeglVnGp3eK4VF4gIbpDn1QEtBylrHmk1yO21YF/ZjJdhdzEP3OgyZJVJ3/VMMjajluWxX0YybbnYggJuodcQHtFqcGER9bkyxf/XUahHF86TgIADqdO9uzk90EsdK9niMb3MgBHXn6CICa7PJK9gW09X7cgBqPNQAd6a6opDlRAlDaLEhAg+iDkt8iLrhjhmYAVHaXVkIftCXqtCqzD9pyv2xoNhrQ6RX+debAZOnSPuGmsTncDCqsVINdd7ZwVaobd5YmVrWbPicZlFPRSQFt7oVJUCEOxuhSvXZp/QA6mz4oYdbcDbZR4fFOljruXJnnkwJ9L+0P3HUzGcUTZrYBbXya6Y6RLcaM9ISftYr7NBNhZgvQ8pTgIHdEtugLqOlrQnHq9Uj0TbTeAR1awfbe74yjn7eB7nIEHPUYegLaMjd8fZjuBtvZ7ar6BrRVQbIZWprzXI8vxgFqa8xF9EHJjLm8uWC6I2s3yCw4QOmOUjeglrrmw+zYjajbfkojU/bexf2OBLN2BnkDtJwXr58xl6Hpvffae7/xso6I3/4WCWbPYonO5fJdZwK1lRpN3yafgPrqg5bz4vUz9nLcpvaneRCae7v7YBgbWyJcU+3MtVkWBC0r5wapL2nD3NClbe8ir4D2NRsIaDknST8bvBQiQVpjt5kOhiVAiVq0S5kCUHPGLO2XuSMAnaaf0tuOCWg5q1M/G7scd7rbOh4bZtU3ln18oIhaWCplZK1M+4DpxnPlnYozL14/G7sctzEVmrJDQ/n7VBoIMYM2gmunQKa75Xt0nifqOzLoMECNvT+/u8VUi8ax7Vs5u0Fw+ZzkzIYQQO31QW0FIvpgIAhrpbJH8ZvFKH4zG8XLXo572lIRhLVS+50HVTmz33nQ0RX0YybbXcxBcAHtFqcGQe0WWe5iDgKABuAu5iAAaADuYg4CgAbgLuYgAGgA7mIOAoAG4C7mIOwACkE+hAwq013MQaCJD8BdzEEA0ADcxRwEAA3AXcxBWBwkEbctc+9qZtrZNZPtLuYgai8BqEx3MQcBQANwF3MQADQAdzEHYRFQCHIsAAqJFgCFRAuAQqIFQCHRGgloOQ15idQitNc6tpceatPxzGaUw9M7as1b2pu2o9ydZJtJd9qODlf9uhUj1tSM9KYNKHfajHR39ihdKZhyp80Id/nyw5zK6WWK80omL/N3U40D9KQz6GJtecpD/WfJzAURDtWvSpx+8YT0pu0od+o70frNNLMdI9znyV6nY03NaG+ZAelO++G4O7n+I8ed+oUZxqHleNN2VXcnGdEnOdijAN2/+l1HBj17/MS4re6h/pMQRjPK4YnaF/vbpDdtx6lf6/cqzHa0u9N/+OdtOtbMjPSmDSh32ox0p/ww3Gkzxq5TWYCz65RdxZ3+6ZryF2wcNvFJfi8SdbeH+o/qGM04Dls/0WO247hLvv8sd4kd6e7s8f8kGYV0l5mR3rQB5U6bke5Ov/xv1XZT7rQZY9epzMnZdcqu4k4n3DLvOgRUtaKMtJJ4qP8smdGM4VD9+gnDW2pHuzu9kxwMTuWUHenu+aZq8kh3mRnpTRtQ7rQZ7e5OCjvpLjOjd13qhLHr0s2lu1YCdTpIUiI7Kz0yKO3w9b1N1vc2tePUr0dCptwlfs4YGVSbcSqnDFi1Y/RDl/5AnNGMrl3ah2RUruhrZu6aPVAhgDL6KixA1feb7kfldqz6Mbq0VT8d7rKx6SblTpuxKsetHQPQ179PWSL7oL9nArqvImBUbn+zeLZdvizfdQmo+hqcfcs5zVT/WTKjGeVQc0d603aUO91Ake4qP59KhKtSIyPWvCfQ6U0bUO60GV25/e0seRO12y96Ap3usgabjjWzK9wtGdI5Pg96lRzt9TwP2uVwwNm3zvrp7WTltB0dbs/zoN3emLXjVi7xwznpq80od3lfkopV2+Xu2l1QXEmCZAuAQqIFQCHRAqCQaAFQSLQAKCRaANSi3txPFzi6fX7+8sNvOuyqW//vf93XK2QBUIt6c/9y8v8LRWinKoB2kwwBUJvKAM3+7xIA5QuAWlQJ6MsP/0M9T5PpzoW07f/Z9+f5o6LyxcqFxPblBysrFM5xC4BalG7i3/6zQvBZ8rDzl5eTN2+/uZ/AmLzOH5OtLz/I+gHIoIQAqEXpQVKWI1/+/Ps3//JvCY0///6Fyp6vbt3OH19++O8f6LwJQAkBUIvKMuirW2mOTDLny7/6099+n2TMZ3gEFxYAAAC+SURBVCm3K5fzR9Ww64EUACUEQC1KD4+SRKm427nw4sKb+3+XvKdae6X8MWnfd/KnALRbANSi6oC+ePtfb58/+4tfJc/eyijMH5Otr25dzp9OVNlABEAtqjqK/yZp6t9Sg/UkVb65n/yX0Jk/qq3PMliTHunElRYuAGpRepB0WSdG1YxnmVJtUEDqR7U1hTXRTnq6CTIJgEKiBUAh0QKgkGgBUEi0ACgkWgAUEi0ACokWAIVEC4BCogVAIdH6f8tI7y2qRc+sAAAAAElFTkSuQmCC">
+<figcaption>
+</figcaption>
+</figure>
+<p>As we can see from the visualization of p values and the number of
+them below the arbitrary but often used alpha value of 0.05, that for
+majority of the time periods we can not refuse the null hypothesis that
+there is no spatial correlation in the areal units. On the other hand in
+nearly 30 of the biweeks the p values are less than 0.05 and after all,
+the I value is an exploratory measure. We will describe building the
+spatial model in the next section.</p>
 </div>
 <div id="the-spatial-model" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> The Spatial Model</h1>
@@ -1716,18 +1804,67 @@ it. In doing so we will need to define</p>
 P(Y_{1},\ldots,Y_{N})
 \label{eq:joint}
 \end{equation}\]</span></p>
-<p>which is not trivial. If we want to take into account spatial
-relations, it is clear that this will not happen via <span class="math inline">\(P(Y_{1}) \times \ldots \times P(Y_{N})\)</span>.
+<p>which is not trivial. Furthermore, if we want to take into account
+spatial relations, it is clear that this will not happen via <span class="math inline">\(P(Y_{1}) \times \ldots \times P(Y_{N})\)</span>.
 It is standard in Bayesian applications to obtain this joint form from
-full conditional probabilities. On the other hand as <span class="citation">Banerjee, Carlin, and Gelfand (2003)</span> discusses
-that, these conditional probabilities can not be arbitrary and
-demonstrates the form they need to take to create a valid joint
-probability distribution <span class="math inline">\(\eqref{eq:joint}\)</span>.</p>
+full conditional probabilities. On the other hand as <span class="citation">Banerjee, Carlin, and Gelfand (2003)</span> discusses,
+these conditional probabilities can not be arbitrary and demonstrates
+the form they need to take to create a valid joint probability
+distribution <span class="math inline">\(\eqref{eq:joint}\)</span>.</p>
+<p>Markov Random Fields (MRFs), a special stochastic process, provides
+an important method to create this joint distribution from conditional
+distributions. A good description of these mechanisms are described in
+<span class="citation">Besag (1974)</span> and <span class="citation">Cressie and Wikle (2015)</span> and an introductory set
+of illustrations can be <a href="https://ermongroup.github.io/cs228-notes/representation/undirected/">found
+here.</a> MRFs, a set of random numbers, can be represented as
+undirected graphs with specific conditional independence properties. The
+main advantage of using MRFs is being able to use spatial effect
+probabilities conditional on neighborhood structure rather than using
+all areal units in order to create the joint probability
+distribution.</p>
+<p>We will give a very brief introduction to these mechanism by first
+describing the term clique within the context of spatial analysis. We
+can define a clique as a set of areal units where each unit is a
+neighbor to all in the clique. For instance in figure Figure 1 Kern, Los
+Angeles, Ventura (County FIPS == 111) form a clique since they all share
+a boundary with each other. This is also the maximal clique since it is
+not a subset of another clique.</p>
+<p>Using MRFs’ <a href="https://www.cs.cmu.edu/~16831-f14/notes/F11/16831_lecture07_bneuman.pdf">properties</a>
+and their relationship to Gibbs distributions (Fields) we can use
+quadratic potentials between areal units to come up with the joint
+probability of all areal units.</p>
+<p><span class="math display">\[\begin{equation}
+p(\mathbf{\phi})=p(\phi_{1},\ldots,\phi_{N})=
+\frac{1}{2}exp\bigg[-\sum_{c_{i}\epsilon C}f_{i}(c_{i})\bigg],
+\label{eq:cliques}
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(c_{i}\)</span> is 2 member cliques,
+<span class="math inline">\(i\)</span> is going to go from 1 to the
+total number of unique pairwise cliques. We will expand more on this as
+we detail the code. For instance there is clique of county FIPS 29
+(Kern) and 71 (San Bernardino). The function <span class="math inline">\(f_{i}\)</span>, potentials between spatial areas
+will be based on squared differences on <span class="math inline">\(\phi\)</span> terms. <span class="math display">\[(\phi_{i}-\phi_{j})^2\]</span> where the index
+<span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are neighbors that form the clique. The
+detailed assumptions and restrictions given by <span class="citation">Besag (1974)</span> allow the normal distribution to
+describe the uncertainty in the joint distribution of <span class="math inline">\(\phi\)</span> where the <span class="math inline">\(f_{i}\)</span> terms become a component.</p>
+<p>In the <a href="https://mc-stan.org/users/documentation/case-studies/icar_stan.html">link</a>
+we can see the linear algebra that shows the derivation of the potential
+function via the assumption of multivariate normal distribution for the
+joint probability of <span class="math inline">\(\phi\)</span>.</p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-banerjee2003hierarchical" class="csl-entry">
 Banerjee, Sudipto, Bradley P Carlin, and Alan E Gelfand. 2003.
 <em>Hierarchical Modeling and Analysis for Spatial Data</em>. Chapman;
 Hall/CRC.
+</div>
+<div id="ref-besag74" class="csl-entry">
+Besag, Julian. 1974. <span>“Spatial Interaction and the Statistical
+Analysis of Lattice Systems.”</span> <em>Journal of the Royal
+Statistical Society. Series B (Methodological)</em> 36 (2): 192–236. <a href="http://www.jstor.org/stable/2984812">http://www.jstor.org/stable/2984812</a>.
+</div>
+<div id="ref-cressie2015statistics" class="csl-entry">
+Cressie, Noel, and Christopher K Wikle. 2015. <em>Statistics for
+Spatio-Temporal Data</em>. John Wiley &amp; Sons.
 </div>
 </div>
 </div>
