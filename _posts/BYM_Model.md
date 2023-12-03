@@ -93,6 +93,7 @@ library(tidyr)
 library(ggplot2)
 setwd("C:/Users/rm84/Desktop/research/HMM/data")
 load("workspacewithbasedata.RData")
+cnames=read.table("countynames.txt",sep="\t",header=TRUE)
 ```
 
 
@@ -232,4 +233,48 @@ p(\mathbf{\phi})=p(\phi_{1},\ldots,\phi_{N})=
 where $c_{i}$ is 2 member cliques, $i$ is going to go from 1 to the total number of unique pairwise cliques. We will expand more on this as we detail the code. For instance there is clique of county FIPS 29 (Kern) and 71 (San Bernardino). The function $f_{i}$, potentials between spatial areas will be based on squared differences on $\phi$ terms. 
 \[(\phi_{i}-\phi_{j})^2\] where the index $i$ and $j$ are neighbors that form the clique. The detailed assumptions and restrictions given by @besag74 allow the normal distribution to describe the uncertainty in the joint distribution of $\phi$ where the $f_{i}$ terms become a component.  
 
-In the [link](https://mc-stan.org/users/documentation/case-studies/icar_stan.html) we can see the linear algebra that shows the derivation of the potential function via the assumption of multivariate normal distribution for the joint probability of $\phi$. 
+In the [link](https://mc-stan.org/users/documentation/case-studies/icar_stan.html) we can see the linear algebra that shows the derivation of the potential function via the assumption of multivariate normal distribution with a mean of 0 for the joint probability of $\phi$. Note that the mean of 0 is to ensure an identifiable joint distribution. 
+
+The pairwise cliques (neighbors) is obtained in r via the nb_data_funs functions provided by Mitzi Morris via the [github site](https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R). Among the many functions the author provides, an important one we will use is nb2graph as explained below. 
+
+First we are going to create a neighborhood list using the poly2nb function from the spdep package.   
+
+```r
+nb_CA = poly2nb(shapeanddata)
+print(nb_CA)
+```
+
+```
+## Neighbour list object:
+## Number of regions: 58 
+## Number of nonzero links: 288 
+## Percentage nonzero weights: 8.561237 
+## Average number of links: 4.965517
+```
+The nb_CA object will contain basic information about the neighborhood structure and will also have the neighborhood relationships for instance
+
+```r
+nb_CA[[1]]
+```
+
+```
+## [1]  7 38 39 41 43 50
+```
+Shows that the first county 1,Alameda shares borders with counties 7 (Contra Costa), 38 San Francisco, 39 San Joaquin, 41 San Mateo, 43 Santa Clara and 50 Stanislaus.
+
+In addition to the printed information above we can obtain    
+
+
+```r
+nbs=nb2graph(nb_CA)
+
+N = nbs$N
+node1 = nbs$node1
+node2 = nbs$node2
+N_edges = nbs$N_edges
+```
+
+We obtain some information regarding our spatial object (graph object), namely that there are 58  areal units (counties) 144 shared borders. This means in a neighborhood 58 by 58 matrix, with (3364) cells, 144 of the cells will have a non zero value. 
+
+
+

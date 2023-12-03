@@ -1698,7 +1698,8 @@ code.</p>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">&quot;C:/Users/rm84/Desktop/research/HMM/data&quot;</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;workspacewithbasedata.RData&quot;</span>)</span></code></pre></div>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;workspacewithbasedata.RData&quot;</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>cnames<span class="ot">=</span><span class="fu">read.table</span>(<span class="st">&quot;countynames.txt&quot;</span>,<span class="at">sep=</span><span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>,<span class="at">header=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#shapeanddata is a simple features class object that contains </span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#spatial information and county level feature information. </span></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#The poly2nb function creates the neighbor indexes </span></span>
@@ -1849,8 +1850,41 @@ detailed assumptions and restrictions given by <span class="citation">Besag (197
 describe the uncertainty in the joint distribution of <span class="math inline">\(\phi\)</span> where the <span class="math inline">\(f_{i}\)</span> terms become a component.</p>
 <p>In the <a href="https://mc-stan.org/users/documentation/case-studies/icar_stan.html">link</a>
 we can see the linear algebra that shows the derivation of the potential
-function via the assumption of multivariate normal distribution for the
-joint probability of <span class="math inline">\(\phi\)</span>.</p>
+function via the assumption of multivariate normal distribution with a
+mean of 0 for the joint probability of <span class="math inline">\(\phi\)</span>. Note that the mean of 0 is to
+ensure an identifiable joint distribution.</p>
+<p>The pairwise cliques (neighbors) is obtained in r via the
+nb_data_funs functions provided by Mitzi Morris via the <a href="https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R">github
+site</a>. Among the many functions the author provides, an important one
+we will use is nb2graph as explained below.</p>
+<p>First we are going to create a neighborhood list using the poly2nb
+function from the spdep package.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>nb_CA <span class="ot">=</span> <span class="fu">poly2nb</span>(shapeanddata)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">print</span>(nb_CA)</span></code></pre></div>
+<pre><code>## Neighbour list object:
+## Number of regions: 58 
+## Number of nonzero links: 288 
+## Percentage nonzero weights: 8.561237 
+## Average number of links: 4.965517</code></pre>
+<p>The nb_CA object will contain basic information about the
+neighborhood structure and will also have the neighborhood relationships
+for instance</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>nb_CA[[<span class="dv">1</span>]]</span></code></pre></div>
+<pre><code>## [1]  7 38 39 41 43 50</code></pre>
+<p>Shows that the first county 1,Alameda shares borders with counties 7
+(Contra Costa), 38 San Francisco, 39 San Joaquin, 41 San Mateo, 43 Santa
+Clara and 50 Stanislaus.</p>
+<p>In addition to the printed information above we can obtain</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>nbs<span class="ot">=</span><span class="fu">nb2graph</span>(nb_CA)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>N <span class="ot">=</span> nbs<span class="sc">$</span>N</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>node1 <span class="ot">=</span> nbs<span class="sc">$</span>node1</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>node2 <span class="ot">=</span> nbs<span class="sc">$</span>node2</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>N_edges <span class="ot">=</span> nbs<span class="sc">$</span>N_edges</span></code></pre></div>
+<p>We obtain some information regarding our spatial object (graph
+object), namely that there are 58 areal units (counties) 144 shared
+borders. This means in a neighborhood 58 by 58 matrix, with (3364)
+cells, 144 of the cells will have a non zero value.</p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-banerjee2003hierarchical" class="csl-entry">
 Banerjee, Sudipto, Bradley P Carlin, and Alan E Gelfand. 2003.
