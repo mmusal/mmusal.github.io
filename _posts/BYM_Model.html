@@ -1871,10 +1871,10 @@ neighborhood structure and will also have the neighborhood relationships
 for instance</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>nb_CA[[<span class="dv">1</span>]]</span></code></pre></div>
 <pre><code>## [1]  7 38 39 41 43 50</code></pre>
-<p>Shows that the first county 1,Alameda shares borders with counties 7
-(Contra Costa), 38 San Francisco, 39 San Joaquin, 41 San Mateo, 43 Santa
-Clara and 50 Stanislaus.</p>
-<p>In addition to the printed information above we can obtain</p>
+<p>Shows that the first county 1,(Alameda) shares borders with counties
+7 (Contra Costa), 38 (San Francisco), 39 (San Joaquin), (41 San Mateo),
+(43 Santa Clara) and (50 Stanislaus).</p>
+<p>Using this object nb_CA we will be</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>nbs<span class="ot">=</span><span class="fu">nb2graph</span>(nb_CA)</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>N <span class="ot">=</span> nbs<span class="sc">$</span>N</span>

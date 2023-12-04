@@ -260,9 +260,9 @@ nb_CA[[1]]
 ```
 ## [1]  7 38 39 41 43 50
 ```
-Shows that the first county 1,Alameda shares borders with counties 7 (Contra Costa), 38 San Francisco, 39 San Joaquin, 41 San Mateo, 43 Santa Clara and 50 Stanislaus.
+Shows that the first county 1,(Alameda) shares borders with counties 7 (Contra Costa), 38 (San Francisco), 39 (San Joaquin), (41 San Mateo), (43 Santa Clara) and (50 Stanislaus).
 
-In addition to the printed information above we can obtain    
+Using this object nb_CA we will be 
 
 
 ```r

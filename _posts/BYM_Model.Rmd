@@ -316,7 +316,9 @@ First we are going to create a neighborhood list using the poly2nb function from
 nb_CA = poly2nb(shapeanddata)
 print(nb_CA)
 ```
-The nb_CA object will contain basic information about the neighborhood structure and will also have the neighborhood relationships for instance
+
+We obtain some information regarding our spatial object (graph object), namely that there are `r nbs$N`  areal units (counties) `r nbs$N_edges` shared borders. This means in a neighborhood `r nbs$N` by `r nbs$N` matrix, with (`r  nbs$N*nbs$N`) cells, `r nbs$N_edges` of the cells will have a non zero value. 
+Furthermore the nb_CA object will contain neighborhood structure between counties. For instance; 
 ```{r}
 nb_CA[[1]]
 ```
@@ -333,7 +335,7 @@ node2 = nbs$node2
 N_edges = nbs$N_edges
 ```
 
-We obtain some information regarding our spatial object (graph object), namely that there are `r nbs$N`  areal units (counties) `r nbs$N_edges` shared borders. This means in a neighborhood `r nbs$N` by `r nbs$N` matrix, with (`r  nbs$N*nbs$N`) cells, `r nbs$N_edges` of the cells will have a non zero value. 
+
 
 
 
