@@ -1618,9 +1618,18 @@ MathJax.Hub.Config({
 <div id="models-using-areal-data" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Models Using Areal
 Data</h1>
-<p>An in depth introduction to many of the R related concepts we will
-discuss here is in <a href="https://maczokni.github.io/crime_mapping_textbook/">Crime Mapping
+<p>In this section we will give a brief description of spatial models,
+and describe processes which will eventually allow us to describe the
+Besag-York-Mollie model and its extensions. An in depth introduction to
+many of the R related concepts we will discuss here is in <a href="https://maczokni.github.io/crime_mapping_textbook/">Crime Mapping
 Textbook</a></p>
+<p>We will first discuss Moran’s I which provides an exploratory test
+for spatial relations. This is to be followed by a discussion involving
+the modeling of joint probability of spatial effects <span class="math inline">\(\phi\)</span>. In addition we will illustrate how
+to prepare the data for STAN.</p>
+</div>
+<div id="morans-i" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Moran’s I</h1>
 <p>When determining the presence of spatial relationships, a first step
 will be to determine whether there is reason to suspect that data that
 is in close proximity shows a recognizable pattern such that data which
@@ -1653,9 +1662,6 @@ shares a border with another county its’ effect is to be estimated. We
 will explain how to create and represent this matrix in STAN. Based on
 the neighborhood structure one of the first things to do would be to
 determine whether there is any spatial effects to model.</p>
-</div>
-<div id="morans-i" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Moran’s I</h1>
 <p>Moran’s I is an exploratory index for spatial correlation and has a
 range between -1 and 1.<br />
 Per <span class="citation">Banerjee, Carlin, and Gelfand (2003)</span>
@@ -1729,7 +1735,7 @@ Covid-19 mortality rather than Covid-19 mortality itself. We find that
 this is more realistic to determine whether spatial structure exists as
 there are large fluctuations in Covid-19 mortality due to differences in
 population size.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#Number of permutations for 2.</span></span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#Number of permutations for 2. Areal Unit Permutation.</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>nsim <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#Random number seed</span></span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
@@ -1796,22 +1802,28 @@ nearly 30 of the biweeks the p values are less than 0.05 and after all,
 the I value is an exploratory measure. We will describe building the
 spatial model in the next section.</p>
 </div>
-<div id="the-spatial-model" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> The Spatial Model</h1>
+<div id="the-joint-spatial-effect-phi" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> The Joint Spatial
+Effect <span class="math inline">\(\phi\)</span></h1>
 <p>Once we determine what counts as a neighbor and that there is a
 spatial effect to account for, we will need to decide how to account for
 it. In doing so we will need to define</p>
 <p><span class="math display">\[\begin{equation}
-P(Y_{1},\ldots,Y_{N})
+P(\phi_{1},\ldots,\phi_{N}),
 \label{eq:joint}
-\end{equation}\]</span></p>
-<p>which is not trivial. Furthermore, if we want to take into account
-spatial relations, it is clear that this will not happen via <span class="math inline">\(P(Y_{1}) \times \ldots \times P(Y_{N})\)</span>.
-It is standard in Bayesian applications to obtain this joint form from
-full conditional probabilities. On the other hand as <span class="citation">Banerjee, Carlin, and Gelfand (2003)</span> discusses,
-these conditional probabilities can not be arbitrary and demonstrates
-the form they need to take to create a valid joint probability
-distribution <span class="math inline">\(\eqref{eq:joint}\)</span>.</p>
+\end{equation}\]</span> where N is the number of areal units (i.e.: 58
+counties in CA). Writing this form is not trivial. Furthermore, if we
+want to take into account spatial relations, it is clear that this will
+not happen via <span class="math inline">\(P(\phi_{1}) \times \ldots
+\times P(\phi_{N})\)</span>. It is standard in Bayesian applications to
+obtain this joint form from full conditional probabilities. However as
+<span class="citation">Banerjee, Carlin, and Gelfand (2003)</span>
+discusses, these conditional probabilities can not be arbitrary and
+demonstrates the form they need to take to create a valid joint
+probability distribution <span class="math inline">\(\eqref{eq:joint}\)</span>.</p>
+<div id="markov-random-fields-mrfs" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Markov Random Fields
+(MRFs)</h2>
 <p>Markov Random Fields (MRFs), a special stochastic process, provides
 an important method to create this joint distribution from conditional
 distributions. A good description of these mechanisms are described in
@@ -1836,27 +1848,31 @@ quadratic potentials between areal units to come up with the joint
 probability of all areal units.</p>
 <p><span class="math display">\[\begin{equation}
 p(\mathbf{\phi})=p(\phi_{1},\ldots,\phi_{N})=
-\frac{1}{2}exp\bigg[-\sum_{c_{i}\epsilon C}f_{i}(c_{i})\bigg],
+\frac{1}{Z}exp\bigg[-\sum_{c_{i}\epsilon C}f_{i}(c_{i})\bigg],
 \label{eq:cliques}
 \end{equation}\]</span></p>
 <p>where <span class="math inline">\(c_{i}\)</span> is 2 member cliques,
 <span class="math inline">\(i\)</span> is going to go from 1 to the
-total number of unique pairwise cliques. We will expand more on this as
-we detail the code. For instance there is clique of county FIPS 29
-(Kern) and 71 (San Bernardino). The function <span class="math inline">\(f_{i}\)</span>, potentials between spatial areas
-will be based on squared differences on <span class="math inline">\(\phi\)</span> terms. <span class="math display">\[(\phi_{i}-\phi_{j})^2\]</span> where the index
-<span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are neighbors that form the clique. The
+total number of unique pairwise cliques and Z is a normalizing constant.
+We will expand more on this as we detail the code. For instance there is
+clique of county FIPS 29 (Kern) and 71 (San Bernardino). The function
+<span class="math inline">\(f_{i}\)</span>, potentials between spatial
+areas will be based on squared differences on <span class="math inline">\(\phi\)</span> terms leading to the result; <span class="math display">\[\begin{equation}
+-\frac{1}{2} \sum (\phi_{i}-\phi_{j})^2
+\label{eq:sqrddif}
+\end{equation}\]</span></p>
+<p>where the index <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are neighbors that form the clique. The
 detailed assumptions and restrictions given by <span class="citation">Besag (1974)</span> allow the normal distribution to
-describe the uncertainty in the joint distribution of <span class="math inline">\(\phi\)</span> where the <span class="math inline">\(f_{i}\)</span> terms become a component.</p>
+describe the uncertainty in the joint distribution of <span class="math inline">\(\phi\)</span>.</p>
 <p>In the <a href="https://mc-stan.org/users/documentation/case-studies/icar_stan.html">link</a>
 we can see the linear algebra that shows the derivation of the potential
 function via the assumption of multivariate normal distribution with a
-mean of 0 for the joint probability of <span class="math inline">\(\phi\)</span>. Note that the mean of 0 is to
-ensure an identifiable joint distribution.</p>
-<p>The pairwise cliques (neighbors) is obtained in r via the
-nb_data_funs functions provided by Mitzi Morris via the <a href="https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R">github
-site</a>. Among the many functions the author provides, an important one
-we will use is nb2graph as explained below.</p>
+mean of 0 for the joint probability of <span class="math inline">\(\phi\)</span>. Note that the mean of 0 for <span class="math inline">\(\phi\)</span> is to ensure an identifiable joint
+distribution. Further discussion will await the code.</p>
+</div>
+<div id="preparing-the-areal-data-for-stan" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Preparing the Areal
+Data for STAN</h2>
 <p>First we are going to create a neighborhood list using the poly2nb
 function from the spdep package.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>nb_CA <span class="ot">=</span> <span class="fu">poly2nb</span>(shapeanddata)</span>
@@ -1866,25 +1882,122 @@ function from the spdep package.</p>
 ## Number of nonzero links: 288 
 ## Percentage nonzero weights: 8.561237 
 ## Average number of links: 4.965517</code></pre>
-<p>The nb_CA object will contain basic information about the
-neighborhood structure and will also have the neighborhood relationships
-for instance</p>
+<p>We obtain some information regarding our spatial object (graph
+object), namely that there are 58 areal units (counties) 144 shared
+borders. This means in a neighborhood 58 by 58 matrix, with (3364)
+cells, 144 of the cells will have a non zero value. Furthermore the
+nb_CA object will contain neighborhood structure between counties. For
+instance;</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>nb_CA[[<span class="dv">1</span>]]</span></code></pre></div>
 <pre><code>## [1]  7 38 39 41 43 50</code></pre>
 <p>Shows that the first county 1,(Alameda) shares borders with counties
 7 (Contra Costa), 38 (San Francisco), 39 (San Joaquin), (41 San Mateo),
 (43 Santa Clara) and (50 Stanislaus).</p>
-<p>Using this object nb_CA we will be</p>
+<p>The pairwise cliques (neighbors) is obtained in r via the
+nb_data_funs functions provided by Mitzi Morris via the <a href="https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R">github
+site</a>. Among the many functions the author provides, an important one
+we will use is nb2graph.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>nbs<span class="ot">=</span><span class="fu">nb2graph</span>(nb_CA)</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>N <span class="ot">=</span> nbs<span class="sc">$</span>N</span>
 <span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>node1 <span class="ot">=</span> nbs<span class="sc">$</span>node1</span>
 <span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>node2 <span class="ot">=</span> nbs<span class="sc">$</span>node2</span>
 <span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>N_edges <span class="ot">=</span> nbs<span class="sc">$</span>N_edges</span></code></pre></div>
-<p>We obtain some information regarding our spatial object (graph
-object), namely that there are 58 areal units (counties) 144 shared
-borders. This means in a neighborhood 58 by 58 matrix, with (3364)
-cells, 144 of the cells will have a non zero value.</p>
+<p>This function converts the spdep object into a form that will allow
+STAN to model the joint distribution of <span class="math inline">\(\phi\)</span>. We will pass N as the number of
+areal units (counties) which is <code>r</code>nbs$N`. In addition node1
+and node2 will contain information which will be used in computing <span class="math inline">\((\phi_{i} - \phi_{j})^2\)</span>.</p>
+<p>There are going to be 144 unique cliques (neighbor pairs), we will
+look at the first 10 such cliques below.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>node1[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
+<pre><code>##  [1] 1 1 1 1 1 1 2 2 2 2</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>node2[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
+<pre><code>##  [1]  7 38 39 41 43 50  3  5  9 26</code></pre>
+<p>As described above county 1,(Alameda), has 6 listed neighbors in node
+2 corresponding to county 1 in node 1, which can be seen in the R output
+above.</p>
+<p>Once the spatial and covariate data is prepared for STAN by combining
+them into a list, it is exported via the stan_rdump function as a
+text-file via rstan package.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>dump<span class="ot">=</span><span class="fu">c</span>(<span class="st">&#39;K&#39;</span>,<span class="st">&#39;R&#39;</span>,<span class="st">&#39;T&#39;</span>,<span class="st">&#39;N&#39;</span>,<span class="st">&#39;N_edges&#39;</span>,<span class="st">&#39;node1&#39;</span>,<span class="st">&#39;node2&#39;</span>,<span class="st">&#39;log_E&#39;</span>,<span class="st">&#39;y&#39;</span>,<span class="st">&#39;x&#39;</span>,</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>       <span class="st">&#39;VacPop&#39;</span>,<span class="st">&#39;medage&#39;</span>,<span class="st">&#39;medsex&#39;</span>,<span class="st">&#39;race&#39;</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>       <span class="st">&#39;scaling_factor&#39;</span>,<span class="st">&#39;START&#39;</span>,<span class="st">&#39;END&#39;</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a><span class="do">#################################################</span></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a><span class="fu">stan_rdump</span>(dump, <span class="at">file =</span> <span class="st">&quot;C:/Users/rm84/Desktop/research/2023coviddata.r&quot;</span>, <span class="at">append =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>           <span class="at">envir =</span> <span class="fu">parent.frame</span>(),</span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>           <span class="at">width =</span> <span class="fu">options</span>(<span class="st">&quot;width&quot;</span>)<span class="sc">$</span>width,</span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>           <span class="at">quiet =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="besag-york-mollie-bym-model" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Besag York Mollie (BYM)
+Model</h1>
+<p>BYM model was first implemented in <span class="citation">Besag,
+York, and Mollié (1991)</span> which has a log linear Poisson
+likelihood. The original form of the distribution can be stated as;</p>
+<p><span class="math display">\[\begin{equation}
+Y_{i} \sim Poisson(\lambda_{i}) \\
+log(\lambda_{i}) = log(E_{i})  \times
+(\beta*X_{i}+\theta_{i}+\phi_{i}),  
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(\phi\)</span>, areal spatial
+effect, has the form as described via <span class="math inline">\(\eqref{eq:sqrddif}\)</span>. It will be a vector
+with N elements same as <span class="math inline">\(\theta\)</span>, the
+specific random effects of the areal units. In this post we will ignore
+the original model and focus on the extended version</p>
+<p><span class="math display">\[\begin{equation}
+Y_{it} \sim Poisson(\lambda_{i}) \\
+log(\lambda_{i}) = log(E_{i})  \times
+\left(\beta*X_{i}+\left(\sqrt{\frac{\rho}{s}}\times
+\phi_{i}+\sqrt{(1-\rho)}\times \theta_{i}\right)\times \sigma
+\right),  \end{equation}\]</span></p>
+<ul>
+<li><span class="math inline">\(\rho \in [0,1]\)</span> controls the
+contribution of spatial vs random effects. If <span class="math inline">\(\rho\)</span> is 0,</li>
+<li>s is the scaling factor which can be computed using the and the
+function provided by once again Mitzi Morris and the <a href="https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R">github
+site</a>. The constant value is evaluated from the matrix <span class="math inline">\(Q\)</span> and for ICAR models it is equal to
+<span class="math display">\[Q=D(I-A)\]</span> where</li>
+<li>D is the N by N diagonal matrix with the number of neighbors for
+each areal unit.</li>
+<li>I is the N by N identity matrix.</li>
+<li>A is the N by N adjacency matrix.<br />
+Using these matrices as input, the function “scale_nb_components”
+calculates the geometric mean of the variances which are on the diagonal
+of <span class="math inline">\(Q^{-1}\)</span> matrix diagonal. This in
+turn ensures that the prior of <span class="math inline">\(\phi\)</span>
+will have a standard deviation of 1. We will also set the prior of <span class="math inline">\(\theta\)</span> as 1.</li>
+</ul>
+<p>We will include a time component t which will modify the equation.
+For now we will focus on STAN program.</p>
+<div id="stan-program-and-bym-original-and-extended-version" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> STAN program and BYM
+Original and Extended Version</h2>
+<p>In this section we explain how to setup and execute the Besag York
+Mollie model. Most of this section is paraphrased from <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6830524/">here</a>,
+where the analysis is based on a single slice of time. The authors
+explain the original formulation for BYM which have convergence issues
+and propose a new solution.</p>
+</div>
+<div id="stan-function-for-phi" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> STAN Function for
+<span class="math inline">\(\phi\)</span></h2>
+<p>An elaborate explanation of the function created in STAN for <span class="math inline">\(\phi\)</span> exists <a href="https://mc-stan.org/users/documentation/case-studies/icar_stan.html#adding-an-icar-component-to-a-stan-model">here</a>.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="kw">functions</span> {</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>  <span class="dt">real</span> icar_normal_lpdf(<span class="dt">row_vector</span> phi, <span class="dt">int</span> N, <span class="dt">int</span>[] node1, <span class="dt">int</span>[] node2) </span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>  {</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>    <span class="cf">return</span> -<span class="fl">0.5</span> * dot_self(phi[node1] - phi[node2])</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>    + normal_lpdf(sum(phi) | <span class="dv">0</span>, <span class="fl">0.0001</span> * N);</span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>  }</span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>          }</span></code></pre></div>
+<p>It should be noted here that the variable declared as sum of <span class="math inline">\(\phi\)</span> on the last line of the puts a soft
+constraint on the the mean of <span class="math inline">\(\phi\)</span>
+vector of 0 with a standard deviation of 0.0001.</p>
+<p>The data</p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-banerjee2003hierarchical" class="csl-entry">
 Banerjee, Sudipto, Bradley P Carlin, and Alan E Gelfand. 2003.
@@ -1895,6 +2008,11 @@ Hall/CRC.
 Besag, Julian. 1974. <span>“Spatial Interaction and the Statistical
 Analysis of Lattice Systems.”</span> <em>Journal of the Royal
 Statistical Society. Series B (Methodological)</em> 36 (2): 192–236. <a href="http://www.jstor.org/stable/2984812">http://www.jstor.org/stable/2984812</a>.
+</div>
+<div id="ref-besag1991bayesian" class="csl-entry">
+Besag, Julian, Jeremy York, and Annie Mollié. 1991. <span>“Bayesian
+Image Restoration, with Two Applications in Spatial Statistics.”</span>
+<em>Annals of the Institute of Statistical Mathematics</em> 43: 1–20.
 </div>
 <div id="ref-cressie2015statistics" class="csl-entry">
 Cressie, Noel, and Christopher K Wikle. 2015. <em>Statistics for
@@ -1952,7 +2070,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1",
+      selectors: "h1,h2",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
