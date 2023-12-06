@@ -342,7 +342,7 @@ where
 * D is the N by N diagonal matrix with the number of neighbors for each areal unit.
 * I is the N by N identity matrix. 
 * A is the N by N adjacency matrix.  
-Using these matrices as input, the function "scale_nb_components" calculates the geometric mean of the variances which are on the diagonal of $Q^{-1}$ matrix diagonal. This in turn ensures that the prior of $\phi$ will have a standard deviation of 1. We will also set the prior of $\theta$ as 1.   
+Using these matrices as input, the function "scale_nb_components" calculates the geometric mean of the variances which are on the diagonal of $Q^{-1}$ matrix diagonal. This in turn ensures that the prior of $\phi$ will have a standard deviation of 1. We will also set the prior of $\theta$ as 1. This is necessary to be able to interpret $\sigma$ as the overall standard deviation of combined $\phi$ and $\theta$ terms.  
 
 We will include a time component t which will modify the equation. For now we will focus on STAN program. 
 

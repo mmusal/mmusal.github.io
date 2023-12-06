@@ -15,7 +15,7 @@ output:
    number_sections: true
    usemathjax: true
 bibliography: bibliography.bib 
-tags: [Besag-York-Mollie, Areal Data]
+tags: [Besag-York-Mollie, Areal Data, Moran's I, Spatial Effect]
 always_allow_html: true
 ---
 <script type="text/x-mathjax-config">
@@ -388,7 +388,7 @@ where
 * D is the N by N diagonal matrix with the number of neighbors for each areal unit.
 * I is the N by N identity matrix. 
 * A is the N by N adjacency matrix.  
-Using these matrices as input, the function "scale_nb_components" calculates the geometric mean of the variances which are on the diagonal of $Q^{-1}$ matrix diagonal. This in turn ensures that the prior of $\phi$ will have a standard deviation of 1. We will also set the prior of $\theta$ as 1.   
+Using these matrices as input, the function "scale_nb_components" calculates the geometric mean of the variances which are on the diagonal of $Q^{-1}$ matrix diagonal. This in turn ensures that the prior of $\phi$ will have a standard deviation of 1. We will also set the prior of $\theta$ as 1. This is necessary to be able to interpret $\sigma$ as the overall standard deviation of combined $\phi$ and $\theta$ terms.  
 
 We will include a time component t which will modify the equation. For now we will focus on STAN program. 
 
@@ -408,7 +408,7 @@ functions {
           }
 ```
 
-It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
+It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
 
 The data 
 
