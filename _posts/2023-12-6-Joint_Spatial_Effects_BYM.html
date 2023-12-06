@@ -1666,7 +1666,7 @@ determine whether there is any spatial effects to model.</p>
 range between -1 and 1.<br />
 Per <span class="citation">Banerjee, Carlin, and Gelfand (2003)</span>
 Moran’s I and its variance is; <span class="math display">\[
-I=\frac{N}{W}\frac{\sum_{i}\sum_{j}(y_{i}-\bar y)(y_{j}-\bar
+I=\frac{n}{W}\frac{\sum_{i}\sum_{j}w_{ij}(y_{i}-\bar y)(y_{j}-\bar
 y)}{(y_{i}-\bar y)^{2}}
 \label{eq:I}
 \]</span> <span class="math display">\[
@@ -1677,8 +1677,13 @@ S_{0}=\sum_{i \ne j} w_{ij}, S_{1}=\frac{1}{2}\sum_{i \ne
 j}(w_{ij}+w_{ji})^{2},S_{2}=\sum_{k} \left( \sum_{j} w_{kj} + \sum_{i}
 w_{ik} \right)^{2}
 \]</span> where;</p>
-<p>N is the number of areal components. (58 in California)</p>
-<p>W is the sum of weights in the neighborhood weight matrix (58).</p>
+<ul>
+<li><p>n is the number of areal components. (58 in California).</p></li>
+<li><p><span class="math inline">\(w_{ij}\)</span> is the weight between
+areal unit i and j which for our purposes is either 0 or 1.</p></li>
+<li><p>W is the sum of weights in the neighborhood weight matrix
+(58).</p></li>
+</ul>
 <p><span class="math inline">\(y_{i}\)</span> is the quantity of
 interest in areal unit i.</p>
 <p><span class="math inline">\(\bar y\)</span> is the mean quantity.
@@ -1993,10 +1998,13 @@ and propose a new solution.</p>
 <span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>    + normal_lpdf(sum(phi) | <span class="dv">0</span>, <span class="fl">0.0001</span> * N);</span>
 <span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>  }</span>
 <span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>          }</span></code></pre></div>
-<p>It should be noted here that the variable declared as sum of <span class="math inline">\(\phi\)</span> on the last line of the puts a soft
-constraint on the the mean of <span class="math inline">\(\phi\)</span>
+<p>The dot_self function, multiplied with -0.5 is the application of
+equation <span class="math inline">\(\eqref{eq:sqrddif}\)</span>. It
+should be noted here that the variable declared as sum of <span class="math inline">\(\phi\)</span> on the last line of the puts a soft
+constraint on the mean of <span class="math inline">\(\phi\)</span>
 vector of 0 with a standard deviation of 0.0001.</p>
-<p>The data</p>
+<p>The data section will include the time index we incorporate to our
+research.</p>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">

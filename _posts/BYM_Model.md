@@ -365,9 +365,9 @@ functions {
           }
 ```
 
-It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
+The dot_self function, multiplied with -0.5 is the application of equation  \eqref{eq:sqrddif}. It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
 
-The data 
+The data  section will include the time index we incorporate to our research. 
 
 # References
 
