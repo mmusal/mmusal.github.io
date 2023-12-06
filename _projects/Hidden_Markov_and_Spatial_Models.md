@@ -38,7 +38,9 @@ First we need to have an understanding of the scripting language R to represent 
 
 ### [Hidden Markov Model (HMM)](https://mmusal.github.io/blog/2023/Hidden-Markov-Models/)
 
-### Besag York Mollie Model
+### Moran's I, Spatial Effects and Besag York Mollie Model Part 1
+
+### Besag York Mollie Model Part 2
 
 ### STAN Programming Language
 
