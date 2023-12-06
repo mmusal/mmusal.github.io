@@ -15,7 +15,7 @@ output:
    number_sections: true
    usemathjax: true
 bibliography: bibliography.bib 
-tags: [Besag-York-Mollie, Areal Data]
+tags: [Besag-York-Mollie, Areal Data, Moran's I, Spatial Effect]
 always_allow_html: true
 ---
 <script type="text/x-mathjax-config">
@@ -56,7 +56,7 @@ Turn your attention to San Bernardino. It is surrounded by counties with Federal
 Moran's I is an exploratory index for spatial correlation and has a range between -1 and 1.   
 Per @banerjee2003hierarchical Moran's I and its variance is;
 \[
-I=\frac{N}{W}\frac{\sum_{i}\sum_{j}(y_{i}-\bar y)(y_{j}-\bar y)}{(y_{i}-\bar y)^{2}}
+I=\frac{n}{W}\frac{\sum_{i}\sum_{j}w_{ij}(y_{i}-\bar y)(y_{j}-\bar y)}{(y_{i}-\bar y)^{2}}
 \label{eq:I}
 \]
 \[
@@ -69,9 +69,11 @@ S_{0}=\sum_{i \ne j} w_{ij}, S_{1}=\frac{1}{2}\sum_{i \ne j}(w_{ij}+w_{ji})^{2},
 \]
 where;
 
-N is the number of areal components. (58 in California)
+* n is the number of areal components. (58 in California).
 
-W is the sum of weights in the neighborhood weight matrix (58).
+* $w_{ij}$ is the weight between areal unit i and j which for our purposes is either 0 or 1.
+
+* W is the sum of weights in the neighborhood weight matrix (58).
 
 $y_{i}$ is the quantity of interest in areal unit i.
 
@@ -363,7 +365,7 @@ functions {
           }
 ```
 
-It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
+It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
 
 The data 
 
