@@ -381,7 +381,9 @@ where $\phi$, areal spatial effect, has the form as described via \eqref{eq:sqrd
 
 \begin{equation}
 Y_{it} \sim Poisson(\lambda_{i}) \\
-log(\lambda_{i}) = log(E_{i})  \times \left(\beta*X_{i}+\left(\sqrt{\frac{\rho}{s}}\times \phi_{i}+\sqrt{(1-\rho)}\times \theta_{i}\right)\times \sigma \right),  \end{equation}
+log(\lambda_{i}) = log(E_{i})  \times \left(\beta*X_{i}+\left(\sqrt{\frac{\rho}{s}}\times \phi_{i}+\sqrt{(1-\rho)}\times \theta_{i}\right)\times \sigma \right),
+\label{eq:lambda}
+\end{equation}
 
 * $\rho \in [0,1]$ controls the contribution of spatial vs random effects. If $\rho$ is 0, 
 * s is the scaling factor which can be computed using the  and the function provided by once again Mitzi Morris and the [github site](https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R). The constant value is evaluated from the matrix $Q$ and for ICAR models it is equal to 
@@ -412,7 +414,110 @@ functions {
 
 The dot_self function, multiplied with -0.5 is the application of equation  \eqref{eq:sqrddif}. It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
 
-The data  section will include the time index we incorporate to our research. 
+## STAN Data/Transformed Section
+The data  section will include the time index extending the current research. 
+
+```{stan, eval=FALSE, output.var="data"}
+data { 
+  int<lower=1> T;//number of time periods
+  int<lower=1> R;//number of races in data
+  int START; //time period analysis will start from 
+  int END; // time period analysis will stop at
+  int<lower=0> N;//number of spatial areas
+  int<lower=0> N_edges; //number of shared borders
+  int<lower=1, upper=N> node1[N_edges];  // node1[i], node2[i] neighbors
+  int<lower=1, upper=N> node2[N_edges];  // node1[i] < node2[i]
+  int<lower=0>  y[T,N];              // count outcomes across T time periods
+  real  x[167,N];              // covariates which also include interaction effects
+  matrix [T,N] log_E; // logarithm of the expected mortality values if mortality risk was uniformly applied 
+  vector [N] VacPop[T] ; // Vaccinated population percentage in the county. Changes with biweeks 
+  real<lower=0> scaling_factor;  // scales the variance of the spatial effects
+  vector [N] medage; // standardized median age
+  vector [N] medsex; // sex (coded as dummy)
+  matrix [R,N] race; // percentage of races in counties
+}
+
+transformed data {
+  //Providing a matrix with a single index returns the specified row. For instance, if m is a matrix, then m[2] is the second row. 
+//using the covariates matrix X to create specific matrices   
+//t = 1 to 25 is 2020
+//t = 26 to 51 is 2021
+//t = 52 to 77 is 2022
+matrix [T,N] poverty;
+matrix [T,N] income;
+matrix [T,N] povinc;
+matrix [T,N] gini;
+int ITER=END-START+1; 
+  row_vector[N] white=race[2];
+  row_vector[N] nonwhite=1-race[2];
+poverty[26:51] =rep_matrix(to_row_vector(x[2]), 26);
+poverty[52:77] =rep_matrix(to_row_vector(x[3]), 26);
+income[1:25] =rep_matrix(to_row_vector(x[4]), 25);
+income[26:51] =rep_matrix(to_row_vector(x[5]), 26);
+income[52:77] =rep_matrix(to_row_vector(x[6]), 26);
+povinc[1:25] =rep_matrix(to_row_vector(x[8]), 25);
+povinc[26:51] =rep_matrix(to_row_vector(x[9]), 26);
+povinc[52:77] =rep_matrix(to_row_vector(x[10]), 26);
+gini[1:25] =rep_matrix(to_row_vector(x[11]), 25);
+gini[26:51] =rep_matrix(to_row_vector(x[12]), 26);
+gini[52:77] =rep_matrix(to_row_vector(x[13]), 26);
+}
+
+
+```
+
+## STAN Parameter/Transformed Section
+In this section we specify the parameters that we will keep track of. Note that the parameters that are to be dynamically estimated is in transformed parameters section. In addition the parameter $\lambda$ in \eqref{eq:lambda} is referred to as alpha in this section.
+
+```{stan, eval=FALSE, output.var="parameters"}
+parameters {
+  real <lower = 0> sigma [ITER];
+ real gamma_vac[ITER];
+   row_vector[N] phi;
+  real<lower=0,upper=1> rho[ITER];
+  matrix [ITER,N] theta;
+real beta_int[ITER];
+real beta_pov;
+real beta_inc;
+real beta_dens;
+real beta_gini;
+real beta_age;
+real beta_sex;
+real beta_white;
+}
+transformed parameters {
+  matrix[1,N] alpha [ITER] ;
+  real beta_vac[ITER];
+
+
+beta_vac[1]=gamma_vac[1];    
+  {
+    matrix [ITER,N] convolved_re;
+   
+    for(t in START:ITER) {
+      beta_vac[t]=beta_vac[t-1]+gamma_vac[t];}
+      
+for(t in START:END){
+      convolved_re[t-START+1] = (sqrt(rho[t-START+1] / scaling_factor) * phi + sqrt(1 - rho[t-START+1]) * theta[t-START+1])*sigma[t-START+1]; 
+      alpha[t-START+1][1,1:N]=exp(
+                                  log_E[t,1:N]+
+                                  to_row_vector(convolved_re[t-START+1])+
+                                    beta_int[t-START+1]+
+                                    beta_pov*poverty[t]+
+                                    beta_inc*income[t]+
+                                    beta_dens*to_row_vector(x[7])+
+                                    beta_gini*gini[t]+
+                                    beta_vac[t-START+1]*to_row_vector(VacPop[t-1])+
+                                    beta_age*to_row_vector(medage)+
+                                    beta_sex*to_row_vector(medsex)+
+                                    beta_white*to_row_vector(white)
+                                    ); 
+                                   
+    }
+ 
+  }
+}
+```
 
 # References
 
