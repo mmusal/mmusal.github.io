@@ -2009,14 +2009,32 @@ vector of 0 with a standard deviation of 0.0001.</p>
 <h2><span class="header-section-number">4.3</span> STAN Data/Transformed
 Section</h2>
 <p>The data section will include the time index extending the current
+research. We start this section by defining constants. The constants are
+self explanatory via the commented out sections. The matrix y are the
+mortality values aggregated in biweeks<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> from the daily data
+obtained from California Health and Human Services is between 2020-02-01
+and 2023-01-17. We will remove the last 16 days of observation from the
+analysis. The first day of 2023 (Sunday) to is contained in the last
+observed biweek of 2022.</p>
+<p>We also obtain daily fully vaccinated individuals’ data in the
+counties and convert it to biweekly rates of vaccinated population. This
+assumes the location people get vaccinated is in the county of their
+residence. The Covid-19 vaccine has been available only since December
+2020 in California therefore the percentage is entered as 0 percent for
+the previous biweeks.</p>
+<p>The Gini inequality is obtained from American Community Survey data<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. Gini
+inequality is a number that goes between 0 and 1, 0 indicating every
+individual element (household) having the same income and 1 indicating
+the maximum possible inequality between the households. Gini inequality
+can have 1 and 5 year estimates, we use the 5 year estimates in this
 research.</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="kw">data</span> { </span>
 <span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">1</span>&gt; T;<span class="co">//number of time periods</span></span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">1</span>&gt; R;<span class="co">//number of races in data</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">1</span>&gt; R;<span class="co">//number of races specified in dataset</span></span>
 <span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>  <span class="dt">int</span> START; <span class="co">//time period analysis will start from </span></span>
 <span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>  <span class="dt">int</span> END; <span class="co">// time period analysis will stop at</span></span>
 <span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; N;<span class="co">//number of spatial areas</span></span>
-<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; N_edges; <span class="co">//number of shared borders</span></span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; N_edges; <span class="co">//number of shared borders between counties</span></span>
 <span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">1</span>, <span class="kw">upper</span>=N&gt; node1[N_edges];  <span class="co">// node1[i], node2[i] neighbors</span></span>
 <span id="cb23-9"><a href="#cb23-9" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">1</span>, <span class="kw">upper</span>=N&gt; node2[N_edges];  <span class="co">// node1[i] &lt; node2[i]</span></span>
 <span id="cb23-10"><a href="#cb23-10" tabindex="-1"></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt;  y[T,N];              <span class="co">// count outcomes across T time periods</span></span>
@@ -2078,7 +2096,22 @@ random effects.</p>
 the object alpha. This is an array of ITER size where each element is a
 matrix of “1,N” (1,58) dimensions. This object is where the equation
 <span class="math inline">\(\eqref{eq:lambda}\)</span> is going to be
-evaluated.</p>
+evaluated. The beta_vac array is an array of size ITER and is calculated
+as <span class="math display">\[
+\beta_{vac_{1}}=\gamma_{1} \\
+\beta_{vac_{t}}=\beta_{vac_{t-1}}+\gamma_{t}
+\label{eq:vac}
+\]</span></p>
+<p>The for loop involving beta_vac is the one associated with <span class="math inline">\(\eqref{eq:vac}\)</span>. The next for loop
+calculates concolved_re</p>
+<p><span class="math display">\[\begin{equation}
+\left(\sqrt{\frac{\rho}{s}}\times \phi_{i}+\sqrt{(1-\rho)}\times
+\theta_{i}\right)\times \sigma
+\end{equation}\]</span></p>
+<p>which is the combination of spatial and random effect in the <span class="math inline">\(\eqref{eq:lambda}\)</span> and is evaluated in to
+the matrix object with ITER and N rows, columns respectively.</p>
+<p>In the final stage alpha array of ITER size where every element is a
+matrix of 1,N (1,58) dimensions is evaluated.</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="kw">parameters</span> {</span>
 <span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>  <span class="dt">real</span> &lt;<span class="kw">lower</span> = <span class="dv">0</span>&gt; sigma [ITER];</span>
 <span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a> <span class="dt">real</span> gamma_vac[ITER];</span>
@@ -2151,6 +2184,13 @@ Cressie, Noel, and Christopher K Wikle. 2015. <em>Statistics for
 Spatio-Temporal Data</em>. John Wiley &amp; Sons.
 </div>
 </div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p><a href="https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state" class="uri">https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://data.census.gov/table/ACSDT5Y2022.B19083?q=inequality%20in%20counties%20of%20california&amp;g=040XX00US06$0500000" class="uri">https://data.census.gov/table/ACSDT5Y2022.B19083?q=inequality%20in%20counties%20of%20california&amp;g=040XX00US06$0500000</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
 
 

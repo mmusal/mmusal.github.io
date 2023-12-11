@@ -370,17 +370,22 @@ functions {
 The dot_self function, multiplied with -0.5 is the application of equation  \eqref{eq:sqrddif}. It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
 
 ## STAN Data/Transformed Section
-The data  section will include the time index extending the current research. 
+The data  section will include the time index extending the current research. We start this section by defining constants.  The constants are self explanatory via the commented out sections.  The matrix y are the mortality values aggregated in   biweeks^[https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state] from the daily data obtained from California Health and Human Services is between 2020-02-01 and 2023-01-17. We will remove the last 16 days of observation from the analysis. The first day of 2023 (Sunday) to is contained in the last observed biweek of 2022. 
+
+We also obtain daily fully vaccinated individuals' data in the counties and convert it to biweekly rates of vaccinated population. This assumes the location people get vaccinated is in the county of their residence. The Covid-19 vaccine has been available only since December 2020 in California therefore the percentage is entered as 0 percent for the previous biweeks.  
+
+The Gini inequality is obtained from American Community Survey data^[https://data.census.gov/table/ACSDT5Y2022.B19083?q=inequality%20in%20counties%20of%20california&g=040XX00US06$0500000]. Gini inequality is a number that goes between 0 and 1, 0 indicating every individual element (household) having the same income and 1 indicating the maximum possible inequality between the households. Gini inequality can have 1 and 5 year estimates, we use the 5 year estimates in this research.
+
 
 
 ```stan
 data { 
   int<lower=1> T;//number of time periods
-  int<lower=1> R;//number of races in data
+  int<lower=1> R;//number of races specified in dataset
   int START; //time period analysis will start from 
   int END; // time period analysis will stop at
   int<lower=0> N;//number of spatial areas
-  int<lower=0> N_edges; //number of shared borders
+  int<lower=0> N_edges; //number of shared borders between counties
   int<lower=1, upper=N> node1[N_edges];  // node1[i], node2[i] neighbors
   int<lower=1, upper=N> node2[N_edges];  // node1[i] < node2[i]
   int<lower=0>  y[T,N];              // count outcomes across T time periods
@@ -425,8 +430,23 @@ gini[52:77] =rep_matrix(to_row_vector(x[13]), 26);
 In this section we specify the parameters that we will keep track of. The parameters that are to be dynamically estimated is in transformed parameters section. We define $\sigma$ of \eqref{eq:lambda} as the single dimensional array sigma with ITER elements,$ ITER==(T-1)==77-1$, making explicit the choice that we shall estimate the parameter at every t. The parameter gamma_vac is going to be used to estimate beta_vac the coefficient effect of vaccinations. The spatial effect $\phi$ is a row vector with N (58) elements. The parameter which quantifies the trade-off between spatial effect $\phi$ and $\theta$ is created as an array of size ITER, rho ($\rho$), which will also be estimated at every iteration t. The intercept parameter array, beta_int has the same number of elements as rho array. The rest of the coefficients are associated the covariates written next to "beta".    
 The ITER (76) sized array theta contains a matrix of size 1 and N (1,58). It represents $\theta$, random effects.      
 
-In the transformed parameters section, the first object created is the object alpha. This is an array of ITER size where each element is a matrix of "1,N" (1,58) dimensions. This object is where the equation \eqref{eq:lambda} is going to be evaluated.  
+In the transformed parameters section, the first object created is the object alpha. This is an array of ITER size where each element is a matrix of "1,N" (1,58) dimensions. This object is where the equation \eqref{eq:lambda} is going to be evaluated. The beta_vac array is an array of size ITER and is calculated as
+\[
+\beta_{vac_{1}}=\gamma_{1} \\
+\beta_{vac_{t}}=\beta_{vac_{t-1}}+\gamma_{t}
+\label{eq:vac}
+\]
 
+The for loop involving beta_vac is the one associated with \eqref{eq:vac}.
+The next for loop calculates concolved_re
+
+\begin{equation}
+\left(\sqrt{\frac{\rho}{s}}\times \phi_{i}+\sqrt{(1-\rho)}\times \theta_{i}\right)\times \sigma
+\end{equation}
+
+which is the combination of spatial and random effect in the \eqref{eq:lambda} and is evaluated in to the matrix object with ITER and N rows, columns respectively.  
+
+In the final stage alpha array of ITER size where every element is a matrix of 1,N (1,58) dimensions is evaluated. 
 
 ```stan
 parameters {
