@@ -415,12 +415,55 @@ functions {
 The dot_self function, multiplied with -0.5 is the application of equation  \eqref{eq:sqrddif}. It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
 
 ## STAN Data/Transformed Section
-The data  section will include the time index extending the current research. We start this section by defining constants.  The constants are self explanatory via the commented out sections.  The matrix y are the mortality values aggregated in   biweeks^[https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state] from the daily data obtained from California Health and Human Services is between 2020-02-01 and 2023-01-17. We will remove the last 16 days of observation from the analysis. The first day of 2023 (Sunday) to is contained in the last observed biweek of 2022. 
-
-We also obtain daily fully vaccinated individuals' data in the counties and convert it to biweekly rates of vaccinated population. This assumes the location people get vaccinated is in the county of their residence. The Covid-19 vaccine has been available only since December 2020 in California therefore the percentage is entered as 0 percent for the previous biweeks.  
+The data  section will include the time index extending the research explained so far. The STAN program has comments next to these constants that are self explanatory.  The matrix y are the mortality values aggregated in   biweeks^[https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state] from the daily data obtained from California Health and Human Services is between 2020-02-01 and 2023-01-17. We will remove the last 16 days of observation from the analysis. The first day of 2023 (Sunday) to is contained in the last observed biweek of 2022. 
 
 The Gini inequality is obtained from American Community Survey data^[https://data.census.gov/table/ACSDT5Y2022.B19083?q=inequality%20in%20counties%20of%20california&g=040XX00US06$0500000]. Gini inequality is a number that goes between 0 and 1, 0 indicating every individual element (household) having the same income and 1 indicating the maximum possible inequality between the households. Gini inequality can have 1 and 5 year estimates, we use the 5 year estimates in this research.
 
+```{r, warning=FALSE}
+library(ggplot2)
+library(viridis)
+library(cowplot)
+library(ggspatial)
+library(ggpubr) 
+
+wd="C:/Users/rm84/Desktop/research/HMM/data/"
+setwd(wd)
+GINI=read.table("gini20and21and22.csv",header=TRUE,sep=",")
+attach(GINI)
+map_GINI20=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Gini 2020")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Gini_Index_2020)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "GINI. 20")+scale_fill_viridis(limits = c(0.39,0.6),direction=-1)+
+  theme(legend.position = "none")
+
+map_GINI21=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Gini 2021")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Gini_Index_2021)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "GINI. 21")+scale_fill_viridis(limits = c(0.39,0.6),direction=-1)+
+  theme(legend.position = "none")
+
+map_GINI22=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Gini 2022")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Gini_Index_2022)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "GINI. 22")+scale_fill_viridis(limits = c(0.39,0.6),direction=-1)+
+  theme(legend.position = "none")
+              
+ggarrange(map_GINI20,map_GINI21,map_GINI22,nrow=1,ncol=3,common.legend = TRUE, legend="bottom")
+
+```
+
+In this particular plot we see the changes in the GINI inequality measures collected across the counties of California across 5 years across 2020 to 2022.   
+
+We also obtain daily fully vaccinated individuals' data in the counties and convert it to biweekly rates of vaccinated population. This assumes the location people get vaccinated is in the county of their residence. The Covid-19 vaccine has been available only since December 2020 in California therefore the percentage is entered as 0 percent for the previous biweeks. 
 
 ```{stan, eval=FALSE, output.var="data"}
 data { 
