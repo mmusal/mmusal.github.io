@@ -201,7 +201,7 @@ annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_P
 
 ```
 
-# Creating the multiline graph and annotation {#multiline}
+# Creating the multiline graph and annotation
 
 ```{r, warning=FALSE,include=TRUE}
 library(tidyr)

@@ -294,7 +294,7 @@ annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_P
 
 ![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-5-1.png)<!-- -->
 
-# Creating the multiline graph and annotation {#multiline}
+# Creating the multiline graph and annotation
 
 
 ```r
