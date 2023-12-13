@@ -474,7 +474,7 @@ In this particular plot we see the changes in the GINI inequality measures colle
 ### Vaccinations vector [N] VacPop[T] ;
 
 We also obtain daily fully vaccinated individuals' data in the counties and convert it to biweekly rates of vaccinated population. This assumes the location people get vaccinated is in the county of their residence. The Covid-19 vaccine has been available only since December 2020 in California therefore the percentage is entered as 0 percent for the previous biweeks. 
-Most of the code we present below is from another [post](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/#Creating-the-multi-line-graph-and-annotation).
+Most of the code we present below is from another [post](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/#Creating-the-multiline-graph-and-annotation).
 ```{r, warning=FALSE}
 library(tidyr)
 library(dplyr)
