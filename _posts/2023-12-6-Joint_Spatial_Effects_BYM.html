@@ -1851,11 +1851,11 @@ not a subset of another clique.</p>
 and their relationship to Gibbs distributions (Fields) we can use
 quadratic potentials between areal units to come up with the joint
 probability of all areal units.</p>
-<p><span class="math display">\[\begin{equation}
+<span class="math display">\[\begin{equation}
 p(\mathbf{\phi})=p(\phi_{1},\ldots,\phi_{N})=
 \frac{1}{Z}exp\bigg[-\sum_{c_{i}\epsilon C}f_{i}(c_{i})\bigg],
 \label{eq:cliques}
-\end{equation}\]</span></p>
+\end{equation}\]</span>
 <p>where <span class="math inline">\(c_{i}\)</span> is 2 member cliques,
 <span class="math inline">\(i\)</span> is going to go from 1 to the
 total number of unique pairwise cliques and Z is a normalizing constant.
@@ -1940,23 +1940,23 @@ Model</h1>
 <p>BYM model was first implemented in <span class="citation">Besag,
 York, and Mollié (1991)</span> which has a log linear Poisson
 likelihood. The original form of the distribution can be stated as;</p>
-<p><span class="math display">\[\begin{equation}
+<span class="math display">\[\begin{equation}
 Y_{i} \sim Poisson(\lambda_{i}) \\
 log(\lambda_{i}) = log(E_{i})  \times
 (\beta*X_{i}+\theta_{i}+\phi_{i}),  
-\end{equation}\]</span></p>
+\end{equation}\]</span>
 <p>where <span class="math inline">\(\phi\)</span>, areal spatial
 effect, has the form as described via <span class="math inline">\(\eqref{eq:sqrddif}\)</span>. It will be a vector
 with N elements same as <span class="math inline">\(\theta\)</span>, the
 specific random effects of the areal units. In this post we will ignore
 the original model and focus on the extended version</p>
-<p><span class="math display">\[\begin{equation}
+<span class="math display">\[\begin{equation}
 Y_{it} \sim Poisson(\lambda_{i}) \\
 log(\lambda_{i}) = log(E_{i})  \times
 \left(\beta*X_{i}+\left(\sqrt{\frac{\rho}{s}}\times
 \phi_{i}+\sqrt{(1-\rho)}\times \theta_{i}\right)\times \sigma \right),
 \label{eq:lambda}
-\end{equation}\]</span></p>
+\end{equation}\]</span>
 <ul>
 <li><span class="math inline">\(\rho \in [0,1]\)</span> controls the
 contribution of spatial vs random effects. If <span class="math inline">\(\rho\)</span> is 0,</li>
@@ -1991,7 +1991,7 @@ and propose a new solution.</p>
 <div id="stan-function-for-phi" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> STAN Function for
 <span class="math inline">\(\phi\)</span></h2>
-<p>An elaborate explanation of the function created in STAN for <span class="math inline">\(\phi\)</span> exists <a href="https://mc-stan.org/users/documentation/case-studies/icar_stan.html#adding-an-icar-component-to-a-stan-model">here</a>.</p>
+<p>An elaborate explanation of the function created in STAN for <span class="math inline">\(\phi\)</span> exists <a href="https://mc-stan.org/users/documentation/case-studies/icar_stan#adding-an-icar-component-to-a-stan-model">here</a>.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode stan"><code class="sourceCode stan"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="kw">functions</span> {</span>
 <span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>  <span class="dt">real</span> icar_normal_lpdf(<span class="dt">row_vector</span> phi, <span class="dt">int</span> N, <span class="dt">int</span>[] node1, <span class="dt">int</span>[] node2) </span>
 <span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>  {</span>
@@ -2095,8 +2095,8 @@ counties and convert it to biweekly rates of vaccinated population. This
 assumes the location people get vaccinated is in the county of their
 residence. The Covid-19 vaccine has been available only since December
 2020 in California therefore the percentage is entered as 0 percent for
-the previous biweeks. Most of the code we present below is from another
-<a href="https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files.html#multiline">post</a></p>
+the previous biweeks. Most of the code we present below is from earlier
+<a href="https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/#multiline">post</a></p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
 <span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
 <pre><code>## 
@@ -2237,10 +2237,10 @@ as <span class="math display">\[
 \]</span></p>
 <p>The for loop involving beta_vac is the one associated with <span class="math inline">\(\eqref{eq:vac}\)</span>. The next for loop
 calculates concolved_re</p>
-<p><span class="math display">\[\begin{equation}
+<span class="math display">\[\begin{equation}
 \left(\sqrt{\frac{\rho}{s}}\times \phi_{i}+\sqrt{(1-\rho)}\times
 \theta_{i}\right)\times \sigma
-\end{equation}\]</span></p>
+\end{equation}\]</span>
 <p>which is the combination of spatial and random effect in the <span class="math inline">\(\eqref{eq:lambda}\)</span> and is evaluated in to
 the matrix object with ITER and N rows, columns respectively.</p>
 <p>In the final stage alpha array of ITER size where every element is a
