@@ -11,7 +11,7 @@ output:
    keep_md: yes
    toc_float: true
    toc_collapsed: false
-   toc_depth: 2
+   toc_depth: 3
    number_sections: true
    usemathjax: true
 bibliography: bibliography.bib 
@@ -415,9 +415,15 @@ functions {
 The dot_self function, multiplied with -0.5 is the application of equation  \eqref{eq:sqrddif}. It should be noted here that the variable declared as sum of $\phi$ on the last line of the puts a soft constraint on the mean of $\phi$ vector of 0 with a standard deviation of 0.0001. 
 
 ## STAN Data/Transformed Section
-The data  section will include the time index extending the research explained so far. The STAN program has comments next to these constants that are self explanatory.  The matrix y are the mortality values aggregated in   biweeks^[https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state] from the daily data obtained from California Health and Human Services is between 2020-02-01 and 2023-01-17. We will remove the last 16 days of observation from the analysis. The first day of 2023 (Sunday) to is contained in the last observed biweek of 2022. 
+The data  section will include the time index extending the research explained so far. The STAN program has comments next to these constants that are self explanatory.  
 
-The Gini inequality is obtained from American Community Survey data^[https://data.census.gov/table/ACSDT5Y2022.B19083?q=inequality%20in%20counties%20of%20california&g=040XX00US06$0500000]. Gini inequality is a number that goes between 0 and 1, 0 indicating every individual element (household) having the same income and 1 indicating the maximum possible inequality between the households. Gini inequality can have 1 and 5 year estimates, we use the 5 year estimates in this research.
+### Mortality Matrix: y[T,N];
+
+The matrix y are the mortality values aggregated in   biweeks^[https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state] from the daily data obtained from California Health and Human Services is between 2020-02-01 and 2023-01-17. We will remove the last 16 days of observation from the analysis. The first day of 2023 (Sunday) to is contained in the last observed biweek of 2022. 
+
+### Gini Inequality: matrix [T,N] gini;
+
+The Gini inequality is obtained from American Community Survey data^[https://data.census.gov/table/ACSDT5Y2022.B19083?q=inequality%20in%20counties%20of%20california&g=040XX00US06$0500000]. Gini inequality is a number that goes between 0 and 1, 0 indicating every individual element (household) having the same income and 1 indicates one single household have all the income in the population of interest. [This number is calculated by calculating the percentage of area under the Lorenz curve vs the total area under the curve under the assumption of complete income equality](https://www.census.gov/topics/income-poverty/income-inequality/about/metrics/gini-index.html). Gini inequality calculated by [Census](https://www.census.gov/) has 1 and 5 year estimates, we use the 5 year estimates in this research.
 
 ```{r, warning=FALSE}
 library(ggplot2)
@@ -430,6 +436,7 @@ wd="C:/Users/rm84/Desktop/research/HMM/data/"
 setwd(wd)
 GINI=read.table("gini20and21and22.csv",header=TRUE,sep=",")
 attach(GINI)
+#Once we attach GINI we can refer to the Gini_Index_XXXX variables. The values in GINI dataset are in the order of the county FIPS numbers which is how they are also listed in shapeanddata object. This is why aes parameter can use the variable directly rather than having to be attached to shapeanddata. 
 map_GINI20=ggplot() +
   annotation_spatial(shapeanddata) +
   ggtitle("Gini 2020")+
@@ -461,9 +468,67 @@ ggarrange(map_GINI20,map_GINI21,map_GINI22,nrow=1,ncol=3,common.legend = TRUE, l
 
 ```
 
-In this particular plot we see the changes in the GINI inequality measures collected across the counties of California across 5 years across 2020 to 2022.   
+
+In this particular plot we see the changes in the GINI inequality measures collected across the counties of California across 5 years. This measure has been calculated for the years 2020, 2021 and 2022 therefore they do not provide independent information. [On the other hand they are more reliable than one year estimates](https://www.census.gov/programs-surveys/acs/guidance/estimates.html).     
+
+### Vaccinations vector [N] VacPop[T] ;
 
 We also obtain daily fully vaccinated individuals' data in the counties and convert it to biweekly rates of vaccinated population. This assumes the location people get vaccinated is in the county of their residence. The Covid-19 vaccine has been available only since December 2020 in California therefore the percentage is entered as 0 percent for the previous biweeks. 
+Most of the code we present below is from another [post](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/#Creating-the- multi-line-graph-and-annotation).
+```{r, warning=FALSE}
+library(tidyr)
+library(dplyr)
+VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
+#Sort the name of the counties to make sure it merges to the correct counties.
+names=sort(shape$NAMELSAD)
+gvacPop1=as.data.frame(cbind(names,VacPop))
+names(gvacPop1)[1]="names"
+names(gvacPop1)[2]="fips"
+T=ncol(VacPop)-1
+for(c in 1:(T)){
+  names(gvacPop1)[c+2]=paste0("Time_",c)
+} 
+gvacPop2=gvacPop1 %>% 
+  pivot_longer(
+    cols = starts_with("Time"), 
+    names_to = "Time", 
+    values_to = "Vac",
+    values_drop_na = TRUE
+  )
+
+gvacPop2=select(gvacPop2, -c(fips))
+gvacPop2=as.data.frame(gvacPop2)
+
+gvacPop2$Time=rep(c(1:T),58)
+
+maxtime=ncol(VacPop)-1
+labels = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
+
+gvacPop2$Vac=as.numeric(gvacPop2$Vac)
+maxlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1])), maxtime+1])+0.02,
+                      Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime+1]==max(gvacPop1[,maxtime+1]))]))
+#minlabel and maxlabel are created in order to demonstrate how to partially parameterize the annotations on the ggplot. minlabel will have the information regarding the county with the least amount of vaccination. maxlabel will have the information regarding the county with the most amount of vaccination
+
+minlabel = data.frame(Vac = as.numeric(gvacPop1[which(gvacPop1[,maxtime+1]==min(gvacPop1[,maxtime+1])), maxtime+1])+0.02,Time = maxtime,text = paste0(names[which(gvacPop1[,maxtime]==min(gvacPop1[,maxtime]))]))
+
+i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
+  geom_line()+  
+  theme(legend.position = "none")+
+  theme(axis.title.y =element_blank())+
+  xlab("Biweek t")+
+  annotate("text", x = maxtime-15, y = maxlabel[,1], label =maxlabel[,3])+
+  annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=maxlabel[,1], 
+           yend=maxlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
+  annotate("text", x = maxtime-15, y = minlabel[,1], label = minlabel[,3])+
+  annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=minlabel[,1], 
+           yend=minlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
+  ggtitle("Percent of Population Vaccinated")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+i3
+```
+
+
 
 ```{stan, eval=FALSE, output.var="data"}
 data { 

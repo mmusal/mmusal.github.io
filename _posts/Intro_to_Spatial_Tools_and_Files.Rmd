@@ -5,13 +5,14 @@ author: "Rasim M Musal"
 date: "2023-10-04"
 output:
   html_document:
+   theme: darkly
+   highlight: espresso
    toc: true
    keep_md: yes
    toc_float: true
    toc_collapsed: true
    toc_depth: 3
    number_sections: true
-theme: lumen
 tags: [ggplot, maps]
 always_allow_html: true
 
@@ -135,7 +136,7 @@ shapeanddata=merge(shape,data_for_spatial,by.x="COUNTYFP",by.y="ID")
 
 ## Using ggplot for our first maps
 
-```{r include=TRUE}
+```{r,warning=FALSE,include=TRUE}
 
 #These variables are needed to unnormalize the poverty percentages
 meanpov=mean(poverty_for_spatial[,5])
@@ -200,7 +201,7 @@ annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_P
 
 ```
 
-# Creating the multi-line graph and annotation
+# Creating the multi-line graph and annotation 
 
 ```{r include=TRUE}
 library(tidyr)

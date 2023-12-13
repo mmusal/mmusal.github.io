@@ -5,13 +5,14 @@ author: "Rasim M Musal"
 date: "2023-10-04"
 output:
   html_document:
+   theme: darkly
+   highlight: espresso
    toc: true
    keep_md: yes
    toc_float: true
    toc_collapsed: true
    toc_depth: 3
    number_sections: true
-theme: lumen
 tags: [ggplot, maps]
 always_allow_html: true
 
@@ -293,7 +294,7 @@ annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_P
 
 ![](C:/Users/rm84/Documents/GitHub/mmusal.github.io/assets/img/2023-10-04-Intro_to_Spatial_Tools_and_Filesunnamed-chunk-5-1.png)<!-- -->
 
-# Creating the multi-line graph and annotation
+# Creating the multi-line graph and annotation 
 
 
 ```r
