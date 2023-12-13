@@ -98,7 +98,7 @@ We created a dataframe named \bold{CASummary} by wrangling through a multitude o
 
 ## Reading in the shape file, filtering USA to CA, merging data.frame
 
-```{r include=TRUE}
+```{r ,warning=FALSE, include=TRUE}
 
 library(sf)
 library(ggpubr)
@@ -203,7 +203,7 @@ annotate_figure(fig.lab.face="bold",fig.lab.size=14,fig.lab.pos="top.left",map_P
 
 # Creating the multiline graph and annotation {#multiline}
 
-```{r include=TRUE}
+```{r, warning=FALSE,include=TRUE}
 library(tidyr)
 library(dplyr)
 VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
