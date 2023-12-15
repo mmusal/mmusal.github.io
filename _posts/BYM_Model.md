@@ -832,29 +832,28 @@ ggarrange(map_Pov20,map_Pov21,map_Pov22,nrow=1,ncol=3,common.legend = TRUE, lege
 ```r
 map_Inc20=ggplot() +
   annotation_spatial(shapeanddata) +
-  ggtitle("Income 2020")+
+  ggtitle("2020")+
   theme(plot.title = element_text(hjust = 0.5))+
   layer_spatial(shapeanddata, aes(fill = (Median.Household.Income_2020/1000)))+
-  labs(color="Median\nHousehold\nIncome")+
-  scale_fill_viridis(limits = c(35,160),direction=-1)+
-  theme(legend.position = "none")
+  scale_fill_viridis(limits = c(35,160),direction=-1)+labs(fill="Median Household Income")
+  
 
 map_Inc21=ggplot() +
   annotation_spatial(shapeanddata) +
-  ggtitle("Income 2021")+
+  ggtitle("2021")+
   theme(plot.title = element_text(hjust = 0.5))+
   layer_spatial(shapeanddata, aes(fill = (Median.Household.Income_2021/1000)))+
   theme(legend.title= element_blank())+
-  labs(fill = "Inc. 21")+scale_fill_viridis(limits = c(35,160),direction=-1)+
+  scale_fill_viridis(limits = c(35,160),direction=-1)+
   theme(legend.position = "none")
 
 map_Inc22=ggplot() +
   annotation_spatial(shapeanddata) +
-  ggtitle("Income 2022")+
+  ggtitle("2022")+
   theme(plot.title = element_text(hjust = 0.5))+
   layer_spatial(shapeanddata, aes(fill = (Median.Household.Income_2022/1000)))+
   theme(legend.title= element_blank())+
-  labs(fill = "Inc. 22")+scale_fill_viridis(limits = c(35,160),direction=-1)+
+  scale_fill_viridis(limits = c(35,160),direction=-1)+
   theme(legend.position = "none")
 
 ggarrange(map_Inc20,map_Inc21,map_Inc22,nrow=1,ncol=3,common.legend = TRUE, legend="bottom")
