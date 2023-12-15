@@ -712,6 +712,156 @@ i3
 
 <figure><img src="BYM_Model_files/figure-html/unnamed-chunk-15-1.png"><figcaption></figcaption></figure>
 
+As we can see in the labels of this plot there is a wide difference between the counties in terms of percentage of population vaccinated. 
+
+### Povery and Income
+
+In this section we read in the poverty and income data between the years 2020 and 2022, downloaded from [Small Area Income and Poverty Estimates](https://www.census.gov/data-tools/demo/saipe/#/)(SAIPE)
+
+
+```r
+wd='C:/Users/rm84/Desktop/research/HMM/data'
+setwd(wd)
+#Read Downloaded Data - poverty 2019-2022
+poverty<-read.table('saipepoverty.csv',header=TRUE,sep=',')
+#First set of rows
+head(poverty)
+```
+
+```
+##   Year   ID             Name Percent.in.Poverty
+## 1 2019 6001   Alameda County                8.9
+## 2 2019 6003    Alpine County               17.2
+## 3 2019 6005    Amador County                9.8
+## 4 2019 6007     Butte County               16.1
+## 5 2019 6009 Calaveras County               12.1
+## 6 2019 6011    Colusa County               12.0
+```
+
+```r
+#Read Downloaded Data - Income 2019-2022
+income<-read.table('saipeincome.csv',header=TRUE,sep=',')
+#First set of rows
+head(income)
+```
+
+```
+##   Year   ID             Name Median.Household.Income
+## 1 2019 6001   Alameda County                  107589
+## 2 2019 6003    Alpine County                   58112
+## 3 2019 6005    Amador County                   62640
+## 4 2019 6007     Butte County                   58394
+## 5 2019 6009 Calaveras County                   68248
+## 6 2019 6011    Colusa County                   59048
+```
+
+```r
+# Specify number of characters to extract from county field that has leading 0s.
+n_last <- 5   
+# Number of Counties
+N<-length(shape$GEOID)
+#remove the year 2019 from the first N rows and combine . 
+povertyandincome<-cbind(poverty[-c(1:N),],income[-c(1:N),])
+#remove dupilicate and unnecessary columns
+povertyandincome<-povertyandincome[-c(5,6,7)]
+
+#since county ID values had leading 0s they were lost in reading
+#we attach the 0s to the left of the ID values and use the substring function to obtain 5 columns of the ID values from the right.
+povertyandincome$ID=paste('0',povertyandincome$ID,sep="")
+povertyandincome$ID=substr(povertyandincome$ID, nchar(povertyandincome$ID) - n_last + 1, nchar(povertyandincome$ID))
+#Quality assurance that all county ID s correspond to counties.
+povertyandincome=povertyandincome[nchar(povertyandincome$ID)==5,]
+
+#putting them in a form to export for STAN
+povertyandincome1=povertyandincome %>%
+  pivot_wider(names_from = Year, values_from = c(Percent.in.Poverty,Median.Household.Income))
+head(povertyandincome1)
+```
+
+```
+## # A tibble: 6 × 8
+##   ID    Name             Percent.in.Poverty_2020 Percent.in.Poverty_2021
+##   <chr> <chr>                              <dbl>                   <dbl>
+## 1 06001 Alameda County                       8.6                     9.4
+## 2 06003 Alpine County                       14.3                    15.8
+## 3 06005 Amador County                       10.3                    11.1
+## 4 06007 Butte County                        17.3                    16.6
+## 5 06009 Calaveras County                    11.6                    13.5
+## 6 06011 Colusa County                       10.3                    11.4
+## # ℹ 4 more variables: Percent.in.Poverty_2022 <dbl>,
+## #   Median.Household.Income_2020 <int>, Median.Household.Income_2021 <int>,
+## #   Median.Household.Income_2022 <int>
+```
+
+```r
+attach(povertyandincome1)
+
+#Use ggplot as we did in GINI for poverty values facet wrap would be a better option to work with but this works well enough
+map_Pov20=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Poverty 2020")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Percent.in.Poverty_2020)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Pov. 20")+scale_fill_viridis(limits = c(5,25),direction=-1)+
+  theme(legend.position = "none")
+
+map_Pov21=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Poverty 2021")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Percent.in.Poverty_2021)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Pov. 21")+scale_fill_viridis(limits = c(5,25),direction=-1)+
+  theme(legend.position = "none")
+
+map_Pov22=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Poverty 2022")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Percent.in.Poverty_2022)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Pov. 22")+scale_fill_viridis(limits = c(5,25),direction=-1)+
+  theme(legend.position = "none")
+
+ggarrange(map_Pov20,map_Pov21,map_Pov22,nrow=1,ncol=3,common.legend = TRUE, legend="bottom")
+```
+
+<figure><img src="BYM_Model_files/figure-html/unnamed-chunk-16-1.png"><figcaption></figcaption></figure>
+
+```r
+map_Inc20=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Income 2020")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Median.Household.Income_2020/1000)))+
+  labs(color="Median\nHousehold\nIncome")+
+  scale_fill_viridis(limits = c(35,160),direction=-1)+
+  theme(legend.position = "none")
+
+map_Inc21=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Income 2021")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Median.Household.Income_2021/1000)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Inc. 21")+scale_fill_viridis(limits = c(35,160),direction=-1)+
+  theme(legend.position = "none")
+
+map_Inc22=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Income 2022")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Median.Household.Income_2022/1000)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Inc. 22")+scale_fill_viridis(limits = c(35,160),direction=-1)+
+  theme(legend.position = "none")
+
+ggarrange(map_Inc20,map_Inc21,map_Inc22,nrow=1,ncol=3,common.legend = TRUE, legend="bottom")
+```
+
+<figure><img src="BYM_Model_files/figure-html/unnamed-chunk-16-2.png"><figcaption></figcaption></figure>
+
 
 ```stan
 data { 

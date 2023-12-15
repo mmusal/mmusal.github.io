@@ -712,6 +712,106 @@ i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
 i3
 ```
 
+As we can see in the labels of this plot there is a wide difference between the counties in terms of percentage of population vaccinated. 
+
+### Povery and Income
+
+In this section we read in the poverty and income data between the years 2020 and 2022, downloaded from [Small Area Income and Poverty Estimates](https://www.census.gov/data-tools/demo/saipe/#/)(SAIPE)
+
+```{r}
+wd='C:/Users/rm84/Desktop/research/HMM/data'
+setwd(wd)
+#Read Downloaded Data - poverty 2019-2022
+poverty<-read.table('saipepoverty.csv',header=TRUE,sep=',')
+#First set of rows
+head(poverty)
+#Read Downloaded Data - Income 2019-2022
+income<-read.table('saipeincome.csv',header=TRUE,sep=',')
+#First set of rows
+head(income)
+# Specify number of characters to extract from county field that has leading 0s.
+n_last <- 5   
+# Number of Counties
+N<-length(shape$GEOID)
+#remove the year 2019 from the first N rows and combine . 
+povertyandincome<-cbind(poverty[-c(1:N),],income[-c(1:N),])
+#remove dupilicate and unnecessary columns
+povertyandincome<-povertyandincome[-c(5,6,7)]
+
+#since county ID values had leading 0s they were lost in reading
+#we attach the 0s to the left of the ID values and use the substring function to obtain 5 columns of the ID values from the right.
+povertyandincome$ID=paste('0',povertyandincome$ID,sep="")
+povertyandincome$ID=substr(povertyandincome$ID, nchar(povertyandincome$ID) - n_last + 1, nchar(povertyandincome$ID))
+#Quality assurance that all county ID s correspond to counties.
+povertyandincome=povertyandincome[nchar(povertyandincome$ID)==5,]
+
+#putting them in a form to export for STAN
+povertyandincome1=povertyandincome %>%
+  pivot_wider(names_from = Year, values_from = c(Percent.in.Poverty,Median.Household.Income))
+head(povertyandincome1)
+
+attach(povertyandincome1)
+
+#Use ggplot as we did in GINI for poverty values facet wrap would be a better option to work with but this works well enough
+map_Pov20=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Poverty 2020")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Percent.in.Poverty_2020)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Pov. 20")+scale_fill_viridis(limits = c(5,25),direction=-1)+
+  theme(legend.position = "none")
+
+map_Pov21=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Poverty 2021")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Percent.in.Poverty_2021)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Pov. 21")+scale_fill_viridis(limits = c(5,25),direction=-1)+
+  theme(legend.position = "none")
+
+map_Pov22=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Poverty 2022")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Percent.in.Poverty_2022)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Pov. 22")+scale_fill_viridis(limits = c(5,25),direction=-1)+
+  theme(legend.position = "none")
+
+ggarrange(map_Pov20,map_Pov21,map_Pov22,nrow=1,ncol=3,common.legend = TRUE, legend="bottom")
+
+map_Inc20=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Income 2020")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Median.Household.Income_2020/1000)))+
+  labs(color="Median\nHousehold\nIncome")+
+  scale_fill_viridis(limits = c(35,160),direction=-1)+
+  theme(legend.position = "none")
+
+map_Inc21=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Income 2021")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Median.Household.Income_2021/1000)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Inc. 21")+scale_fill_viridis(limits = c(35,160),direction=-1)+
+  theme(legend.position = "none")
+
+map_Inc22=ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle("Income 2022")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (Median.Household.Income_2022/1000)))+
+  theme(legend.title= element_blank())+
+  labs(fill = "Inc. 22")+scale_fill_viridis(limits = c(35,160),direction=-1)+
+  theme(legend.position = "none")
+
+ggarrange(map_Inc20,map_Inc21,map_Inc22,nrow=1,ncol=3,common.legend = TRUE, legend="bottom")
+```
+
 ```{stan, eval=FALSE, output.var="data"}
 data { 
   int<lower=1> T;//number of time periods
