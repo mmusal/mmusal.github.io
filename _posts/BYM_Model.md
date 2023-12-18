@@ -558,30 +558,10 @@ and 5 year estimates, we use the 5 year estimates in this research.
 ```r
 library(ggplot2)
 library(viridis)
-```
-
-```
-## Loading required package: viridisLite
-```
-
-```r
 library(cowplot)
 library(ggspatial)
 library(ggpubr) 
-```
 
-```
-## 
-## Attaching package: 'ggpubr'
-```
-
-```
-## The following object is masked from 'package:cowplot':
-## 
-##     get_legend
-```
-
-```r
 wd="C:/Users/rm84/Desktop/research/HMM/data/"
 setwd(wd)
 GINI=read.table("gini20and21and22.csv",header=TRUE,sep=",")
@@ -640,26 +620,6 @@ previous biweeks. Most of the code we present below is from earlier
 ```r
 library(tidyr)
 library(dplyr)
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
 #Sort the name of the counties to make sure it merges to the correct counties.
 names=sort(shape$NAMELSAD)
@@ -714,7 +674,7 @@ i3
 
 As we can see in the labels of this plot there is a wide difference between the counties in terms of percentage of population vaccinated. 
 
-### Povery and Income
+### Poverty and Income
 
 In this section we read in the poverty and income data between the years 2020 and 2022, downloaded from [Small Area Income and Poverty Estimates](https://www.census.gov/data-tools/demo/saipe/#/)(SAIPE)
 
@@ -861,6 +821,179 @@ ggarrange(map_Inc20,map_Inc21,map_Inc22,nrow=1,ncol=3,common.legend = TRUE, lege
 
 <figure><img src="BYM_Model_files/figure-html/unnamed-chunk-16-2.png"><figcaption></figcaption></figure>
 
+### Median Age,Old-age dependency and Sex Ratio
+
+
+```r
+#American Community Survey. Does not have 2020 year therefore we have to use 5 year
+#Median age (years)
+#Sex ratio (males per 100 females)
+#Age dependency ratio
+#Old-age dependency ratio
+#Child dependency ratio
+collabels=c("Cnames","Year","Median_Age","Sex_Ratio","Age_Dependence","Old_Age_Dep","Child_Dep")
+
+library(readxl)
+wd="C:/Users/rm84/Desktop/research/HMM/data/"
+setwd(wd)
+SummaryAgeSex20 <- read_excel("sexagesummary20.xlsx", 
+                            sheet = "Data")
+SummaryAgeSex21 <- read_excel("sexagesummary21.xlsx", 
+                              sheet = "Data")
+SummaryAgeSex22 <- read_excel("sexagesummary22.xlsx", 
+                              sheet = "Data")
+
+sagesex20=as.data.frame(matrix(nrow=nrow(shape),ncol=nrow(SummaryAgeSex20)))
+sagesex21=as.data.frame(matrix(nrow=nrow(shape),ncol=nrow(SummaryAgeSex20)))
+sagesex22=as.data.frame(matrix(nrow=nrow(shape),ncol=nrow(SummaryAgeSex20)))
+
+I=nrow(shape)
+j=0  
+for(i in 1:I){
+  i=6*(i-1)+1
+  j=1+j
+  sagesex20[j,]=as.numeric(t(SummaryAgeSex20[,i]))
+  sagesex21[j,]=as.numeric(t(SummaryAgeSex21[,i]))
+  sagesex22[j,]=as.numeric(t(SummaryAgeSex22[,i]))
+}
+
+sagesex20=cbind("2020",sagesex20)
+sagesex21=cbind("2021",sagesex21)
+sagesex22=cbind("2022",sagesex22)
+cnames=read.table("countynames.txt",header = TRUE,sep="\t")[1:58,1]
+sagesex20=cbind(cnames,sagesex20)
+sagesex21=cbind(cnames,sagesex21)
+sagesex22=cbind(cnames,sagesex22)
+names(sagesex20)=collabels
+names(sagesex21)=collabels
+names(sagesex22)=collabels
+
+sagesex=rbind(sagesex20,sagesex21,sagesex22)
+sagesex$Year=as.numeric(sagesex$Year)
+sagesex$Median_Age=as.numeric(sagesex$Median_Age)
+
+maxchange_county_name=cnames[which(sagesex20$Median_Age/sagesex21$Median_Age==
+max(sagesex20$Median_Age/sagesex21$Median_Age))]
+
+maxchange_county_name
+```
+
+```
+## [1] "Sierra"
+```
+
+```r
+ggplot(aes(x = as.character(Year), y = Median_Age),data=sagesex)+geom_boxplot()+xlab("Year")
+```
+
+<figure><img src="BYM_Model_files/figure-html/unnamed-chunk-17-1.png"><figcaption></figcaption></figure>
+
+```r
+ggplot(aes(x = Year, y = Median_Age,color=Cnames),data=sagesex)+
+  geom_line()+  
+  theme(legend.position = "none")+
+  theme(axis.title.y =element_blank())+
+  scale_x_continuous(breaks=c(2020,2021, 2022))+
+  xlab("Year")+ylab("Median_Age")+
+  annotate("text", x = 2020.5, y = sagesex21[sagesex21[,1]==maxchange_county_name,]$Median_Age-2, label =maxchange_county_name)+
+  annotate("segment", color="black", x=2020.5, xend = 2021, y=sagesex21[sagesex21[,1]==maxchange_county_name,]$Median_Age-1, 
+           yend=sagesex21[sagesex21[,1]==maxchange_county_name,]$Median_Age, arrow=arrow(length=unit(0.2,"cm")))
+```
+
+<figure><img src="BYM_Model_files/figure-html/unnamed-chunk-17-2.png"><figcaption></figcaption></figure>
+
+### Race
+
+Below we show the distribution of 6 races in the 58 counties of California. Note that due to sparsity of these races across all of the counties we will use only the White only race as a covariate in the analysis.  
+
+
+```r
+wd="C:/Users/rm84/Desktop/research/HMM/data/"
+setwd(wd)
+library(reshape)
+race=read.table(file="DECENNIALPL2020.P2-2023-02-15T024354race.txt",sep="\t",header=TRUE)
+head(race)[,1:2]
+```
+
+```
+##                                              Label Alameda.County.California
+## 1                               Hispanic or Latino                    393749
+## 2                                      White alone                    472277
+## 3                  Black or African American alone                    159499
+## 4          American Indian and Alaska Native alone                      4131
+## 5                                      Asian alone                    540511
+## 6 Native Hawaiian and Other Pacific Islander alone                     13209
+```
+
+```r
+#race is going to have 6 main races and 1 remainder
+racenames=c(race[1:6,1],"rest")
+race1=as.data.frame(matrix(nrow=nrow(race)-2,ncol=ncol(race)-1))
+
+for(j in 2:ncol(race)){
+  race1[1:6,j-1]=race[1:6,j]/race[nrow(race),j]
+  race1[7,j-1]=1-sum(race1[1:6,j-1])
+}
+
+head(race1)[,1:3]
+```
+
+```
+##            V1          V2          V3
+## 1 0.234046600 0.069767442 0.148589218
+## 2 0.280724081 0.665282392 0.734422098
+## 3 0.094807095 0.008305648 0.030019272
+## 4 0.002455489 0.177740864 0.014256066
+## 5 0.321282751 0.009966777 0.013687800
+## 6 0.007851503 0.000000000 0.001803627
+```
+
+```r
+#transpose the dataframe
+race2=t(race1)
+head(race2)
+```
+
+```
+##          [,1]      [,2]        [,3]        [,4]        [,5]        [,6]
+## V1 0.23404660 0.2807241 0.094807095 0.002455489 0.321282751 0.007851503
+## V2 0.06976744 0.6652824 0.008305648 0.177740864 0.009966777 0.000000000
+## V3 0.14858922 0.7344221 0.030019272 0.014256066 0.013687800 0.001803627
+## V4 0.18953655 0.6598766 0.015687609 0.014411809 0.048825319 0.002400393
+## V5 0.12949307 0.7654332 0.007374371 0.010973240 0.015587742 0.001655922
+## V6 0.61706122 0.3178259 0.008333715 0.012821100 0.011538990 0.003205275
+##          [,7]
+## V1 0.05883248
+## V2 0.06893688
+## V3 0.05722192
+## V4 0.06926174
+## V5 0.06948247
+## V6 0.02921379
+```
+
+```r
+#These labels are not official labels of the Decennial Census but are selected to #fit the visual screen.
+racenames1=c("Hisp.","White","Black","Indian","Asian","Haw. or other Pac.","Rest")
+colnames(race2)=racenames1
+#We will be showing the distribution of 6 races, Hawaiian or other Pacific Islanders are going to be added to the other category.
+race2[,7]=(race2[,6]+race2[,7])
+race2=race2[,-6]
+
+race3=melt(as.data.frame(race2))
+
+
+ggplot(data=race3,aes(x=variable,y=value))+
+  geom_boxplot()+
+  ylab("Percentage")+
+  theme(axis.title.x =element_blank())+
+  ggtitle("Boxplots of Races 2020")+
+  theme(plot.title.position = 'plot', 
+      plot.title = element_text(hjust = 0.5))
+```
+
+<figure><img src="BYM_Model_files/figure-html/unnamed-chunk-18-1.png"><figcaption></figcaption></figure>
+
+
 
 ```stan
 data { 
@@ -932,7 +1065,8 @@ In the transformed parameters section, the first object created is the
 object alpha. This is an array of ITER size where each element is a
 matrix of "1,N" (1,58) dimensions. This object is where the equation
 \eqref{eq:lambda} is going to be evaluated. The beta_vac array is an
-array of size ITER and is calculated as $$
+array of size ITER and is calculated as 
+$$
 \beta_{vac_{1}}=\gamma_{1} \\
 \beta_{vac_{t}}=\beta_{vac_{t-1}}+\gamma_{t}
 \label{eq:vac}

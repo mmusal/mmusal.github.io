@@ -245,7 +245,7 @@ load("workspacewithbasedata.RData")
 cnames=read.table("countynames.txt",sep="\t",header=TRUE)
 ```
 
-```{r,warning=FALSE}
+```{r,warning=FALSE,message = FALSE}
 #shapeanddata is a simple features class object that contains 
 #spatial information and county level feature information. 
 #The poly2nb function creates the neighbor indexes 
@@ -297,7 +297,7 @@ is assumed to hold, respectively. Since we hypothesize that like values
 are clustered together the p values are going to be calculated via
 $P(Z>z)$.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE,message = FALSE}
 #Object where p values are calculated based on spatial neighborhood permutations
 sim_pvalue=array(dim=c(NumBiWeeks))
 #Object where p values are calculated based on assuming Central Limit Theorem applies
@@ -423,7 +423,7 @@ discussion will await the code.
 First we are going to create a neighborhood list using the poly2nb
 function from the spdep package.
 
-```{r}
+```{r,message = FALSE}
 nb_CA = poly2nb(shapeanddata)
 print(nb_CA)
 ```
@@ -450,7 +450,7 @@ site](https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poiss
 Among the many functions the author provides, an important one we will
 use is nb2graph.
 
-```{r}
+```{r,message = FALSE}
 nbs=nb2graph(nb_CA)
 
 N = nbs$N
@@ -481,7 +481,7 @@ Once the spatial and covariate data is prepared for STAN by combining
 them into a list, it is exported via the stan_rdump function as a
 text-file via rstan package.
 
-```{r eval=FALSE}
+```{r eval=FALSE,message = FALSE}
 dump=c('K','R','T','N','N_edges','node1','node2','log_E','y','x',
        'VacPop','medage','medsex','race',
        'scaling_factor','START','END')
@@ -599,7 +599,7 @@ and 5 year estimates, we use the 5 year estimates in this research.
 
 [^2]: <https://data.census.gov/table/ACSDT5Y2022.B19083?q=inequality%20in%20counties%20of%20california&g=040XX00US06$0500000>
 
-```{r, warning=FALSE}
+```{r, warning=FALSE,message = FALSE}
 library(ggplot2)
 library(viridis)
 library(cowplot)
@@ -659,7 +659,7 @@ California therefore the percentage is entered as 0 percent for the
 previous biweeks. Most of the code we present below is from earlier
 [post](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/#_32_The_final_multi-line_plot_via_ggplot)
 
-```{r, warning=FALSE}
+```{r, warning=FALSE,message = FALSE}
 library(tidyr)
 library(dplyr)
 VacPop=read.table('C:/Users/rm84/Documents/VacPop.csv',header = TRUE,sep=",")
@@ -714,11 +714,11 @@ i3
 
 As we can see in the labels of this plot there is a wide difference between the counties in terms of percentage of population vaccinated. 
 
-### Povery and Income
+### Poverty and Income
 
 In this section we read in the poverty and income data between the years 2020 and 2022, downloaded from [Small Area Income and Poverty Estimates](https://www.census.gov/data-tools/demo/saipe/#/)(SAIPE)
 
-```{r}
+```{r,message = FALSE}
 wd='C:/Users/rm84/Desktop/research/HMM/data'
 setwd(wd)
 #Read Downloaded Data - poverty 2019-2022
@@ -811,6 +811,119 @@ map_Inc22=ggplot() +
 ggarrange(map_Inc20,map_Inc21,map_Inc22,nrow=1,ncol=3,common.legend = TRUE, legend="bottom")
 ```
 
+### Median Age,Old-age dependency and Sex Ratio
+
+```{r,message = FALSE}
+#American Community Survey. Does not have 2020 year therefore we have to use 5 year
+#Median age (years)
+#Sex ratio (males per 100 females)
+#Age dependency ratio
+#Old-age dependency ratio
+#Child dependency ratio
+collabels=c("Cnames","Year","Median_Age","Sex_Ratio","Age_Dependence","Old_Age_Dep","Child_Dep")
+
+library(readxl)
+wd="C:/Users/rm84/Desktop/research/HMM/data/"
+setwd(wd)
+SummaryAgeSex20 <- read_excel("sexagesummary20.xlsx", 
+                            sheet = "Data")
+SummaryAgeSex21 <- read_excel("sexagesummary21.xlsx", 
+                              sheet = "Data")
+SummaryAgeSex22 <- read_excel("sexagesummary22.xlsx", 
+                              sheet = "Data")
+
+sagesex20=as.data.frame(matrix(nrow=nrow(shape),ncol=nrow(SummaryAgeSex20)))
+sagesex21=as.data.frame(matrix(nrow=nrow(shape),ncol=nrow(SummaryAgeSex20)))
+sagesex22=as.data.frame(matrix(nrow=nrow(shape),ncol=nrow(SummaryAgeSex20)))
+
+I=nrow(shape)
+j=0  
+for(i in 1:I){
+  i=6*(i-1)+1
+  j=1+j
+  sagesex20[j,]=as.numeric(t(SummaryAgeSex20[,i]))
+  sagesex21[j,]=as.numeric(t(SummaryAgeSex21[,i]))
+  sagesex22[j,]=as.numeric(t(SummaryAgeSex22[,i]))
+}
+
+sagesex20=cbind("2020",sagesex20)
+sagesex21=cbind("2021",sagesex21)
+sagesex22=cbind("2022",sagesex22)
+cnames=read.table("countynames.txt",header = TRUE,sep="\t")[1:58,1]
+sagesex20=cbind(cnames,sagesex20)
+sagesex21=cbind(cnames,sagesex21)
+sagesex22=cbind(cnames,sagesex22)
+names(sagesex20)=collabels
+names(sagesex21)=collabels
+names(sagesex22)=collabels
+
+sagesex=rbind(sagesex20,sagesex21,sagesex22)
+sagesex$Year=as.numeric(sagesex$Year)
+sagesex$Median_Age=as.numeric(sagesex$Median_Age)
+
+maxchange_county_name=cnames[which(sagesex20$Median_Age/sagesex21$Median_Age==
+max(sagesex20$Median_Age/sagesex21$Median_Age))]
+
+maxchange_county_name
+
+ggplot(aes(x = as.character(Year), y = Median_Age),data=sagesex)+geom_boxplot()+xlab("Year")
+
+ggplot(aes(x = Year, y = Median_Age,color=Cnames),data=sagesex)+
+  geom_line()+  
+  theme(legend.position = "none")+
+  theme(axis.title.y =element_blank())+
+  scale_x_continuous(breaks=c(2020,2021, 2022))+
+  xlab("Year")+ylab("Median_Age")+
+  annotate("text", x = 2020.5, y = sagesex21[sagesex21[,1]==maxchange_county_name,]$Median_Age-2, label =maxchange_county_name)+
+  annotate("segment", color="black", x=2020.5, xend = 2021, y=sagesex21[sagesex21[,1]==maxchange_county_name,]$Median_Age-1, 
+           yend=sagesex21[sagesex21[,1]==maxchange_county_name,]$Median_Age, arrow=arrow(length=unit(0.2,"cm")))
+
+```
+
+### Race
+
+Below we show the distribution of 6 races in the 58 counties of California. Note that due to sparsity of these races across all of the counties we will use only the White only race as a covariate in the analysis.  
+
+```{r,warning=FALSE,message = FALSE}
+wd="C:/Users/rm84/Desktop/research/HMM/data/"
+setwd(wd)
+library(reshape)
+race=read.table(file="DECENNIALPL2020.P2-2023-02-15T024354race.txt",sep="\t",header=TRUE)
+head(race)[,1:2]
+#race is going to have 6 main races and 1 remainder
+racenames=c(race[1:6,1],"rest")
+race1=as.data.frame(matrix(nrow=nrow(race)-2,ncol=ncol(race)-1))
+
+for(j in 2:ncol(race)){
+  race1[1:6,j-1]=race[1:6,j]/race[nrow(race),j]
+  race1[7,j-1]=1-sum(race1[1:6,j-1])
+}
+
+head(race1)[,1:3]
+#transpose the dataframe
+race2=t(race1)
+head(race2)
+#These labels are not official labels of the Decennial Census but are selected to #fit the visual screen.
+racenames1=c("Hisp.","White","Black","Indian","Asian","Haw. or other Pac.","Rest")
+colnames(race2)=racenames1
+#We will be showing the distribution of 6 races, Hawaiian or other Pacific Islanders are going to be added to the other category.
+race2[,7]=(race2[,6]+race2[,7])
+race2=race2[,-6]
+
+race3=melt(as.data.frame(race2))
+
+
+ggplot(data=race3,aes(x=variable,y=value))+
+  geom_boxplot()+
+  ylab("Percentage")+
+  theme(axis.title.x =element_blank())+
+  ggtitle("Boxplots of Races 2020")+
+  theme(plot.title.position = 'plot', 
+      plot.title = element_text(hjust = 0.5))
+
+```
+
+
 ```{stan, eval=FALSE, output.var="data"}
 data { 
   int<lower=1> T;//number of time periods
@@ -882,7 +995,8 @@ In the transformed parameters section, the first object created is the
 object alpha. This is an array of ITER size where each element is a
 matrix of "1,N" (1,58) dimensions. This object is where the equation
 \eqref{eq:lambda} is going to be evaluated. The beta_vac array is an
-array of size ITER and is calculated as $$
+array of size ITER and is calculated as 
+$$
 \beta_{vac_{1}}=\gamma_{1} \\
 \beta_{vac_{t}}=\beta_{vac_{t-1}}+\gamma_{t}
 \label{eq:vac}
