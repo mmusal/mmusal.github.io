@@ -484,8 +484,8 @@ log(\lambda_{i}) = log(E_{i})  \times \left(\beta*X_{i}+\left(\sqrt{\frac{\rho}{
     Using these matrices as input, the function "scale_nb_components"
     calculates the geometric mean of the variances which are on the
     diagonal of $Q^{-1}$ matrix diagonal. This in turn ensures that the
-    prior of $\phi$ will have a standard deviation of 1. We will also
-    set the prior of $\theta$ as 1. This is necessary to be able to
+    prior of $\phi$ will have a standard deviation of 1. We will
+    set $\theta$'s prior standard deviation as 1. This is necessary to be able to 
     interpret $\sigma$ as the overall standard deviation of combined
     $\phi$ and $\theta$ terms.
 
@@ -611,9 +611,9 @@ estimates](https://www.census.gov/programs-surveys/acs/guidance/estimates.html).
 We also obtain daily fully vaccinated individuals' data in the counties
 and convert it to biweekly rates of vaccinated population. This assumes
 the location people get vaccinated is in the county of their residence.
-The Covid-19 vaccine has been available only since December 2020 in
-California therefore the percentage is entered as 0 percent for the
-previous biweeks. Most of the code we present below is from earlier
+The Covid-19 vaccine has been available only since the second half of December 2020^[https://www.latimes.com/california/story/2020-12-14/covid-19-vaccines-arrive-in-california] in California. The data from the Californian health services has a minor issue that it recorded a partially vaccinated person in January 8 2020 and some minor number of additional individuals after this date until the date of official start of vaccinations. We ignore this record, and only include this covariate from the biweek 25.
+
+Most of the visualization code we present below is from earlier
 [post](https://mmusal.github.io/blog/2023/Intro_to_Spatial_Tools_and_Files/#_32_The_final_multi-line_plot_via_ggplot)
 
 
@@ -665,7 +665,8 @@ i3=ggplot(gvacPop2, aes(x = Time, y = Vac,color=names)) +
   annotate("segment", color="blue", x=maxtime-2, xend = maxtime-7, y=minlabel[,1], 
            yend=minlabel[,1], arrow=arrow(length=unit(0.2,"cm")))+
   ggtitle("Percent of Population Vaccinated")+
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_discrete(limits=c(1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,77))
 
 i3
 ```
@@ -821,7 +822,7 @@ ggarrange(map_Inc20,map_Inc21,map_Inc22,nrow=1,ncol=3,common.legend = TRUE, lege
 
 <figure><img src="BYM_Model_files/figure-html/unnamed-chunk-16-2.png"><figcaption></figcaption></figure>
 
-### Median Age,Old-age dependency and Sex Ratio
+### Median Age,Old-age dependency and Sex Ratio, vector [N] medage ; vector [N] medsex; 
 
 
 ```r
@@ -834,6 +835,13 @@ ggarrange(map_Inc20,map_Inc21,map_Inc22,nrow=1,ncol=3,common.legend = TRUE, lege
 collabels=c("Cnames","Year","Median_Age","Sex_Ratio","Age_Dependence","Old_Age_Dep","Child_Dep")
 
 library(readxl)
+```
+
+```
+## Warning: package 'readxl' was built under R version 4.3.2
+```
+
+```r
 wd="C:/Users/rm84/Desktop/research/HMM/data/"
 setwd(wd)
 SummaryAgeSex20 <- read_excel("sexagesummary20.xlsx", 
@@ -902,7 +910,7 @@ ggplot(aes(x = Year, y = Median_Age,color=Cnames),data=sagesex)+
 
 <figure><img src="BYM_Model_files/figure-html/unnamed-chunk-17-2.png"><figcaption></figcaption></figure>
 
-### Race
+### Race matrix [R,N] race; row_vector[N] white=race[2];
 
 Below we show the distribution of 6 races in the 58 counties of California. Note that due to sparsity of these races across all of the counties we will use only the White only race as a covariate in the analysis.  
 
@@ -1049,7 +1057,7 @@ In this section we specify the parameters that we will keep track of.
 The parameters that are to be dynamically estimated is in transformed
 parameters section. We define $\sigma$ of \eqref{eq:lambda} as the
 single dimensional array sigma with ITER elements,\$
-ITER==(T-1)==77-1\$, making explicit the choice that we shall estimate
+ITER==(END-START)+1==77-1+1\$, making explicit the choice that we shall estimate
 the parameter at every t. The parameter gamma_vac is going to be used to
 estimate beta_vac the coefficient effect of vaccinations. The spatial
 effect $\phi$ is a row vector with N (58) elements. The parameter which
@@ -1058,14 +1066,14 @@ created as an array of size ITER, rho ($\rho$), which will also be
 estimated at every iteration t. The intercept parameter array, beta_int
 has the same number of elements as rho array. The rest of the
 coefficients are associated the covariates written next to "beta".\
-The ITER (76) sized array theta contains a matrix of size 1 and N
+The ITER (77) sized array theta contains a matrix of size 1 and N
 (1,58). It represents $\theta$, random effects.
 
 In the transformed parameters section, the first object created is the
 object alpha. This is an array of ITER size where each element is a
 matrix of "1,N" (1,58) dimensions. This object is where the equation
 \eqref{eq:lambda} is going to be evaluated. The beta_vac array is an
-array of size ITER and is calculated as 
+array of size (T-V+1) and is calculated as 
 $$
 \beta_{vac_{1}}=\gamma_{1} \\
 \beta_{vac_{t}}=\beta_{vac_{t-1}}+\gamma_{t}
@@ -1073,7 +1081,7 @@ $$
 $$
 
 The for loop involving beta_vac is the one associated with
-\eqref{eq:vac}. The next for loop calculates concolved_re
+\eqref{eq:vac}. The next for loop calculates convolved_re
 
 ```{=tex}
 \begin{equation}
@@ -1091,7 +1099,7 @@ matrix of 1,N (1,58) dimensions is evaluated.
 ```stan
 parameters {
   real <lower = 0> sigma [ITER];
- real gamma_vac[ITER];
+ real gamma_vac[END-V+1];
    row_vector[N] phi;
   real<lower=0,upper=1> rho[ITER];
   matrix [ITER,N] theta;
@@ -1106,17 +1114,17 @@ real beta_white;
 }
 transformed parameters {
   matrix[1,N] alpha [ITER] ;
-  real beta_vac[ITER];
+  real beta_vac[T-V+1];
 
 
 beta_vac[1]=gamma_vac[1];    
-  {
+  
     matrix [ITER,N] convolved_re;
    
-    for(t in START:ITER) {
+    for(t in (2):(T-V+1)) {
       beta_vac[t]=beta_vac[t-1]+gamma_vac[t];}
       
-for(t in START:END){
+for(t in START:V){
       convolved_re[t-START+1] = (sqrt(rho[t-START+1] / scaling_factor) * phi + sqrt(1 - rho[t-START+1]) * theta[t-START+1])*sigma[t-START+1]; 
       alpha[t-START+1][1,1:N]=exp(
                                   log_E[t,1:N]+
@@ -1126,16 +1134,68 @@ for(t in START:END){
                                     beta_inc*income[t]+
                                     beta_dens*to_row_vector(x[7])+
                                     beta_gini*gini[t]+
-                                    beta_vac[t-START+1]*to_row_vector(VacPop[t-1])+
-                                    beta_age*to_row_vector(medage)+
-                                    beta_sex*to_row_vector(medsex)+
+                                    beta_age*to_row_vector(median_age[t])+
+                                    beta_sex*to_row_vector(sex[t])+
                                     beta_white*to_row_vector(white)
                                     ); 
                                    
     }
- 
-  }
+    for(t in (V+1):END){
+      convolved_re[t-START+1] = (sqrt(rho[t-START+1] / scaling_factor) * phi + sqrt(1 - rho[t-START+1]) * theta[t-START+1])*sigma[t-START+1]; 
+      alpha[t-START+1][1,1:N]=exp(
+                                  log_E[t,1:N]+
+                                  to_row_vector(convolved_re[t-START+1])+
+                                    beta_int[t-START+1]+
+                                    beta_pov*poverty[t]+
+                                    beta_inc*income[t]+
+                                    beta_dens*to_row_vector(x[7])+
+                                    beta_gini*gini[t]+
+                                    beta_vac[t-V+1]*to_row_vector(VacPop[t-1])+
+                                    beta_age*to_row_vector(median_age[t])+
+                                    beta_sex*to_row_vector(sex[t])+
+                                    beta_white*to_row_vector(white)
+                                    ); 
+                                   
+    }
 }
+ 
 ```
 
+## STAN Model Section  
+
+STAN utilizes the model section to write the likelihood and the priors for the parameters. The likelihood itself is based on \refeq{eq:lambda}. Due to the lower limit posted in the [parameters section](https://mmusal.github.io/blog/2023/Joint_Spatial_Effects_BYM/#_44_STAN_ParameterTransformed_Section) the normal prior will evaluate to half normal. The prior for the parameter rho is a relatively informative beta distribution with the hyper-parameters 2 and 2.  The covariate coefficients priors all have a normal distribution with 0 mean and 1 standard deviation. These hyper-priors are not as informative as they look since the model is a log-linear one and the covariates are standardized.   
+
+\[
+\prod_{t=1}^{t=T} \bigg[  \prod_{n=1}^{n=N} \bigg[ Poisson(y_{t,n}|\alpha_{t,n}) \times p(\theta_{n}) \bigg] \times p(\rho_{t}) \times p(\sigma_{t}) \times p(\gamma_{t})\bigg] \\ \times p(\phi_{1}, \ldots , \phi_{N}) \times p(\beta_{Pov}) \times \ldots \times p(\beta_{white}) 
+\]
+
+
+```stan
+model {
+  
+rho ~ beta(2, 2);
+
+target += poisson_lpmf(y[1,1:N] | alpha[1][1,1:N]);
+.
+.
+.
+target += poisson_lpmf(y[77,1:N] | alpha[77][1,1:N]);
+
+for(t in START:END){
+  sigma[t-START+1]~normal(0,1);
+theta[t-START+1] ~ normal(0,1);
+                    }
+
+phi~icar_normal(N,node1,node2);
+
+beta_int~normal(0,1);
+beta_pov~normal(0,1);
+beta_inc~normal(0,1);
+beta_dens~normal(0,1);
+beta_gini~normal(0,1);
+beta_age~normal(0,1);
+beta_sex~normal(0,1);
+beta_white~normal(0,1);
+gamma_vac~normal(0,1);
+```
 # References
