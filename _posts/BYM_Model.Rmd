@@ -979,8 +979,8 @@ gini[52:77] =rep_matrix(to_row_vector(x[13]), 26);
 In this section we specify the parameters that we will keep track of.
 The parameters that are to be dynamically estimated is in transformed
 parameters section. We define $\sigma$ of \eqref{eq:lambda} as the
-single dimensional array sigma with ITER elements,\$
-ITER==(END-START)+1==77-1+1\$, making explicit the choice that we shall estimate
+single dimensional array sigma with ITER elements,
+ITER==(END-START)+1==77-1+1, making explicit the choice that we shall estimate
 the parameter at every t. The parameter gamma_vac is going to be used to
 estimate beta_vac the coefficient effect of vaccinations. The spatial
 effect $\phi$ is a row vector with N (58) elements. The parameter which
@@ -1085,16 +1085,30 @@ for(t in START:V){
 
 ## STAN Model Section  
 
-STAN utilizes the model section to write the likelihood and the priors for the parameters. The likelihood itself is based on \refeq{eq:lambda}. Due to the lower limit posted in the [parameters section](https://mmusal.github.io/blog/2023/Joint_Spatial_Effects_BYM/#_44_STAN_ParameterTransformed_Section) the normal prior will evaluate to half normal. The prior for the parameter rho is a relatively informative beta distribution with the hyper-parameters 2 and 2.  The covariate coefficients priors all have a normal distribution with 0 mean and 1 standard deviation. These hyper-priors are not as informative as they look since the model is a log-linear one and the covariates are standardized.   
+STAN utilizes the model section to write the likelihood and the priors for the parameters. The likelihood itself is based on \eqref{eq:lambda}. Due to the lower limit posted in the [parameters section](https://mmusal.github.io/blog/2023/Joint_Spatial_Effects_BYM/#_44_STAN_ParameterTransformed_Section) the normal prior will evaluate to half normal. The prior for the parameter rho is a relatively informative beta distribution with the hyper-parameters 2 and 2.  The covariate coefficients priors all have a normal distribution with 0 mean and 1 standard deviation. These hyper-priors are not as informative as they might look at a first glance since the model is a log-linear one and the covariates are standardized.   
 
-\[
-\prod_{t=1}^{t=T} \bigg[  \prod_{n=1}^{n=N} \bigg[ Poisson(y_{t,n}|\alpha_{t,n}) \times p(\theta_{n}) \bigg] \times p(\rho_{t}) \times p(\sigma_{t}) \times p(\gamma_{t})\bigg] \\ \times p(\phi_{1}, \ldots , \phi_{N}) \times p(\beta_{Pov}) \times \ldots \times p(\beta_{white}) 
-\]
+If we did not have vaccination variable the multiplication of the likelihood and the priors would be written as \eqref{eq:olikelihoodprior}.
+
+```{=tex}
+\begin{equation}
+\prod_{t=1}^{t=T} \bigg[  \prod_{n=1}^{n=N} \bigg[ Poisson(y_{t,n}|\alpha_{t,n}) \times p(\theta_{t,n}) \bigg] \times p(\rho_{t}) \times p(\sigma_{t}) \times p(\gamma_{t})\bigg] \\ \times p(\phi_{1}, \ldots , \phi_{N}) \times p(\beta_{Pov}) \times \ldots \times p(\beta_{white}) 
+\label{eq:olikelihoodprior}
+\end{equation}
+```
+
+Since we have a vaccination covariate which became a factor at the end of December 2020, we will separate out the likelihood in two adding the effect of vaccines after t=24. Since we want to make our program as flexible as possible  we use the constant V (t=24), START (t=1) and END (t=77) as part of data.   
+
+```{=tex}
+\begin{equation}
+\prod_{t=START}^{t=V} \bigg[  \prod_{n=1}^{n=N} \bigg[ Poisson(y_{t,n}|\alpha_{t,n}) \times p(\theta_{t,n}) \bigg] \bigg] \\
+\prod_{t=V+1}^{t=END} \bigg[  \prod_{n=1}^{n=N} \bigg[ Poisson(y_{t,n}|\alpha_{t,n}) \times p(\theta_{t,n}) \bigg] \times p(\rho_{t}) \times p(\sigma_{t}) \times p(\gamma_{t})\bigg] \\ \times p(\phi_{1}, \ldots , \phi_{N}) \times p(\beta_{Pov}) \times \ldots \times p(\beta_{white}) 
+\label{eq:newlikelihoodprior}
+\end{equation}
+```
+Note that sigma and Gamma is an array with (T-V+1) and T elements respectively where V is 24. This allows us to write the priot for these parameters using the $\sim normal(0,1)$ notation rather than writing a loop as we end up doing for theta. The parameter theta is a matrix of ITER rows and N columns as declared in the parameters section.      
 
 ```{stan,eval=FALSE, output.var="parameters"}
 model {
-  
-rho ~ beta(2, 2);
 
 target += poisson_lpmf(y[1,1:N] | alpha[1][1,1:N]);
 .
@@ -1102,10 +1116,6 @@ target += poisson_lpmf(y[1,1:N] | alpha[1][1,1:N]);
 .
 target += poisson_lpmf(y[77,1:N] | alpha[77][1,1:N]);
 
-for(t in START:END){
-  sigma[t-START+1]~normal(0,1);
-theta[t-START+1] ~ normal(0,1);
-                    }
 
 phi~icar_normal(N,node1,node2);
 
@@ -1118,5 +1128,16 @@ beta_age~normal(0,1);
 beta_sex~normal(0,1);
 beta_white~normal(0,1);
 gamma_vac~normal(0,1);
+sigma~normal(0,1);
+phi~icar_normal(N,node1,node2);
+rho ~ beta(2, 2);
+
+  for(t in START:END){
+    theta[t-START+1] ~ normal(0,1);
+    }
+
+
 ```
+
+
 # References
