@@ -126,8 +126,8 @@ gc()
 
 ```
 ##             used   (Mb) gc trigger   (Mb)   max used   (Mb)
-## Ncells   1305950   69.8    2463402  131.6    2463402  131.6
-## Vcells 416507235 3177.7 1137772996 8680.6 1304979320 9956.3
+## Ncells   1306011   69.8    2463827  131.6    2463827  131.6
+## Vcells 416507683 3177.8 1137776191 8680.6 1304979768 9956.3
 ```
 
 ```r
@@ -161,6 +161,14 @@ for(t in START:END){
 MSE=mean(MSEarray)
 rMSE=sqrt(MSE)
 
+rMSE
+```
+
+```
+## [1] 1.660921
+```
+
+```r
 START=1
 END=77
 l=length(alpha.1.1.1)
@@ -224,6 +232,53 @@ escape=FALSE)
 |97.5th Perc. |0.162         |-0.075        |0.149          |0.013          |1.289           |0.201         |-0.049        |
 |Max          |0.231         |0.009         |0.184          |0.068          |1.678           |0.278         |0.014         |
 As can be seen from the table's $95\%$ credibility intervals increased poverty, density, percentage of people who are white, median age leads to increased mortality risk. On the other hand increased income and males to females ratio in the county decreases mortality risk. When we control for all the covariates, Gini covariate coefficient contains the value 0 in the $95\%$ credibility interval.
+
+## Parameters of Vaccination Coefficients
+
+
+```r
+library(ggpubr)
+library(dplyr)
+library(gridExtra)
+
+V=cadata$V
+qhigh=array(dim=c(T-V+1))
+qlow=array(dim=c(T-V+1))
+beta_vac=as.data.frame(matrix(nrow=(T-V+1)*l,ncol=2))
+for(i in 1:(T-V+1)){
+  beta_vac[((i-1)*(l)+1):((i)*l),1]=eval(parse(text=(paste0("beta_vac.",i))))
+  beta_vac[((i-1)*(l)+1):((i)*l),2]=i
+  qhigh[i]=quantile(eval(parse(text=(paste0("beta_vac.",i)))),0.975)
+  qlow[i]=quantile(eval(parse(text=(paste0("beta_vac.",i)))),0.025)
+}
+names(beta_vac)=c("beta_vac","Biweeks")
+library(dplyr)
+
+qhigh_data <- beta_vac %>%
+  group_by(Biweeks) %>%
+  summarise(qhigh = quantile(beta_vac,0.975))
+
+qlow_data <- beta_vac %>%
+  group_by(Biweeks) %>%
+  summarise(qlow = quantile(beta_vac,0.025))
+
+ggplot(data = beta_vac,aes(x= Biweeks, y = beta_vac,group=Biweeks))+
+  geom_boxplot(outlier.shape = NA)+scale_y_continuous(name=bquote(beta[vac]))+ggtitle(bquote(beta[vac] ~ "from t=25...77"))+theme(plot.title = element_text(hjust = 0.5))+
+  geom_hline(yintercept=0.0, linetype="solid", color = "red") +
+  scale_x_continuous(name="Time",labels=c('25','29','34','39','44','49','54','59','64','69','74','77'),breaks=c(1,5,10,15,20,25,30,35,40,45,50,54))+
+    stat_summary(data = qhigh_data, 
+                 aes(x = Biweeks, y = qhigh),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")+
+    stat_summary(data = qlow_data, 
+                 aes(x = Biweeks, y = qlow),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")
+```
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-11-1.png"><figcaption></figcaption></figure>
 
 # References
 
