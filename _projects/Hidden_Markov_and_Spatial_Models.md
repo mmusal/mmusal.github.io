@@ -40,7 +40,7 @@ First we need to have an understanding of the scripting language R to represent 
 
 ### [Moran's I, Spatial Effects and Besag York Mollie Model Part 1](https://mmusal.github.io/blog/2023/Joint_Spatial_Effects_BYM/)
 
-### Besag York Mollie Model Part 2
+### [Besag York Mollie Model Part 2](https://mmusal.github.io/blog/2023/BYM_ModelApplication/)
 
 ### STAN Programming Language
 
