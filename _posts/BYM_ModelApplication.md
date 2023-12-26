@@ -126,8 +126,8 @@ gc()
 
 ```
 ##             used   (Mb) gc trigger   (Mb)   max used   (Mb)
-## Ncells   1306011   69.8    2463827  131.6    2463827  131.6
-## Vcells 416507683 3177.8 1137776191 8680.6 1304979768 9956.3
+## Ncells   1306021   69.8    2463838  131.6    2463838  131.6
+## Vcells 416508003 3177.8 1137778472 8680.6 1304980088 9956.3
 ```
 
 ```r
@@ -235,12 +235,18 @@ As can be seen from the table's $95\%$ credibility intervals increased poverty, 
 
 ## Parameters of Vaccination Coefficients
 
+As can be demonstrated from the plot in this section we can clearly see that in most of 2021 the vaccinations decreased mortality risk in the counties of california. The only biweek where vaccinations in the counties of California had a positive relationship to mortality risk is in biweek 62 which is in 2022. For all of the rest of 2022 the credibility interval contains 0. This acquires more attention and could be due to the vaccinations losing their effectiveness and most of the population having some degree of protection. As both the disease and the vaccinations are evolving we would need to pay close attention to the dynamic nature of these effects. In fact we argue that we should be looking at more changes in the fixed covariates' effect through the biweeks.     
+
 
 ```r
 library(ggpubr)
 library(dplyr)
 library(gridExtra)
 
+V=cadata$V
+qhigh=array(dim=c(T-V+1))
+qlow=array(dim=c(T-V+1))
+beta_vac=as.data.frame(matrix(nrow=(T-V+1)*l,ncol=2))
 V=cadata$V
 qhigh=array(dim=c(T-V+1))
 qlow=array(dim=c(T-V+1))
@@ -252,7 +258,6 @@ for(i in 1:(T-V+1)){
   qlow[i]=quantile(eval(parse(text=(paste0("beta_vac.",i)))),0.025)
 }
 names(beta_vac)=c("beta_vac","Biweeks")
-library(dplyr)
 
 qhigh_data <- beta_vac %>%
   group_by(Biweeks) %>%
@@ -262,10 +267,10 @@ qlow_data <- beta_vac %>%
   group_by(Biweeks) %>%
   summarise(qlow = quantile(beta_vac,0.025))
 
-ggplot(data = beta_vac,aes(x= Biweeks, y = beta_vac,group=Biweeks))+
-  geom_boxplot(outlier.shape = NA)+scale_y_continuous(name=bquote(beta[vac]))+ggtitle(bquote(beta[vac] ~ "from t=25...77"))+theme(plot.title = element_text(hjust = 0.5))+
+  beta_vacplot=ggplot(data = beta_vac,aes(x= Biweeks, y = beta_vac,group=Biweeks))+
+  geom_boxplot(outlier.shape = NA)+scale_y_continuous(name=bquote(beta[vac]))+ggtitle(bquote(beta[vac] ~ "from t=1...64"))+theme(plot.title = element_text(hjust = 0.5))+
   geom_hline(yintercept=0.0, linetype="solid", color = "red") +
-  scale_x_continuous(name="Time",labels=c('25','29','34','39','44','49','54','59','64','69','74','77'),breaks=c(1,5,10,15,20,25,30,35,40,45,50,54))+
+  scale_x_continuous(name="Time",labels=c('25','29','34','39','44','49','54','59','64','69','74','77'),breaks=c(1,5,10,15,20,25,30,35,40,45,50,55))+
     stat_summary(data = qhigh_data, 
                  aes(x = Biweeks, y = qhigh),
                  geom = "point", 
@@ -276,9 +281,49 @@ ggplot(data = beta_vac,aes(x= Biweeks, y = beta_vac,group=Biweeks))+
                  geom = "point", 
                  size = 1, 
                  color = "red")
+
+#Number of biweeks where 0 is above the Credibility Interval  
+num_biweeks_CI_neg<-sum(0<qlow_data$qlow)   
+num_biweeks_CI_neg
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-11-1.png"><figcaption></figcaption></figure>
+```
+## [1] 1
+```
+
+```r
+#What were the biweeks where 0 is above the Credibility Interval 
+which(0<qlow_data$qlow)+V
+```
+
+```
+## 2.5% 
+##   63
+```
+
+```r
+#Number of biweeks where 0 is below the Credibility Interval
+num_biweeks_CI_pos<-sum(0>qhigh_data$qhigh)
+num_biweeks_CI_pos
+```
+
+```
+## [1] 28
+```
+
+```r
+#What were the biweeks where 0 is below the Credibility Interval
+which(0>qhigh_data$qhigh)+V
+```
+
+```
+## 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 
+##    30    31    32    33    34    35    36    37    38    39    40    41    42 
+## 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 97.5% 
+##    43    44    45    46    47    48    49    50    51    52    53    55    56 
+## 97.5% 97.5% 
+##    57    58
+```
 
 # References
 
