@@ -353,7 +353,112 @@ which(0>qhigh_data$qhigh)+V
 
 
 ```
+## $\theta$, Random Effect Coefficients of Counties
 
+We proceed to illustrate the random effects of counties. It is not surprising that for most counties, what can be referred to as the county performance varies across the biweeks per county.    
+
+```{r, warning=FALSE,message=FALSE}
+library(ggpubr)
+library(gridExtra)
+cnames<-read.table("C:/Users/rm84/Desktop/research/HMM/data/countynames.txt",sep="\t",header=TRUE)[,1]
+M=ITER*length(theta.1.15)
+l=length(theta.1.15)
+theta15=as.data.frame(matrix(nrow=M,ncol=2))
+n=15
+for(t in 1:ITER){
+  theta15[((t-1)*(l)+1):((t)*l),1]=eval(parse(text=(paste0("theta.",t,".",n))))
+  theta15[((t-1)*(l)+1):((t)*l),2]=t
+}
+#theta15[,2]=as.character(theta15[,2])
+names(theta15)=c("theta","Biweeks")
+
+
+theta18=as.data.frame(matrix(nrow=M,ncol=2))
+n=18
+for(t in 1:ITER){
+  theta18[((t-1)*(l)+1):((t)*l),1]=eval(parse(text=(paste0("theta.",t,".",n))))
+  theta18[((t-1)*(l)+1):((t)*l),2]=t
+}
+
+names(theta18)=c("theta","Biweeks")
+
+theta36=as.data.frame(matrix(nrow=M,ncol=2))
+n=36
+for(t in 1:ITER){
+  theta36[((t-1)*(l)+1):((t)*l),1]=eval(parse(text=(paste0("theta.",t,".",n))))
+  theta36[((t-1)*(l)+1):((t)*l),2]=t
+}
+
+names(theta36)=c("theta","Biweeks")
+
+
+#################################################
+theta19=as.data.frame(matrix(nrow=M,ncol=2))
+n=19
+for(t in 1:ITER){
+  theta19[((t-1)*(l)+1):((t)*l),1]=eval(parse(text=(paste0("theta.",t,".",n))))
+  theta19[((t-1)*(l)+1):((t)*l),2]=t
+}
+
+names(theta19)=c("theta","Biweeks")
+
+theta37=as.data.frame(matrix(nrow=M,ncol=2))
+n=37
+for(t in 1:ITER){
+  theta37[((t-1)*(l)+1):((t)*l),1]=eval(parse(text=(paste0("theta.",t,".",n))))
+  theta37[((t-1)*(l)+1):((t)*l),2]=t
+}
+
+names(theta37)=c("theta","Biweeks")
+
+theta38=as.data.frame(matrix(nrow=M,ncol=2))
+n=38
+for(t in 1:ITER){
+  theta38[((t-1)*(l)+1):((t)*l),1]=eval(parse(text=(paste0("theta.",t,".",n))))
+  theta38[((t-1)*(l)+1):((t)*l),2]=t
+}
+
+names(theta38)=c("theta","Biweeks")
+############################################################################################
+la=ggplot(data = theta19,aes(x= Biweeks, y = theta,group=Biweeks))+
+  geom_boxplot(outlier.shape = NA)+ggtitle(cnames[19])+theme(plot.title = element_text(hjust = 0.5))+
+  geom_hline(yintercept=0, linetype="solid", color = "red")+scale_y_continuous(name=bquote(theta[19~",t"]))+
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+
+sd=ggplot(data = theta37,aes(x= Biweeks, y = theta,group=Biweeks))+
+  scale_y_continuous(name=bquote(theta))+
+  geom_boxplot(outlier.shape = NA)+ggtitle(cnames[37])+theme(plot.title = element_text(hjust = 0.5))+
+  geom_hline(yintercept=0, linetype="solid", color = "red")+scale_y_continuous(name=bquote(theta[37~",t"]))+
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+
+sf=ggplot(data = theta38,aes(x= Biweeks, y = theta,group=Biweeks))+
+  scale_y_continuous(name=bquote(theta))+
+  geom_boxplot(outlier.shape = NA)+ggtitle(cnames[38])+theme(plot.title = element_text(hjust = 0.5))+
+  geom_hline(yintercept=0, linetype="solid", color = "red")+scale_y_continuous(name=bquote(theta[38~",t"]))+
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+
+#######################################################################################3
+
+Lassen=ggplot(data = theta18,aes(x= Biweeks, y = theta,group=Biweeks))+
+  geom_boxplot(outlier.shape = NA)+ggtitle(cnames[18])+theme(plot.title = element_text(hjust = 0.5))+
+  geom_hline(yintercept=0, linetype="solid", color = "red")+ylim(-5,5)+scale_y_continuous(name=bquote(theta[18~",t"]))+
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+Kern=ggplot(data = theta15,aes(x= Biweeks, y = theta,group=Biweeks))+
+  geom_boxplot(outlier.shape = NA)+ggtitle(cnames[15])+theme(plot.title = element_text(hjust = 0.5))+
+  geom_hline(yintercept=0, linetype="solid", color = "red")+ylim(-5,5)+
+  scale_y_continuous(name=bquote(theta[15~",t"]))+
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+sbern=ggplot(data = theta36,aes(x= Biweeks, y = theta,group=Biweeks))+
+  geom_boxplot(outlier.shape = NA)+ggtitle(cnames[36])+theme(plot.title = element_text(hjust = 0.5))+
+  geom_hline(yintercept=0, linetype="solid", color = "red")+ylim(-5,5)+
+  scale_y_continuous(name=bquote(theta[36~",t"]))+
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+
+
+
+grid.arrange(sbern,Lassen,Kern,la,sd,sf,nrow=2)
+
+```
 # References
 
 
