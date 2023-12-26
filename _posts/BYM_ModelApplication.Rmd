@@ -339,7 +339,7 @@ qlow_data <- beta_vac %>%
                  geom = "point", 
                  size = 1, 
                  color = "red")
-
+beta_vacplot
 #Number of biweeks where 0 is above the Credibility Interval  
 num_biweeks_CI_neg<-sum(0<qlow_data$qlow)   
 num_biweeks_CI_neg

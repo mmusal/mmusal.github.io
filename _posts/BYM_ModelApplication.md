@@ -126,8 +126,8 @@ gc()
 
 ```
 ##             used   (Mb) gc trigger   (Mb)   max used   (Mb)
-## Ncells   1306021   69.8    2463862  131.6    2463862  131.6
-## Vcells 416508003 3177.8 1137778472 8680.6 1304980088 9956.3
+## Ncells   1306022   69.8    2463830  131.6    2463830  131.6
+## Vcells 416508005 3177.8 1137778491 8680.6 1304980090 9956.3
 ```
 
 ```r
@@ -281,7 +281,12 @@ qlow_data <- beta_vac %>%
                  geom = "point", 
                  size = 1, 
                  color = "red")
+beta_vacplot
+```
 
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-11-1.png"><figcaption></figcaption></figure>
+
+```r
 #Number of biweeks where 0 is above the Credibility Interval  
 num_biweeks_CI_neg<-sum(0<qlow_data$qlow)   
 num_biweeks_CI_neg
