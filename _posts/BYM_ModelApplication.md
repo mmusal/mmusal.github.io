@@ -80,7 +80,10 @@ options(mc.cores=parallel::detectCores(),auto_write = TRUE)
 library(rstan)
 library(xtable)
 library(ggspatial)
-
+library(ggplot2)
+library(viridis)
+setwd("C:/Users/rm84/Desktop/research/HMM/data")
+load("workspacewithbasedata.RData")
 #Specifying the location of the csv files and creating string objects
 
 chain1='C:/Users/rm84/Documents/mA11_1.csv'
@@ -125,9 +128,9 @@ gc()
 ```
 
 ```
-##             used   (Mb) gc trigger   (Mb)   max used   (Mb)
-## Ncells   1306114   69.8    2464488  131.7    2464488  131.7
-## Vcells 416509072 3177.8 1137793236 8680.7 1304966152 9956.2
+##             used   (Mb) gc trigger    (Mb)   max used    (Mb)
+## Ncells   1333755   71.3    2467660   131.8    2467660   131.8
+## Vcells 428685557 3270.7 1427136382 10888.2 1311365496 10005.0
 ```
 
 ```r
@@ -414,7 +417,7 @@ sf=ggplot(data = theta38,aes(x= Biweeks, y = theta,group=Biweeks))+
   geom_hline(yintercept=0, linetype="solid", color = "red")+scale_y_continuous(name=bquote(theta[38~",t"]))+
   scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
 
-#######################################################################################3
+#######################################################################################
 
 Lassen=ggplot(data = theta18,aes(x= Biweeks, y = theta,group=Biweeks))+
   geom_boxplot(outlier.shape = NA)+ggtitle(cnames[18])+theme(plot.title = element_text(hjust = 0.5))+
@@ -437,6 +440,162 @@ grid.arrange(sbern,Lassen,Kern,la,sd,sf,nrow=2)
 ```
 
 <figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-12-1.png"><figcaption></figcaption></figure>
+
+## The joint distribution $\phi$ 
+When we look at the joint distribution of spatial contribution to mortality risk, out of the 
+
+
+```r
+phis=as.data.frame(matrix(nrow=N*l,ncol=2))
+
+for(n in 1:N){
+  phis[((n-1)*(l)+1):((n)*l),1]=eval(parse(text=(paste0("phi.",n))))
+  phis[((n-1)*(l)+1):((n)*l),2]=n
+}
+
+names(phis)=c("phi","County_Index")
+
+ggplot(data = phis,aes(x= County_Index, y = phi,group=County_Index))+
+  geom_boxplot(outlier.shape = NA)+scale_y_continuous(name=bquote(phi))+
+  scale_x_discrete(limits = c(1,5,10,15,20,25,30,35,40,45,50,55,58))+
+  ggtitle("County Spatial Effects")+theme(plot.title = element_text(hjust = 0.5))+
+  geom_hline(yintercept=0, linetype="solid", color = "red")+
+  annotate("text", x = 18, y = -1.5, label = cnames[18])+
+  annotate("segment", color="red", x=19, xend = 18, y=-1.45, 
+           yend=quantile(phi.18,0.25), arrow=arrow(length=unit(0.2,"cm")))+
+  
+  annotate("text", x = 20, y = 2.1, label = cnames[19])+
+  annotate("segment", color="red", x=20, xend = 19, y=2, 
+           yend=quantile(phi.19,0.75), arrow=arrow(length=unit(0.2,"cm")))+
+  
+  annotate("text", x = 37, y = 1.5, label = cnames[38])+
+  annotate("segment", color="red", x=37, xend = 38, y=1.45, 
+           yend=quantile(phi.38,0.75), arrow=arrow(length=unit(0.2,"cm")))+
+  
+   annotate("text", x = 32, y = -0.55, label = cnames[37])+
+  annotate("segment", color="red", x=31, xend = 37, y=-0.5, 
+           yend=quantile(phi.37,0.25), arrow=arrow(length=unit(0.2,"cm")))+
+  
+  annotate("text", x = 33, y = 1.75, label = cnames[36])+
+  annotate("segment", color="red", x=33, xend = 36, y=1.7, 
+           yend=quantile(phi.36,0.75), arrow=arrow(length=unit(0.2,"cm")))+
+  
+        annotate("text", x = 12, y = 1.1, label = cnames[15])+
+  annotate("segment", color="red", x=12, xend = 15, y=1.1, 
+           yend=quantile(phi.15,0.75), arrow=arrow(length=unit(0.2,"cm")))
+```
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-13-1.png"><figcaption></figcaption></figure>
+
+```r
+phi_means=aggregate(.~County_Index,data=phis,mean)
+
+
+ggplot() +
+  annotation_spatial(shapeanddata) +
+  ggtitle(bquote("Posterior Mean of "~phi~" s"))+
+  theme(plot.title = element_text(hjust = 0.5))+
+  layer_spatial(shapeanddata, aes(fill = (phi_means$phi)))+
+  theme(legend.title= element_blank())+
+  labs(fill =bquote(phi) )+scale_fill_viridis(limits = c(-2,2),direction=-1)+
+  theme(legend.position = "none")
+```
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-13-2.png"><figcaption></figcaption></figure>
+
+## $\rho$ Coefficient Structured vs Unstructured Errors
+
+```r
+rhos=as.data.frame(matrix(nrow=M,ncol=2))
+l=length(rho.1)
+for(n in 1:ITER){
+  rhos[((n-1)*(l)+1):((n)*l),1]=eval(parse(text=(paste0("rho.",n))))
+  rhos[((n-1)*(l)+1):((n)*l),2]=n
+}
+
+names(rhos)=c("rho","Biweeks")
+
+ggplot(data = rhos,aes(x= Biweeks, y = rho,group=Biweeks))+
+  geom_boxplot(outlier.shape = NA)+scale_y_continuous(name=bquote(rho[t]))+
+  geom_hline(yintercept=0.5, linetype="solid", color = "red") +
+  scale_x_continuous(name="Time",
+  labels=c('1','5','10','15','20','25','30','35','40','45','50',
+'55','60','65','70','75','77'),breaks=c(1,5,10,15,20,25,30,35,40,45,50,
+55,60,65,70,75,77))+ggtitle("Spat. Structured vs Uncorrelated Error")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-14-1.png"><figcaption></figcaption></figure>
+
+## $\sigma$ Overall standard deviation
+
+
+```r
+sigmas=as.data.frame(matrix(nrow=M,ncol=2))
+l=length(rho.1)
+for(n in 1:ITER){
+  sigmas[((n-1)*(l)+1):((n)*l),1]=eval(parse(text=(paste0("sigma.",n))))
+  sigmas[((n-1)*(l)+1):((n)*l),2]=n
+}
+
+names(sigmas)=c("sigma","Biweeks")
+
+ggplot(data = sigmas,aes(x= Biweeks, y = sigma,group=Biweeks))+
+  geom_boxplot(outlier.shape = NA)+scale_y_continuous(name=bquote(sigma[t]))+
+  ggtitle("Overall Standard Deviation of Errors")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(name="Time",
+                     labels=c('1','5','10','15','20','25','30','35',
+                              '40','45','50','55','60','65','70','75','77'),breaks=c(1,5,10,15,20,25,30,35,
+                                                                                     40,45,50,55,60,65,70,75,77))
+```
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-15-1.png"><figcaption></figcaption></figure>
+
+## Convolution
+
+
+```r
+cv=matrix(nrow=ITER,ncol=N)
+for(n in 1:N){
+for(t in 1:ITER){
+cv[t,n]=mean(
+  ((sqrt(eval(parse(text=(paste0("rho.",t))))/scaling_factor))*eval(parse(text=(paste0("phi.",n))))+
+  (sqrt(1-eval(parse(text=(paste0("rho.",t))))))*eval(parse(text=(paste0("theta.",t,".",n)))))*
+  eval(parse(text=(paste0("sigma.",t))))
+)
+}}
+
+convolution1=as.data.frame(matrix(nrow=6*ITER,ncol=3))
+the6counties=c(19,37,38,18,15,36)
+for(i in 1:6){
+  convolution1[((i-1)*ITER+1) :((i-1)*ITER+ITER),1]=cv[,the6counties[i]]
+  convolution1[((i-1)*ITER+1) :((i-1)*ITER+ITER),2]=rep(cnames[the6counties[i]],ITER)
+  convolution1[((i-1)*ITER+1) :((i-1)*ITER+ITER),3]=c(1:ITER)
+}
+names(convolution1)=c("Convolution","County_Names","Biweeks")
+
+ggplot(data = convolution1,aes(x= Biweeks, y = Convolution,group=County_Names))+
+  geom_line(aes(color=County_Names,linetype=County_Names))+
+  geom_hline(yintercept=0, linetype="solid", color = "red")+labs(y=bquote(sigma[t]*nu[i*","*t]))+
+  annotate("text", x =which.min(convolution1[convolution1[,2]==cnames[38],1])-.25, 
+           y =min(convolution1[convolution1[,2]==cnames[38],1])-.05, label = cnames[38])+
+  annotate("text", x = which.max(convolution1[convolution1[,2]==cnames[19],1])-.75, 
+           y =max(convolution1[convolution1[,2]==cnames[19],1])+.05, label = cnames[19])+
+  annotate("text", x = which.min(convolution1[convolution1[,2]==cnames[37],1])-.25, 
+           y =min(convolution1[convolution1[,2]==cnames[37],1])-.05, label = cnames[37])+
+  annotate("text", x = which.max(convolution1[convolution1[,2]==cnames[36],1])-.25, 
+           y =max(convolution1[convolution1[,2]==cnames[36],1])+.05, label = cnames[36])+
+  annotate("text", x = which.min(convolution1[convolution1[,2]==cnames[15],1])-.25, 
+           y =min(convolution1[convolution1[,2]==cnames[15],1])-.05, label = cnames[15])+
+  annotate("text", x = which.max(convolution1[convolution1[,2]==cnames[18],1])-.25, 
+           y =max(convolution1[convolution1[,2]==cnames[18],1])-.05, label = cnames[18])+
+scale_x_continuous(name="Time",labels=c('1','5','10','15','20','25','30','35','40','45','50','55','60','65','70','75','77'),
+breaks=c(1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,77))+ggtitle("Convolution")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-16-1.png"><figcaption></figcaption></figure>
+
 # References
 
 
