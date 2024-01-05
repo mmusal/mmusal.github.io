@@ -506,8 +506,9 @@ log(\lambda_{i}) = log(E_{i})  \times (\beta*X_{i}+\theta_{i}+\phi_{i}),
 ```
 where $\phi$, areal spatial effect, has the form as described via
 \eqref{eq:sqrddif}. It will be a vector with N elements same as
-$\theta$, the specific random effects of the areal units. In this post
-we will ignore the original model and focus on the extended version
+$\theta$, the specific random effects of the areal units. You can conceptualize $\theta_{i}+\phi_{i}$ as the model errors.
+In this post
+we will ignore the original model and focus on the extended version which circumvents the convergence issues arising from decomposing the model errors into two separate components. Per the modified BYM (BYM2) of @morris2019bayesian, using \eqref{eq:lambda} ; 
 
 ```{=tex}
 \begin{equation}
@@ -516,10 +517,10 @@ log(\lambda_{i}) = log(E_{i})  \times \left(\beta*X_{i}+\left(\sqrt{\frac{\rho}{
 \label{eq:lambda}
 \end{equation}
 ```
--   $\rho \in [0,1]$ controls the contribution of spatial vs random
-    effects. If $\rho$ is 0,
--   s is the scaling factor which can be computed using the and the
-    function provided by once again Mitzi Morris and the [github
+-   $\rho \in [0,1]$ controls the contribution weight of spatial vs random
+    effects. If $\rho$ is 0 (1), the contribution of the errors are due solely to $\phi$ ($\theta$). 
+-   s is the scaling factor which can be computed using the 
+    function provided by once again by Mitzi Morris at the [github
     site](https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R).
     The constant value is evaluated from the matrix $Q$ and for ICAR
     models it is equal to $$Q=D(I-A)$$ where

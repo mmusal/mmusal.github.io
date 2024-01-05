@@ -1942,8 +1942,12 @@ log(\lambda_{i}) = log(E_{i})  \times
 <p>where <span class="math inline">\(\phi\)</span>, areal spatial
 effect, has the form as described via <span class="math inline">\(\eqref{eq:sqrddif}\)</span>. It will be a vector
 with N elements same as <span class="math inline">\(\theta\)</span>, the
-specific random effects of the areal units. In this post we will ignore
-the original model and focus on the extended version</p>
+specific random effects of the areal units. You can conceptualize <span class="math inline">\(\theta_{i}+\phi_{i}\)</span> as the model errors.
+In this post we will ignore the original model and focus on the extended
+version which circumvents the convergence issues arising from
+decomposing the model errors into two separate components. Per the
+modified BYM (BYM2) of <span class="citation">Morris et al.
+(2019)</span>, using <span class="math inline">\(\eqref{eq:lambda}\)</span> ;</p>
 <span class="math display">\[\begin{equation}
 Y_{it} \sim Poisson(\lambda_{i}) \\
 log(\lambda_{i}) = log(E_{i})  \times
@@ -1953,9 +1957,11 @@ log(\lambda_{i}) = log(E_{i})  \times
 \end{equation}\]</span>
 <ul>
 <li><span class="math inline">\(\rho \in [0,1]\)</span> controls the
-contribution of spatial vs random effects. If <span class="math inline">\(\rho\)</span> is 0,</li>
-<li>s is the scaling factor which can be computed using the and the
-function provided by once again Mitzi Morris and the <a href="https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R">github
+contribution weight of spatial vs random effects. If <span class="math inline">\(\rho\)</span> is 0 (1), the contribution of the
+errors are due solely to <span class="math inline">\(\phi\)</span>
+(<span class="math inline">\(\theta\)</span>).</li>
+<li>s is the scaling factor which can be computed using the function
+provided by once again by Mitzi Morris at the <a href="https://github.com/stan-dev/example-models/blob/master/knitr/car-iar-poisson/nb_data_funs.R">github
 site</a>. The constant value is evaluated from the matrix <span class="math inline">\(Q\)</span> and for ICAR models it is equal to
 <span class="math display">\[Q=D(I-A)\]</span> where</li>
 <li>D is the N by N diagonal matrix with the number of neighbors for
@@ -2674,6 +2680,13 @@ Image Restoration, with Two Applications in Spatial Statistics.”</span>
 <div id="ref-cressie2015statistics" class="csl-entry">
 Cressie, Noel, and Christopher K Wikle. 2015. <em>Statistics for
 Spatio-Temporal Data</em>. John Wiley &amp; Sons.
+</div>
+<div id="ref-morris2019bayesian" class="csl-entry">
+Morris, Mitzi, Katherine Wheeler-Martin, Dan Simpson, Stephen J Mooney,
+Andrew Gelman, and Charles DiMaggio. 2019. <span>“Bayesian Hierarchical
+Spatial Models: Implementing the Besag York Molli<span>é</span> Model in
+Stan.”</span> <em>Spatial and Spatio-Temporal Epidemiology</em> 31:
+100301.
 </div>
 </div>
 </div>
