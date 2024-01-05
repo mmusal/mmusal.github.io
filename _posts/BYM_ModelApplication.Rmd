@@ -267,6 +267,8 @@ This section will discuss the findings associated with modelA1. We will first di
 
 ## Parameters of Fixed Covariates
 
+In this subsection we discuss the coefficients associated with covariates that are observed a single or 3 separate times effect mortality risk. We obtain Poverty, Income, Gini Sex Ratio and Median Age figures for the counties of California for each of the years under purview. Our data has 25,26,26 biweeks in the years 2020, 2021 and 2022 respectively and as stated in the data section of the STAN model. All of this data are replicated across the biweeks. Race, and Density (Population/Land Area of County) are calculated via Decennial Census and therefore is a fixed value across all the biweeks. In order to limit the number of estimated parameters in the race variable we used proportion of white people, which have the largest median of race values, right under 50%,  as the median value in the 58 counties.
+
 ```{r, warning=FALSE,message=FALSE}
 
 
@@ -291,7 +293,9 @@ escape=FALSE)
 
 
 ```
-As can be seen from the table's $95\%$ credibility intervals increased poverty, density, percentage of people who are white, median age leads to increased mortality risk. On the other hand increased income and males to females ratio in the county decreases mortality risk. When we control for all the covariates, Gini covariate coefficient contains the value 0 in the $95\%$ credibility interval.
+
+As can be seen from the table's $95\%$ credibility intervals increased poverty, density, percentage of people who are white and median age leads to increased mortality risk assuming the model is correct. On the other hand increased income and males to females ratio in the county decreases mortality risk for the same assumption. When we control for all the covariates, Gini covariate coefficient contains the value 0 in the $95\%$ credibility interval. This is not very surprising since we are already controlling for Income and Poverty.
+
 
 ## Parameters of Vaccination Coefficients
 

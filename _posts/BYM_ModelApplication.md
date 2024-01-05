@@ -129,8 +129,8 @@ gc()
 
 ```
 ##             used   (Mb) gc trigger    (Mb)   max used    (Mb)
-## Ncells   1335366   71.4    2508988   134.0    2508988   134.0
-## Vcells 428691118 3270.7 1427185968 10888.6 1311356052 10004.9
+## Ncells   1335368   71.4    2509220   134.1    2509220   134.1
+## Vcells 428691435 3270.7 1425961574 10879.3 1311851534 10008.7
 ```
 
 ```r
@@ -200,6 +200,8 @@ This section will discuss the findings associated with modelA1. We will first di
 
 ## Parameters of Fixed Covariates
 
+In this subsection we discuss the coefficients associated with covariates that are observed a single or 3 separate times effect mortality risk. We obtain Poverty, Income, Gini Sex Ratio and Median Age figures for the counties of California for each of the years under purview. Our data has 25,26,26 biweeks in the years 2020, 2021 and 2022 respectively and as stated in the data section of the STAN model. All of this data are replicated across the biweeks. Race, and Density (Population/Land Area of County) are calculated via Decennial Census and therefore is a fixed value across all the biweeks. In order to limit the number of estimated parameters in the race variable we used proportion of white people, which have the largest median of race values, right under 50%,  as the median value in the 58 counties.
+
 
 ```r
 summary1=xtable(summary((cbind.data.frame(beta_pov,
@@ -232,7 +234,9 @@ escape=FALSE)
 |Mean         |0.089         |-0.162        |0.112          |-0.042         |0.984           |0.122         |-0.114        |
 |97.5th Perc. |0.162         |-0.075        |0.149          |0.013          |1.289           |0.201         |-0.049        |
 |Max          |0.231         |0.009         |0.184          |0.068          |1.678           |0.278         |0.014         |
-As can be seen from the table's $95\%$ credibility intervals increased poverty, density, percentage of people who are white, median age leads to increased mortality risk. On the other hand increased income and males to females ratio in the county decreases mortality risk. When we control for all the covariates, Gini covariate coefficient contains the value 0 in the $95\%$ credibility interval.
+
+As can be seen from the table's $95\%$ credibility intervals increased poverty, density, percentage of people who are white and median age leads to increased mortality risk assuming the model is correct. On the other hand increased income and males to females ratio in the county decreases mortality risk for the same assumption. When we control for all the covariates, Gini covariate coefficient contains the value 0 in the $95\%$ credibility interval. This is not very surprising since we are already controlling for Income and Poverty.
+
 
 ## Parameters of Vaccination Coefficients
 
@@ -600,8 +604,11 @@ Table:  The number of biweeks that the CI did not contain 0 indicating higher or
 |Higher Risk |    2     |    2     |    2     |
 
 There really is not much to infer about Lassen's $\theta$ component and there does not seem to be much learning of the parameters. 
+
 <figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-15-1.png"><figcaption></figcaption></figure>
+
 Kern follows a similar pattern to San Bernardino. The boxplot vs biweeks will provide us with a varying pattern 
+
 <figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-16-1.png"><figcaption></figcaption></figure>
 
 If we cross tabulate the lower/higher relative mortality risk effect by years:
@@ -625,10 +632,10 @@ Table: The number of biweeks that the CI did not contain 0 indicating higher or 
 |Lower Risk  |  3   |  7   |  0   |
 |Higher Risk |  4   |  0   |  7   |
 
-San Diego had a more varied year in 2020 compared to 2021 and 2022. When we look at the same plot as the other counties in this section
+San Diego had a more varied year in 2020 compared to 2021 and 2022. When we look at the same plot as the other counties in this section;
 
 <figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-19-1.png"><figcaption></figcaption></figure>
-and it is straightforward from looking at the boxplots even though there were certain weeks in 2020 and 2021 that San Diego performed poorly for the great majority of the time the county performed well. 
+it is straightforward from looking at the boxplots for the great majority of the time the county performed well even though there were certain weeks in 2020 and 2021 of poor performance. 
 
 
 Table: The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Diego
@@ -638,9 +645,11 @@ Table: The number of biweeks that the CI did not contain 0 indicating higher or 
 |Lower Risk  |  3   |  1   |  4   |
 |Higher Risk |  5   |  3   |  1   |
 
-We again provide the boxplots vs biweeks.  
+We again provide the boxplots vs biweeks, this time for the county of San Francisco. 
+
 <figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-21-1.png"><figcaption></figcaption></figure>
-It is interesting to see that San Francisco as a county performed well until 2022. For the policy makers it would be of interest to understand the reasons behind the relative poor performance in that year.
+
+It is interesting to see that San Francisco as a county performed well until 2022. It would be of interest to understand the reasons behind the relative poor performance in that year.
 
 
 Table: The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Francisco
@@ -713,7 +722,7 @@ ggplot() +
 
 <figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-23-2.png"><figcaption></figcaption></figure>
 
-## $\rho$ Coefficient Structured vs Unstructured Errors
+## $\rho$, Coefficient Structured vs Unstructured Errors
 
 ```r
 rhos=as.data.frame(matrix(nrow=M,ncol=2))
