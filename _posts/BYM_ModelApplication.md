@@ -129,8 +129,8 @@ gc()
 
 ```
 ##             used   (Mb) gc trigger    (Mb)   max used    (Mb)
-## Ncells   1333755   71.3    2467660   131.8    2467660   131.8
-## Vcells 428685557 3270.7 1427136382 10888.2 1311365496 10005.0
+## Ncells   1335271   71.4    2498754   133.5    2498754   133.5
+## Vcells 428690782 3270.7 1430920025 10917.1 1319653481 10068.2
 ```
 
 ```r
@@ -172,8 +172,6 @@ rMSE
 ```
 
 ```r
-START=1
-END=77
 l=length(alpha.1.1.1)
 ll1=array(dim=c(l,(END-START+1),N))
 for(t in START:END){
@@ -250,15 +248,12 @@ V=cadata$V
 qhigh=array(dim=c(T-V+1))
 qlow=array(dim=c(T-V+1))
 beta_vac=as.data.frame(matrix(nrow=(T-V+1)*l,ncol=2))
-V=cadata$V
-qhigh=array(dim=c(T-V+1))
-qlow=array(dim=c(T-V+1))
-beta_vac=as.data.frame(matrix(nrow=(T-V+1)*l,ncol=2))
+
 for(i in 1:(T-V+1)){
   beta_vac[((i-1)*(l)+1):((i)*l),1]=eval(parse(text=(paste0("beta_vac.",i))))
   beta_vac[((i-1)*(l)+1):((i)*l),2]=i
-  qhigh[i]=quantile(eval(parse(text=(paste0("beta_vac.",i)))),0.975)
-  qlow[i]=quantile(eval(parse(text=(paste0("beta_vac.",i)))),0.025)
+  #qhigh[i]=quantile(eval(parse(text=(paste0("beta_vac.",i)))),0.975)
+  #qlow[i]=quantile(eval(parse(text=(paste0("beta_vac.",i)))),0.025)
 }
 names(beta_vac)=c("beta_vac","Biweeks")
 
@@ -271,7 +266,7 @@ qlow_data <- beta_vac %>%
   summarise(qlow = quantile(beta_vac,0.025))
 
   beta_vacplot=ggplot(data = beta_vac,aes(x= Biweeks, y = beta_vac,group=Biweeks))+
-  geom_boxplot(outlier.shape = NA)+scale_y_continuous(name=bquote(beta[vac]))+ggtitle(bquote(beta[vac] ~ "from t=1...64"))+theme(plot.title = element_text(hjust = 0.5))+
+  geom_boxplot(outlier.shape = NA)+scale_y_continuous(name=bquote(beta[vac]))+ggtitle(bquote(beta[vac] ~ "from t=1...77"))+theme(plot.title = element_text(hjust = 0.5))+
   geom_hline(yintercept=0.0, linetype="solid", color = "red") +
   scale_x_continuous(name="Time",labels=c('25','29','34','39','44','49','54','59','64','69','74','77'),breaks=c(1,5,10,15,20,25,30,35,40,45,50,55))+
     stat_summary(data = qhigh_data, 
@@ -332,24 +327,42 @@ which(0>qhigh_data$qhigh)+V
 ## 97.5% 97.5% 
 ##    57    58
 ```
+
 ## $\theta$, Random Effect Coefficients of Counties
 
-We proceed to illustrate the random effects of counties. It is not surprising that for most counties, what can be referred to as the county performance varies across the biweeks per county.    
+We proceed to illustrate the random effects of counties. It is not surprising that for most counties, $\theta_{it}$ which can be referred to as the county performance varies across the biweeks per county. In the script below, the R object thetaXX is going to contain the MCMC samples from various counties. Per the rest of the project we are going to look in detail to 6 Californian counties. The XX values of the components are given in parenthesis after county names. Los Angeles (19), San Diego (37), San Francisco (38), Kern (15), Lassen (18) and San Bernardino (36).  We are following the random effects for 77 biweeks after we take into account the listed covariates as well as areal effects of the counties surrounding them. The posterior means and credibility intervals (CI) of this component are of special importance to policy makers as relatively high/low values should have them look into the root causes behind low/high increase in relative mortality risk.
+
+In order to visualize the random effects via ggplot we will be creating data frame objects with M rows and 2 columns for each of the before mentioned counties. M is the number of MCMC samples multiplied by the biweeks. The first column is going to contain the MCMC values and the second column the biweek value. 
+
+Each of the counties will have a ggplot associated with it that visualizes the boxplot of the MCMC samples for each biweek as well as the Credibility Interval (CI).    
 
 
 ```r
 library(ggpubr)
 library(gridExtra)
+library(ggplot2)
+library(tidyverse)
 cnames<-read.table("C:/Users/rm84/Desktop/research/HMM/data/countynames.txt",sep="\t",header=TRUE)[,1]
-M=ITER*length(theta.1.15)
+
+START=1
+END=77
+ITER=END-START+1
+
 l=length(theta.1.15)
+
+M=ITER*l
+
+
 theta15=as.data.frame(matrix(nrow=M,ncol=2))
+
+
 n=15
 for(t in 1:ITER){
   theta15[((t-1)*(l)+1):((t)*l),1]=eval(parse(text=(paste0("theta.",t,".",n))))
   theta15[((t-1)*(l)+1):((t)*l),2]=t
+
 }
-#theta15[,2]=as.character(theta15[,2])
+
 names(theta15)=c("theta","Biweeks")
 
 
@@ -399,49 +412,243 @@ for(t in 1:ITER){
 }
 
 names(theta38)=c("theta","Biweeks")
+
 ############################################################################################
+
+###Kern
+qhigh_datatheta15 <- theta15 %>%
+  group_by(Biweeks) %>%
+  summarise(qhigh_theta15 = quantile(theta,0.975))
+
+qlow_datatheta15 <- theta15 %>%
+  group_by(Biweeks) %>%
+  summarise(qlow_theta15 = quantile(theta,0.025))
+
+###Lassen 
+qhigh_datatheta18 <- theta18 %>%
+  group_by(Biweeks) %>%
+  summarise(qhigh_theta18 = quantile(theta,0.975))
+
+qlow_datatheta18 <- theta18 %>%
+  group_by(Biweeks) %>%
+  summarise(qlow_theta18 = quantile(theta,0.025))
+
+###Los Angeles
+qhigh_datatheta19 <- theta19 %>%
+  group_by(Biweeks) %>%
+  summarise(qhigh_theta19 = quantile(theta,0.975))
+
+qlow_datatheta19 <- theta19 %>%
+  group_by(Biweeks) %>%
+  summarise(qlow_theta19 = quantile(theta,0.025))
+
+### San Bernardino
+qhigh_datatheta36 <- theta36 %>%
+  group_by(Biweeks) %>%
+  summarise(qhigh_theta36 = quantile(theta,0.975))
+
+qlow_datatheta36 <- theta36 %>%
+  group_by(Biweeks) %>%
+  summarise(qlow_theta36 = quantile(theta,0.025))
+### San Diego
+qhigh_datatheta37 <- theta37 %>%
+  group_by(Biweeks) %>%
+  summarise(qhigh_theta37 = quantile(theta,0.975))
+
+qlow_datatheta37 <- theta37 %>%
+  group_by(Biweeks) %>%
+  summarise(qlow_theta37 = quantile(theta,0.025))
+##### San Francisco
+qhigh_datatheta38 <- theta38 %>%
+  group_by(Biweeks) %>%
+  summarise(qhigh_theta38 = quantile(theta,0.975))
+
+qlow_datatheta38 <- theta38 %>%
+  group_by(Biweeks) %>%
+  summarise(qlow_theta38 = quantile(theta,0.025))
+####  
+
 la=ggplot(data = theta19,aes(x= Biweeks, y = theta,group=Biweeks))+
   geom_boxplot(outlier.shape = NA)+ggtitle(cnames[19])+theme(plot.title = element_text(hjust = 0.5))+
   geom_hline(yintercept=0, linetype="solid", color = "red")+scale_y_continuous(name=bquote(theta[19~",t"]))+
-  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))+stat_summary(data = qhigh_datatheta19, 
+                 aes(x = Biweeks, y = qhigh_theta19),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")+
+    stat_summary(data = qlow_datatheta19, 
+                 aes(x = Biweeks, y = qlow_theta19),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")
 
 sd=ggplot(data = theta37,aes(x= Biweeks, y = theta,group=Biweeks))+
   scale_y_continuous(name=bquote(theta))+
   geom_boxplot(outlier.shape = NA)+ggtitle(cnames[37])+theme(plot.title = element_text(hjust = 0.5))+
   geom_hline(yintercept=0, linetype="solid", color = "red")+scale_y_continuous(name=bquote(theta[37~",t"]))+
-  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))+stat_summary(data = qhigh_datatheta37, 
+                 aes(x = Biweeks, y = qhigh_theta37),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")+
+    stat_summary(data = qlow_datatheta37, 
+                 aes(x = Biweeks, y = qlow_theta37),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")
 
 sf=ggplot(data = theta38,aes(x= Biweeks, y = theta,group=Biweeks))+
   scale_y_continuous(name=bquote(theta))+
   geom_boxplot(outlier.shape = NA)+ggtitle(cnames[38])+theme(plot.title = element_text(hjust = 0.5))+
   geom_hline(yintercept=0, linetype="solid", color = "red")+scale_y_continuous(name=bquote(theta[38~",t"]))+
-  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))+stat_summary(data = qhigh_datatheta38,                 aes(x = Biweeks, y = qhigh_theta38),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")+
+    stat_summary(data = qlow_datatheta38, 
+                 aes(x = Biweeks, y = qlow_theta38),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")
 
 #######################################################################################
 
 Lassen=ggplot(data = theta18,aes(x= Biweeks, y = theta,group=Biweeks))+
   geom_boxplot(outlier.shape = NA)+ggtitle(cnames[18])+theme(plot.title = element_text(hjust = 0.5))+
   geom_hline(yintercept=0, linetype="solid", color = "red")+ylim(-5,5)+scale_y_continuous(name=bquote(theta[18~",t"]))+
-  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))+stat_summary(data = qhigh_datatheta18, 
+                 aes(x = Biweeks, y = qhigh_theta18),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")+
+    stat_summary(data = qlow_datatheta18, 
+                 aes(x = Biweeks, y = qlow_theta18),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")
+
+#############################################################
 Kern=ggplot(data = theta15,aes(x= Biweeks, y = theta,group=Biweeks))+
   geom_boxplot(outlier.shape = NA)+ggtitle(cnames[15])+theme(plot.title = element_text(hjust = 0.5))+
   geom_hline(yintercept=0, linetype="solid", color = "red")+ylim(-5,5)+
   scale_y_continuous(name=bquote(theta[15~",t"]))+
-  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))+stat_summary(data = qhigh_datatheta15,     aes(x = Biweeks, y = qhigh_theta15),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")+
+    stat_summary(data = qlow_datatheta15, 
+                 aes(x = Biweeks, y = qlow_theta15),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")
+
+#############################################################
 sbern=ggplot(data = theta36,aes(x= Biweeks, y = theta,group=Biweeks))+
   geom_boxplot(outlier.shape = NA)+ggtitle(cnames[36])+theme(plot.title = element_text(hjust = 0.5))+
   geom_hline(yintercept=0, linetype="solid", color = "red")+ylim(-5,5)+
   scale_y_continuous(name=bquote(theta[36~",t"]))+
-  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))
-
-
-
-grid.arrange(sbern,Lassen,Kern,la,sd,sf,nrow=2)
+  scale_x_continuous(name="Time",labels=c('1','25','51','77'),breaks=c(1,25,51,77))+stat_summary(data = qhigh_datatheta36, 
+                 aes(x = Biweeks, y = qhigh_theta36),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")+
+    stat_summary(data = qlow_datatheta36, 
+                 aes(x = Biweeks, y = qlow_theta36),
+                 geom = "point", 
+                 size = 1, 
+                 color = "red")
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-12-1.png"><figcaption></figcaption></figure>
+Looking at the boxplot of $\theta$ vs biweeks of San Bernardino we see patterns of some note indicated by CI. In 2020 there is not a lot to note except the few biweeks in the middle of the year that suggests the reduction in mortality risk, which unfortunately turns to an increase in the last biweeks. For great majority of 2021 most of the credibility intervals contain the value 0. In the initial months of year 2022 that increased mortality risk which reverses direction in the latter moths. We can quantify the performance of the county by comparing the lower and upper bound values of the CI to 0. The lower (upper) bound value of CI being higher than 0 indicates higher (lower) relative mortality risk.   
 
-## The joint distribution $\phi$ 
+Using the formulation 0 < 95% Lower Bound CI and summing up the number of biweeks we find that 6 of the times San Bernardino had higher relative risk. To find the number of biweeks with lower mortality risk we replace the 95% Lower Bound CI with 95% Upper Bound CI and change '>' to '<' which results in 8 number of biweeks.  Policy makers should look at these across time and investigate the reason behind this performance specific to the county, after accounting covariates and areal effects.   
+
+
+```r
+SanBernOutliers<-as.data.frame(matrix(nrow=2,ncol=3))
+
+SanBernOutliers[1,1]<-sum(0>qhigh_datatheta36[1:25,2])
+SanBernOutliers[1,2]<-sum(0>qhigh_datatheta36[26:51,2])
+SanBernOutliers[1,3]<-sum(0>qhigh_datatheta36[52:77,2])
+
+SanBernOutliers[2,1]<-sum(0<qlow_datatheta36[1:25,2])
+SanBernOutliers[2,2]<-sum(0<qlow_datatheta36[26:51,2])
+SanBernOutliers[2,3]<-sum(0<qlow_datatheta36[52:77,2])
+
+row.names(SanBernOutliers) = c("Lower Risk","Higher Risk")
+  
+knitr::kable(SanBernOutliers,align="c",
+col.names = c("2020", "2021", "2022"),caption=" The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Bernardino",
+escape=FALSE)
+```
+
+
+
+Table:  The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Bernardino
+
+|            | 2020 | 2021 | 2022 |
+|:-----------|:----:|:----:|:----:|
+|Lower Risk  |  2   |  1   |  5   |
+|Higher Risk |  2   |  2   |  2   |
+
+There really is not much to infer about Lassen's $\theta$ component and there does not seem to be much learning of the parameters. 
+
+Kern follows a similar pattern to San Bernardino. If we cross tabulate it by years:
+
+
+Table: The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in Kern
+
+|            | 2020 | 2021 | 2022 |
+|:-----------|:----:|:----:|:----:|
+|Lower Risk  |  2   |  0   |  0   |
+|Higher Risk |  6   |  1   |  0   |
+
+
+```r
+grid.arrange(sbern,Lassen,Kern,nrow=1)
+```
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-15-1.png"><figcaption></figcaption></figure>
+
+Out of the 3 big cities we investigate Los Angeles first. There seems to be a larger number of biweeks in Los Angeles where the value 0 was not contained within the Credibility intervals. If we do a similar analysis to Kern we see; 
+
+
+Table: The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in Los Angeles
+
+|            | 2020 | 2021 | 2022 |
+|:-----------|:----:|:----:|:----:|
+|Lower Risk  |  3   |  7   |  0   |
+|Higher Risk |  4   |  0   |  7   |
+
+San Diego had a more varied year in 2020 compared to 2021 and 2022. In fa 
+
+
+Table: The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Diego
+
+|            | 2020 | 2021 | 2022 |
+|:-----------|:----:|:----:|:----:|
+|Lower Risk  |  3   |  1   |  4   |
+|Higher Risk |  5   |  3   |  1   |
+
+It is interesting to see that San Francisco as a county performed well until 2022. For the policy makers it would be of interest to understand the reasons behind the relative poor performance in that year.
+
+
+Table: The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Francisco
+
+|            | 2020 | 2021 | 2022 |
+|:-----------|:----:|:----:|:----:|
+|Lower Risk  |  3   |  0   |  0   |
+|Higher Risk |  2   |  0   |  5   |
+
+
+```r
+grid.arrange(la,sd,sf,nrow=1)
+```
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-19-1.png"><figcaption></figcaption></figure>
+
+
+## $\phi$ , The areal joint distribution 
 When we look at the joint distribution of spatial contribution to mortality risk, out of the 
 
 
@@ -485,7 +692,7 @@ ggplot(data = phis,aes(x= County_Index, y = phi,group=County_Index))+
            yend=quantile(phi.15,0.75), arrow=arrow(length=unit(0.2,"cm")))
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-13-1.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-20-1.png"><figcaption></figcaption></figure>
 
 ```r
 phi_means=aggregate(.~County_Index,data=phis,mean)
@@ -501,7 +708,7 @@ ggplot() +
   theme(legend.position = "none")
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-13-2.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-20-2.png"><figcaption></figcaption></figure>
 
 ## $\rho$ Coefficient Structured vs Unstructured Errors
 
@@ -525,7 +732,7 @@ ggplot(data = rhos,aes(x= Biweeks, y = rho,group=Biweeks))+
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-14-1.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-21-1.png"><figcaption></figcaption></figure>
 
 ## $\sigma$ Overall standard deviation
 
@@ -550,9 +757,11 @@ ggplot(data = sigmas,aes(x= Biweeks, y = sigma,group=Biweeks))+
                                                                                      40,45,50,55,60,65,70,75,77))
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-15-1.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-22-1.png"><figcaption></figcaption></figure>
 
 ## Convolution
+
+Recall that convolution is the aggregated areal and random effects associated with the counties. It allows us to look into 
 
 
 ```r
@@ -594,7 +803,7 @@ scale_x_continuous(name="Time",labels=c('1','5','10','15','20','25','30','35','4
 breaks=c(1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,77))+ggtitle("Convolution")+theme(plot.title = element_text(hjust = 0.5))
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-16-1.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-23-1.png"><figcaption></figcaption></figure>
 
 # References
 
