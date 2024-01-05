@@ -129,8 +129,8 @@ gc()
 
 ```
 ##             used   (Mb) gc trigger    (Mb)   max used    (Mb)
-## Ncells   1335271   71.4    2498754   133.5    2498754   133.5
-## Vcells 428690782 3270.7 1430920025 10917.1 1319653481 10068.2
+## Ncells   1335366   71.4    2508988   134.0    2508988   134.0
+## Vcells 428691118 3270.7 1427185968 10888.6 1311356052 10004.9
 ```
 
 ```r
@@ -342,6 +342,7 @@ library(ggpubr)
 library(gridExtra)
 library(ggplot2)
 library(tidyverse)
+
 cnames<-read.table("C:/Users/rm84/Desktop/research/HMM/data/countynames.txt",sep="\t",header=TRUE)[,1]
 
 START=1
@@ -559,9 +560,16 @@ sbern=ggplot(data = theta36,aes(x= Biweeks, y = theta,group=Biweeks))+
                  color = "red")
 ```
 
-Looking at the boxplot of $\theta$ vs biweeks of San Bernardino we see patterns of some note indicated by CI. In 2020 there is not a lot to note except the few biweeks in the middle of the year that suggests the reduction in mortality risk, which unfortunately turns to an increase in the last biweeks. For great majority of 2021 most of the credibility intervals contain the value 0. In the initial months of year 2022 that increased mortality risk which reverses direction in the latter moths. We can quantify the performance of the county by comparing the lower and upper bound values of the CI to 0. The lower (upper) bound value of CI being higher than 0 indicates higher (lower) relative mortality risk.   
+Out of the 6 counties we are looking into, the first county we will investigate is San Bernardino.
+
+Looking at the boxplot of $\theta$ vs biweeks of San Bernardino; 
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-13-1.png"><figcaption></figcaption></figure>
+
+we see patterns of some note indicated by CI. In 2020 there is not a lot to note except the few biweeks in the middle of the year that suggests the reduction in mortality risk, which unfortunately turns to an increase in the last biweeks. For great majority of 2021 most of the credibility intervals contain the value 0. In the initial months of year 2022 that increased mortality risk which reverses direction in the latter moths. We can quantify the performance of the county by comparing the lower and upper bound values of the CI to 0. The lower (upper) bound value of CI being higher than 0 indicates higher (lower) relative mortality risk.   
 
 Using the formulation 0 < 95% Lower Bound CI and summing up the number of biweeks we find that 6 of the times San Bernardino had higher relative risk. To find the number of biweeks with lower mortality risk we replace the 95% Lower Bound CI with 95% Upper Bound CI and change '>' to '<' which results in 8 number of biweeks.  Policy makers should look at these across time and investigate the reason behind this performance specific to the county, after accounting covariates and areal effects.   
+
 
 
 ```r
@@ -577,8 +585,8 @@ SanBernOutliers[2,3]<-sum(0<qlow_datatheta36[52:77,2])
 
 row.names(SanBernOutliers) = c("Lower Risk","Higher Risk")
   
-knitr::kable(SanBernOutliers,align="c",
-col.names = c("2020", "2021", "2022"),caption=" The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Bernardino",
+kable(SanBernOutliers,align="c",
+col.names = c("  2020  ", "  2021  ", "  2022  "),caption=" The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Bernardino",
 escape=FALSE)
 ```
 
@@ -586,29 +594,26 @@ escape=FALSE)
 
 Table:  The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Bernardino
 
-|            | 2020 | 2021 | 2022 |
-|:-----------|:----:|:----:|:----:|
-|Lower Risk  |  2   |  1   |  5   |
-|Higher Risk |  2   |  2   |  2   |
+|            |   2020   |   2021   |   2022   |
+|:-----------|:--------:|:--------:|:--------:|
+|Lower Risk  |    2     |    1     |    5     |
+|Higher Risk |    2     |    2     |    2     |
 
 There really is not much to infer about Lassen's $\theta$ component and there does not seem to be much learning of the parameters. 
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-15-1.png"><figcaption></figcaption></figure>
+Kern follows a similar pattern to San Bernardino. The boxplot vs biweeks will provide us with a varying pattern 
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-16-1.png"><figcaption></figcaption></figure>
 
-Kern follows a similar pattern to San Bernardino. If we cross tabulate it by years:
+If we cross tabulate the lower/higher relative mortality risk effect by years:
 
 
 Table: The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in Kern
 
-|            | 2020 | 2021 | 2022 |
-|:-----------|:----:|:----:|:----:|
-|Lower Risk  |  2   |  0   |  0   |
-|Higher Risk |  6   |  1   |  0   |
+|            |   2020   |   2021   |   2022   |
+|:-----------|:--------:|:--------:|:--------:|
+|Lower Risk  |    2     |    0     |    0     |
+|Higher Risk |    6     |    1     |    0     |
 
-
-```r
-grid.arrange(sbern,Lassen,Kern,nrow=1)
-```
-
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-15-1.png"><figcaption></figcaption></figure>
 
 Out of the 3 big cities we investigate Los Angeles first. There seems to be a larger number of biweeks in Los Angeles where the value 0 was not contained within the Credibility intervals. If we do a similar analysis to Kern we see; 
 
@@ -620,7 +625,10 @@ Table: The number of biweeks that the CI did not contain 0 indicating higher or 
 |Lower Risk  |  3   |  7   |  0   |
 |Higher Risk |  4   |  0   |  7   |
 
-San Diego had a more varied year in 2020 compared to 2021 and 2022. In fa 
+San Diego had a more varied year in 2020 compared to 2021 and 2022. When we look at the same plot as the other counties in this section
+
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-19-1.png"><figcaption></figcaption></figure>
+and it is straightforward from looking at the boxplots even though there were certain weeks in 2020 and 2021 that San Diego performed poorly for the great majority of the time the county performed well. 
 
 
 Table: The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Diego
@@ -630,6 +638,8 @@ Table: The number of biweeks that the CI did not contain 0 indicating higher or 
 |Lower Risk  |  3   |  1   |  4   |
 |Higher Risk |  5   |  3   |  1   |
 
+We again provide the boxplots vs biweeks.  
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-21-1.png"><figcaption></figcaption></figure>
 It is interesting to see that San Francisco as a county performed well until 2022. For the policy makers it would be of interest to understand the reasons behind the relative poor performance in that year.
 
 
@@ -639,13 +649,6 @@ Table: The number of biweeks that the CI did not contain 0 indicating higher or 
 |:-----------|:----:|:----:|:----:|
 |Lower Risk  |  3   |  0   |  0   |
 |Higher Risk |  2   |  0   |  5   |
-
-
-```r
-grid.arrange(la,sd,sf,nrow=1)
-```
-
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-19-1.png"><figcaption></figcaption></figure>
 
 
 ## $\phi$ , The areal joint distribution 
@@ -692,7 +695,7 @@ ggplot(data = phis,aes(x= County_Index, y = phi,group=County_Index))+
            yend=quantile(phi.15,0.75), arrow=arrow(length=unit(0.2,"cm")))
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-20-1.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-23-1.png"><figcaption></figcaption></figure>
 
 ```r
 phi_means=aggregate(.~County_Index,data=phis,mean)
@@ -708,7 +711,7 @@ ggplot() +
   theme(legend.position = "none")
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-20-2.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-23-2.png"><figcaption></figcaption></figure>
 
 ## $\rho$ Coefficient Structured vs Unstructured Errors
 
@@ -732,7 +735,7 @@ ggplot(data = rhos,aes(x= Biweeks, y = rho,group=Biweeks))+
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-21-1.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-24-1.png"><figcaption></figcaption></figure>
 
 ## $\sigma$ Overall standard deviation
 
@@ -757,7 +760,7 @@ ggplot(data = sigmas,aes(x= Biweeks, y = sigma,group=Biweeks))+
                                                                                      40,45,50,55,60,65,70,75,77))
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-22-1.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-25-1.png"><figcaption></figcaption></figure>
 
 ## Convolution
 
@@ -803,7 +806,7 @@ scale_x_continuous(name="Time",labels=c('1','5','10','15','20','25','30','35','4
 breaks=c(1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,77))+ggtitle("Convolution")+theme(plot.title = element_text(hjust = 0.5))
 ```
 
-<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-23-1.png"><figcaption></figcaption></figure>
+<figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-26-1.png"><figcaption></figcaption></figure>
 
 # References
 

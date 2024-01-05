@@ -365,7 +365,7 @@ library(ggpubr)
 library(gridExtra)
 library(ggplot2)
 library(tidyverse)
-library(kableExtra)
+
 cnames<-read.table("C:/Users/rm84/Desktop/research/HMM/data/countynames.txt",sep="\t",header=TRUE)[,1]
 
 START=1
@@ -587,14 +587,20 @@ sbern=ggplot(data = theta36,aes(x= Biweeks, y = theta,group=Biweeks))+
 
 ```
 
-Out of the 6 counties we are looking into, the first county we will investigate is San Bernardino.  
-Looking at the boxplot of $\theta$ vs biweeks of San Bernardino 
-```{r echo=FALSE}
+Out of the 6 counties we are looking into, the first county we will investigate is San Bernardino.
+
+Looking at the boxplot of $\theta$ vs biweeks of San Bernardino; 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+
+sbern
 
 ```
+
 we see patterns of some note indicated by CI. In 2020 there is not a lot to note except the few biweeks in the middle of the year that suggests the reduction in mortality risk, which unfortunately turns to an increase in the last biweeks. For great majority of 2021 most of the credibility intervals contain the value 0. In the initial months of year 2022 that increased mortality risk which reverses direction in the latter moths. We can quantify the performance of the county by comparing the lower and upper bound values of the CI to 0. The lower (upper) bound value of CI being higher than 0 indicates higher (lower) relative mortality risk.   
 
 Using the formulation 0 < 95% Lower Bound CI and summing up the number of biweeks we find that `r sum(0<qlow_datatheta36[,2])` of the times San Bernardino had higher relative risk. To find the number of biweeks with lower mortality risk we replace the 95% Lower Bound CI with 95% Upper Bound CI and change '>' to '<' which results in `r sum(0>qhigh_datatheta36[,2])` number of biweeks.  Policy makers should look at these across time and investigate the reason behind this performance specific to the county, after accounting covariates and areal effects.   
+
 
 ```{r, warning=FALSE,message=FALSE}
 SanBernOutliers<-as.data.frame(matrix(nrow=2,ncol=3))
@@ -610,7 +616,7 @@ SanBernOutliers[2,3]<-sum(0<qlow_datatheta36[52:77,2])
 row.names(SanBernOutliers) = c("Lower Risk","Higher Risk")
   
 kable(SanBernOutliers,align="c",
-col.names = c("2020", "2021", "2022"),caption=" The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Bernardino",
+col.names = c("  2020  ", "  2021  ", "  2022  "),caption=" The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Bernardino",
 escape=FALSE)
 
 
@@ -618,7 +624,21 @@ escape=FALSE)
 
 There really is not much to infer about Lassen's $\theta$ component and there does not seem to be much learning of the parameters. 
 
-Kern follows a similar pattern to San Bernardino. If we cross tabulate it by years:
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+
+Lassen
+
+```
+
+Kern follows a similar pattern to San Bernardino. The boxplot vs biweeks will provide us with a varying pattern 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+
+Kern
+
+```
+
+If we cross tabulate the lower/higher relative mortality risk effect by years:
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 KernOutliers<-as.data.frame(matrix(nrow=2,ncol=3))
@@ -634,16 +654,11 @@ KernOutliers[2,3]<-sum(0<qlow_datatheta15[52:77,2])
 row.names(KernOutliers) = c("Lower Risk","Higher Risk")
   
 knitr::kable(KernOutliers,align="c",
-col.names = c("2020", "2021", "2022"),caption=("The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in Kern"),
+col.names = c("  2020  ", "  2021  ", "  2022  "),caption=("The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in Kern"),
 escape=FALSE)
 
 ```
 
-```{r, warning=FALSE,message=FALSE}
-grid.arrange(sbern,Lassen,Kern,nrow=1)
-
-
-```
 
 Out of the 3 big cities we investigate Los Angeles first. There seems to be a larger number of biweeks in Los Angeles where the value 0 was not contained within the Credibility intervals. If we do a similar analysis to Kern we see; 
 
@@ -666,7 +681,14 @@ escape=FALSE)
 
 ```
 
-San Diego had a more varied year in 2020 compared to 2021 and 2022. In fa 
+San Diego had a more varied year in 2020 compared to 2021 and 2022. When we look at the same plot as the other counties in this section;
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+sd
+
+```
+it is straightforward from looking at the boxplots for the great majority of the time the county performed well even though there were certain weeks in 2020 and 2021 of poor performance. 
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 SDOutliers<-as.data.frame(matrix(nrow=2,ncol=3))
@@ -687,7 +709,15 @@ escape=FALSE)
 
 ```
 
-It is interesting to see that San Francisco as a county performed well until 2022. For the policy makers it would be of interest to understand the reasons behind the relative poor performance in that year.
+We again provide the boxplots vs biweeks, this time for the county of San Francisco. 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+
+sf
+
+```
+
+It is interesting to see that San Francisco as a county performed well until 2022. It would be of interest to understand the reasons behind the relative poor performance in that year.
 
 ```{r, echo=FALSE, warning=FALSE,message=FALSE}
 SFOutliers<-as.data.frame(matrix(nrow=2,ncol=3))
@@ -705,10 +735,6 @@ row.names(SFOutliers) = c("Lower Risk","Higher Risk")
 knitr::kable(SFOutliers,align="c",
 col.names = c("2020", "2021", "2022"),caption=("The number of biweeks that the CI did not contain 0 indicating higher or lower relative mortality risk in San Francisco"),
 escape=FALSE)
-```
-
-```{r, warning=FALSE,message=FALSE}
-grid.arrange(la,sd,sf,nrow=1)
 ```
 
 
@@ -769,7 +795,7 @@ ggplot() +
 
 ```
 
-## $\rho$ Coefficient Structured vs Unstructured Errors
+## $\rho$, Coefficient Structured vs Unstructured Errors
 ```{r, warning=FALSE,message=FALSE}
 
 rhos=as.data.frame(matrix(nrow=M,ncol=2))
