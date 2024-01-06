@@ -267,7 +267,7 @@ This section will discuss the findings associated with modelA1. We will first di
 
 ## Parameters of Fixed Covariates
 
-In this subsection we discuss the coefficients associated with covariates that are observed a single or 3 separate times effect mortality risk. We obtain Poverty, Income, Gini Sex Ratio and Median Age figures for the counties of California for each of the years under purview. Our data has 25,26,26 biweeks in the years 2020, 2021 and 2022 respectively and as stated in the data section of the STAN model. All of this data are replicated across the biweeks. Race, and Density (Population/Land Area of County) are calculated via Decennial Census and therefore is a fixed value across all the biweeks. In order to limit the number of estimated parameters in the race variable we used proportion of white people, which have the largest median of race values, right under 50%,  as the median value in the 58 counties.
+In this subsection we discuss the coefficients associated with covariates that are observed a single or 3 separate times effect mortality risk. We obtain Poverty, Income, Gini Sex Ratio  and Median Age figures for the counties of California for each of the years under purview. Our data has 25,26,26 biweeks in the years 2020, 2021 and 2022 respectively and as stated in the data section of the STAN model. All of this data are replicated across the biweeks. Race, and Density (Population/Land Area of County) are calculated via Decennial Census and therefore is a fixed value across all the biweeks. In order to limit the number of estimated parameters in the race variable we used proportion of white people, which have the largest median of race values, right under 50%,  as the median value in the 58 counties.
 
 ```{r, warning=FALSE,message=FALSE}
 
@@ -935,6 +935,11 @@ breaks=c(1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,77))+ggtitle("Convolution
 ```
 
 # Conclusion
+We found that the effects of the fixed (repeated 2020,2021,2022 values across the appropriate biweeks or based on 2020 decennial data) covariates based on 95% CI: poverty (increase), income (decrease), density (increase), gini (neither), $race_{white}$(increase), median age (increase), sex ratio (decrease with females). The only effect whose sign we were surpised with was the sex ratio. However we have to keep in mind that the CI is controlling for the other variables being present in the model. 
+
+When we have investigated the coefficients of vaccinations we could identify the mortality risk, in general, decreasing for 2020 and 2021 as the percentage of vaccinations increase in a county, controlling for the rest of the variables. However we were surprised to see the negation of this effect in 2022. This could be due to several factors such as evolving pandemic and/or population not keeping up with their vaccinations but we do not want to speculate beyond that.
+
+We have also investigated the model errors. In keeping consistent with the findings regarding vaccinations there are some mild worrying trends in 2022. A major benefit of investigating the model errors is to investigate which of the counties deserve more attention based on increased/decreased mortality risks controlling for all the other covariates. Policy makers should look into counties that performed over or under expectations via model error analysis.
 
 # References
 
