@@ -129,8 +129,8 @@ gc()
 
 ```
 ##             used   (Mb) gc trigger    (Mb)   max used   (Mb)
-## Ncells   1335417   71.4    2738228   146.3    2738228  146.3
-## Vcells 428692092 3270.7 1427194649 10888.7 1297117281 9896.3
+## Ncells   1335422   71.4    2738254   146.3    2738254  146.3
+## Vcells 428693197 3270.7 1427204501 10888.8 1297103381 9896.2
 ```
 
 ```r
@@ -200,7 +200,7 @@ This section will discuss the findings associated with modelA1. We will first di
 
 ## Parameters of Fixed Covariates
 
-In this subsection we discuss the coefficients associated with covariates that are observed a single or 3 separate times effect mortality risk. We obtain Poverty, Income, Gini Sex Ratio and Median Age figures for the counties of California for each of the years under purview. Our data has 25,26,26 biweeks in the years 2020, 2021 and 2022 respectively and as stated in the data section of the STAN model. All of this data are replicated across the biweeks. Race, and Density (Population/Land Area of County) are calculated via Decennial Census and therefore is a fixed value across all the biweeks. In order to limit the number of estimated parameters in the race variable we used proportion of white people, which have the largest median of race values, right under 50%,  as the median value in the 58 counties.
+In this subsection we discuss the coefficients associated with covariates that are observed a single or 3 separate times effect mortality risk. We obtain Poverty, Income, Gini Sex Ratio  and Median Age figures for the counties of California for each of the years under purview. Our data has 25,26,26 biweeks in the years 2020, 2021 and 2022 respectively and as stated in the data section of the STAN model. All of this data are replicated across the biweeks. Race, and Density (Population/Land Area of County) are calculated via Decennial Census and therefore is a fixed value across all the biweeks. In order to limit the number of estimated parameters in the race variable we used proportion of white people, which have the largest median of race values, right under 50%,  as the median value in the 58 counties.
 
 
 ```r
@@ -891,7 +891,7 @@ ggplot() +
 Looking at the map of posterior mean of $\phi$ s we see that the structured (spatial) effects tend to decrease in value from south east of the state to north east. However this could also indicate a need to change the weights of each county in the neighborhood structure. This would necessitate a further model extension.     
 
 ## $\rho$, Coefficient Structured (Spatial) vs Unstructured (Random) Errors
-A component we have already [discussed](https://mmusal.github.io/blog/2023/Joint_Spatial_Effects_BYM/#_4_Besag_York_Mollie_(BYM)_Model) is $\rho$ which determines the weight of spatial vs random effects. As $\rho$ increases there is more weight given to $\theta$ rather than $\phi$ in the model's errors component per the [equation](https://mmusal.github.io/blog/2023/Joint_Spatial_Effects_BYM.html#mjx-eqn-eqlambda).  
+A component we have already [discussed](https://mmusal.github.io/blog/2023/Joint_Spatial_Effects_BYM/#_4_Besag_York_Mollie_(BYM)_Model) is $\rho$ which determines the weight of spatial vs random effects. As $\rho$ increases there is more weight given to $\theta$ rather than $\phi$ in the model's errors component per the [equation](https://mmusal.github.io/blog/2023/Joint_Spatial_Effects_BYM.html#mjx-eqn-eqlambda). As can be seen from the plot of $\rho_{t}$ across the biweeks, the weights neither support spatial or random errors across the biweeks. In year 2020 after biweek 6 until biweek 16 and biweek 25 there seems to be strong weight given to random errors $\theta$. Year 2021 continues this trend such that between biweeks 26 and 33 and biweeks 49 to 55. There is not as much strong evidence for random effects having a larger weight in 2022. Spatial effects in year 2021 are more prominent as biweeks went by. In year 2021, all the posterior medians of $\rho$ in biweeks 33 to 47 are below 0.5 indicating a stronger weight on spatial effects. In 2022 we see strong spatial weights given between biweeks 60 to 64 and in varying degrees of relative strength compared to random effects after biweek 73. These are interesting values to compare since we would like to understand whether the model errors arose due to conditions specific to the counties or were they the result of neighboring effects. County specific effects require local investigations whereas spatial errors would require more regional approaches in understanding what is increasing or decreasing the model errors. Of course these should be done in conjunction with investigating $\phi$ and/or $\theta_{t}$.            
  
 
 ```r
@@ -916,7 +916,9 @@ ggplot(data = rhos,aes(x= Biweeks, y = rho,group=Biweeks))+
 
 <figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-25-1.png"><figcaption></figcaption></figure>
 
-## $\sigma$ Overall standard deviation
+## $\sigma$, Overall standard deviation
+
+There are two main points to draw attention here. First is how in general the standard deviation of $\sigma_{t}$ decreases all the way until year 2022. Than there are modest increases in the standard deviation as can be observed by the interquartile ranges in $\sigma$. What this means is that we have more information about the standard deviation of the errors as the pandemic progressed even though in 2022 our uncertainty has increased that concerns us. The other point we should draw attention here are the changes in the posterior median of $\sigma_{t}$ values from biweek 1 to 77. We see that from biweek 1 to 13, the first half of 2020 the standard deviation of the errors themselves have increased followed by a sharp decline until biweek 19, indicating that we were relatively more certain about mortality risks given the data. A modest increase have followed and been steady until month 35, followed by a large drop until biweek 39. The increases and decreases that followed might not draw attention except that by the end of 2022 our uncertainty regarding the mortality risk have increased to levels seen in biweek 15 in the year 2020.      
 
 
 ```r
@@ -943,7 +945,7 @@ ggplot(data = sigmas,aes(x= Biweeks, y = sigma,group=Biweeks))+
 
 ## Convolution
 
-Recall that convolution is the aggregated areal and random effects associated with the counties. It allows us to look into 
+Recall that convolution is the aggregated areal and random effects associated with the counties. It allows us to look into the magnitudes of error associated with each county. Among the 6 counties of interest, across the 77 biweeks, in general Los Angeles dominates this magnitude followed by San Bernardino. This phenomena would point out that there was a higher risk of mortality in these counties than would be accounted for with the socio-demographic and vaccination covariates. We see that until 2022 San Francisco had smaller magnitudes or error that unfortunately reversed direction. 
 
 
 ```r
@@ -986,6 +988,13 @@ breaks=c(1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,77))+ggtitle("Convolution
 ```
 
 <figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-27-1.png"><figcaption></figcaption></figure>
+
+# Conclusion
+We found that the effects of the fixed (repeated 2020,2021,2022 values across the appropriate biweeks or based on 2020 decennial data) covariates based on 95% CI: poverty (increase), income (decrease), density (increase), gini (neither), $race_{white}$(increase), median age (increase), sex ratio (decrease with females). The only effect whose sign we were surpised with was the sex ratio. However we have to keep in mind that the CI is controlling for the other variables being present in the model. 
+
+When we have investigated the coefficients of vaccinations we could identify the mortality risk, in general, decreasing for 2020 and 2021 as the percentage of vaccinations increase in a county, controlling for the rest of the variables. However we were surprised to see the negation of this effect in 2022. This could be due to several factors such as evolving pandemic and/or population not keeping up with their vaccinations but we do not want to speculate beyond that.
+
+We have also investigated the model errors. In keeping consistent with the findings regarding vaccinations there are some mild worrying trends in 2022. A major benefit of investigating the model errors is to investigate which of the counties deserve more attention based on increased/decreased mortality risks controlling for all the other covariates. Policy makers should look into counties that performed over or under expectations via model error analysis.
 
 # References
 
