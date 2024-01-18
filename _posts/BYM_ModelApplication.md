@@ -60,7 +60,7 @@ Navigate to the folder where the modelA1.STAN has an executable file under the n
 cd /home/admin/Desktop/research/
 ```
 
-While remaining in the same location, we instruct cmdstan to create 3 MCMC chains to run in parallel, do a 50,000 set of warmup simulations and sample 10,000 from them. The data is specified as '2023noICUcoviddata1.r' and the output files will be specified as mA11 with its extensions specified as _i leading to the file names mA11_1,mA11_2, and mA11_3. The execution of the model took approximately 9 hrs in hour workstation.
+While remaining in the same location, we instruct cmdstan to create 3 MCMC chains to run in parallel, do a 50,000 set of warmup simulations and sample 10,000 from them. The data is specified as '2023noICUcoviddata1.r' and the output files will be specified as mA11 with its extensions specified as _i leading to the file names mA11_1,mA11_2, and mA11_3. The execution of the model took approximately 9 hrs in our workstation.
 
 
 ```bash
@@ -71,7 +71,7 @@ output file output file=mA11_${i} &done&
 
 # Reading the files and checking convergence
 
-In this section we will read in the csv files and check for convergence. Note that the mA11_1,mA11_2 and mA11_3 do not have file extensions so we added them for convenience. The model created these large files and they will take a large RAM capacity in your R session.   
+In this section we will read in the csv files and check for convergence. Note that the mA11_1,mA11_2 and mA11_3 do not have file extensions so we added them for convenience to read in R. The model created these large files that contain MCMC samples of your parameters and they will take a large RAM capacity in your R session.   
 
 
 ```r
@@ -82,10 +82,11 @@ library(xtable)
 library(ggspatial)
 library(ggplot2)
 library(viridis)
+#location for the data which is needed for analysis.
+#The actual data operations to create all of the data in the #.Rdata file is a multitude of pages. 
 setwd("C:/Users/rm84/Desktop/research/HMM/data")
 load("workspacewithbasedata.RData")
-#Specifying the location of the csv files and creating string objects
-
+#Creating string objects to Specify the location of the csv files 
 chain1='C:/Users/rm84/Documents/mA11_1.csv'
 chain2='C:/Users/rm84/Documents/mA11_2.csv'
 chain3='C:/Users/rm84/Documents/mA11_3.csv'
@@ -100,7 +101,7 @@ fit=read_stan_csv(csvfiles)
 fitsummary=summary(fit)$summary
 
 Rhats=fitsummary[,"Rhat"]
-
+#How many Rhat values are above 1.01
 sum(Rhats>1.01,na.rm=TRUE)
 ```
 
@@ -109,6 +110,7 @@ sum(Rhats>1.01,na.rm=TRUE)
 ```
 
 ```r
+#If there are any which ones are they?
 Rhats[Rhats>1.01]
 ```
 
@@ -122,19 +124,22 @@ We proceed to extract all the samples into the object listofdraws, remove the st
 
 
 ```r
+#Extract the MCMC samples into a data frame
 listofdraws=as.data.frame(rstan::extract(fit))
+#Remove the STAN object
 rm(fit)
+#Garbage Collection
 gc()
 ```
 
 ```
 ##             used   (Mb) gc trigger    (Mb)   max used   (Mb)
-## Ncells   1335422   71.4    2738254   146.3    2738254  146.3
-## Vcells 428693197 3270.7 1427204501 10888.8 1297103381 9896.2
+## Ncells   1335459   71.4    2738697   146.3    2738697  146.3
+## Vcells 428693530 3270.7 1427207309 10888.8 1297103877 9896.2
 ```
 
 ```r
-#rho 
+#Attach the parameters to literally refer to them 
 attach(listofdraws)
 ```
 
@@ -145,25 +150,27 @@ The list of lists, object named 'cadata', contain all the data that our model ha
 
 ```r
 source("C:/Users/rm84/Desktop/research/HMM/data/R2023noICUcoviddata1.r")
+#Fixing the parameters
 START=1
 END=77
 ITER=END-START+1
+#cadata is the object that contains the standardized and non-standardized observations in California.
 cadata$START=START
 cadata$END=END
-
+#In the STAN program alpha_{t,1,n} is the mean/variance parameter of the Poisson distribution specific to a county "n" at a biweek "t". meansoflambda is going to contain the averaged out MCMC samples of alpha values creating expected value of Y.  
 meansoflambda=array(dim=c(ITER,length=N))
 for(t in START:END){
   for(n in 1:N){
     meansoflambda[t-START+1,n]=mean(eval(parse(text=(paste0("alpha.",t-START+1,".",1,".",n)))))
   }}
-
+#MSEarray_{t} is going to contain the mean square error at biweek t. This is calculated based on the difference between observed (cadata$y) and expected value of y contained in meansoflambda
 MSEarray=array(dim=c(ITER))
 for(t in START:END){
   MSEarray[t-START+1]=mean((cadata$y[t,]-meansoflambda[t-START+1,])^2)
 }
 MSE=mean(MSEarray)
 rMSE=sqrt(MSE)
-
+#Printing the root mean square error over T biweeks N Counties
 rMSE
 ```
 
@@ -172,6 +179,7 @@ rMSE
 ```
 
 ```r
+#The calculation of DIC_{4}
 l=length(alpha.1.1.1)
 ll1=array(dim=c(l,(END-START+1),N))
 for(t in START:END){
@@ -187,7 +195,7 @@ for(t in START:END){
 
 
 ll=-4*mean(rowSums(ll1))+2*sum(ll2)
-
+#Printing DIC_{4}
 ll
 ```
 
@@ -204,6 +212,7 @@ In this subsection we discuss the coefficients associated with covariates that a
 
 
 ```r
+#This section creates a publication quality table via kable 
 summary1=xtable(summary((cbind.data.frame(beta_pov,
 beta_inc,beta_dens,beta_gini,beta_white,beta_age,beta_sex))))
 
@@ -248,18 +257,20 @@ library(ggpubr)
 library(dplyr)
 library(gridExtra)
 
+#V is the biweek that Vaccination is going to include into the likelihood.
 V=cadata$V
-qhigh=array(dim=c(T-V+1))
-qlow=array(dim=c(T-V+1))
-beta_vac=as.data.frame(matrix(nrow=(T-V+1)*l,ncol=2))
 
+#the object that is going to contain the MCMC samples
+beta_vac=as.data.frame(matrix(nrow=(T-V+1)*l,ncol=2))
+#We populate the data frame for ggplot
 for(i in 1:(T-V+1)){
   beta_vac[((i-1)*(l)+1):((i)*l),1]=eval(parse(text=(paste0("beta_vac.",i))))
   beta_vac[((i-1)*(l)+1):((i)*l),2]=i
 
 }
+#labels
 names(beta_vac)=c("beta_vac","Biweeks")
-
+#
 qhigh_data <- beta_vac %>%
   group_by(Biweeks) %>%
   summarise(qhigh = quantile(beta_vac,0.975))
@@ -288,7 +299,7 @@ beta_vacplot
 <figure><img src="BYM_ModelApplication_files/figure-html/unnamed-chunk-11-1.png"><figcaption></figcaption></figure>
 
 ```r
-#Number of biweeks where 0 is above the Credibility Interval  
+#Number of biweeks where 0 is below the Credibility Interval(Higher vaccination correlates with more risk of dying)  
 num_biweeks_CI_neg<-sum(0<qlow_data$qlow)   
 num_biweeks_CI_neg
 ```
@@ -298,7 +309,7 @@ num_biweeks_CI_neg
 ```
 
 ```r
-#What were the biweeks where 0 is above the Credibility Interval 
+#What were the biweeks where 0 is below the Credibility Interval 
 which(0<qlow_data$qlow)+V
 ```
 
@@ -308,7 +319,7 @@ which(0<qlow_data$qlow)+V
 ```
 
 ```r
-#Number of biweeks where 0 is below the Credibility Interval
+#Number of biweeks where 0 is above the Credibility Interval (Higher vaccination correlates with less risk of dying)
 num_biweeks_CI_pos<-sum(0>qhigh_data$qhigh)
 num_biweeks_CI_pos
 ```
@@ -318,7 +329,7 @@ num_biweeks_CI_pos
 ```
 
 ```r
-#What were the biweeks where 0 is below the Credibility Interval
+#What were the biweeks where 0 is above the Credibility Interval
 which(0>qhigh_data$qhigh)+V
 ```
 
