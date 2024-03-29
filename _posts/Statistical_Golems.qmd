@@ -184,7 +184,7 @@ A Golem is an entity which follows instructions but does not think for itself. T
     -   A joint distribution might not be proper even though full conditionals of variables are.
 
     -   $$p(y_{1},y_{2}) \propto exp \left(-\frac{1}{2}\large(y_{1}-y_{2}\large)^{2}\right)$$ $$f(y_{1}|y_{2})\sim N(y_{2},1) , f(y_{2}|y_{1})\sim N(y_{1},1) $$
--   Instead we will make use of Markov Random Fields.
+-   We will be making use of Markov Random Fields.
 :::
 
 ## Convolution of Unknown Effects
