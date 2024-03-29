@@ -11,7 +11,7 @@ format:
     slide-number: true
 ---
 
-## Science Fiction, Magic and Reality, images {background-image="Statistical%20Golems_files//images/MatchCut.png" background-size="contain"}
+## Science Fiction, Magic and Reality, images {background-image="Statistical_Golems_files/figure-revealjs/MatchCut.png" background-size="contain"}
 
 **Any sufficiently advanced technology is indistinguishable from magic.** *Arthur C. Clarke, 1968, Science*
 
@@ -33,7 +33,7 @@ A Golem is an entity which follows instructions but does not think for itself. T
 
 ## Statistical Golems
 
-[![https://statsandr.com/blog/what-statistical-test-should-i-do/](Statistical%20Golems_files/flowchart.png)](https://statsandr.com/blog/what-statistical-test-should-i-do/)
+[![https://statsandr.com/blog/what-statistical-test-should-i-do/](Statistical_Golems_files/figure-revealjs/flowchart.png)](https://statsandr.com/blog/what-statistical-test-should-i-do/)
 
 ## Processes, Statistical Models and Hypothesis
 
@@ -120,13 +120,13 @@ A Golem is an entity which follows instructions but does not think for itself. T
 -   How does a particular county in CA perform across T time periods when given covariates.
     -   Unobs Effects. Spatial Effects.
 
-##  {background-image="Statistical%20Golems_files//images/countiesofcalifornia.png" background-size="contain"}
+##  {background-image="Statistical_Golems_files/figure-revealjs/countiesofcalifornia.png" background-size="contain"}
 
 <span style="color:black"> - Things that are closer to each other are more likely to be similar.
 
 <span style="color:black"> - There is a process based on areal units, beyond observed quantities, which effects Covid-19 mortality.
 
-##  {background-image="Statistical%20Golems_files//images/countiesofcalifornia.png" background-size="contain"}
+##  {background-image="Statistical_Golems_files/figure-revealjs/countiesofcalifornia.png" background-size="contain"}
 
 ::: {.incremental style="color: black;"}
 -   How do we represent a process of similarity in neighboring counties?
