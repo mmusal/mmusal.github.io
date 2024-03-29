@@ -1,0 +1,452 @@
+---
+title: "Scientific Golems and Research in the Era of Automated Intelligence. The Case of merging HMMs and Spatial Models"
+author: "Rasim Muzaffer Musal"
+editor: visual
+format:
+  revealjs: 
+    smaller: true
+    scrollable: true
+    preview-links: true
+    theme: dark
+    slide-number: true
+---
+
+
+## Science Fiction, Magic and Reality, images {background-image="Statistical%20Golems_files//images/MatchCut.png" background-size="contain"}
+
+**Any sufficiently advanced technology is indistinguishable from magic.** *Arthur C. Clarke, 1968, Science*
+
+\
+
+**The very fabric of life now, she thought as she rose, is magic. In the eighteenth century, we knew how everything was done; but here I rise through the air; I listen to voices in America; I see men flying -- but how it's done I can't even begin to wonder. So my belief in magic returns.** *Virginia Woolf, 1928, Orlando*
+
+\
+
+By Screen captures from 2001: A Space Odyssey DVD, Fair use, https://en.wikipedia.org/w/index.php?curid=29557739
+
+## The Golem of Prague and Statistical Golems
+
+*Rethinking Statistics, Richard McElreath*
+
+A Golem is an entity which follows instructions but does not think for itself. The story is that, one was created by a rabbi to protect the Jews from pogroms in the 16th century Prague. The Golem had to eventually be destroyed.
+
+"The Golem took the pails and ran swiftly to the brook. Several hours later the courtyard of the house of the Rabbi was flooded with water, ... But it was not found until the Golem was seen patiently obeying his orders by continuing to pour water into the kegs which had been filled a long time before..."
+
+## Statistical Golems
+
+[![https://statsandr.com/blog/what-statistical-test-should-i-do/](Statistical%20Golems_files/flowchart.png)](https://statsandr.com/blog/what-statistical-test-should-i-do/)
+
+## Processes, Statistical Models and Hypothesis
+
+-   A process Model: Expresses Causal Structure
+
+-   A Statistical Model: Explains data via simplifying the reality that explains/creates it based on a process model.
+
+-   A hypothesis can be tested based on the assumption that a model is correct.
+
+    -   Bayesian Hierarchical Modeling: Statistics for Spatio-Temporal Data Cressie & Wikle pg 21.
+
+    -   Statistical Rethinking: A Bayesian Course with Examples in R and STAN. Richard McElreath ch1.
+
+## Processes: Coin Toss
+
+-   Straightforward to think about the mechanics of a coin toss.
+    -   Lab conditions. "...With careful adjustment, the coin started heads up always lands heads up---one hundred percent of the time. We conclude that coin tossing is"physics" not "random."
+
+    -   Real life conditions even of the lab mentioned above is not going to be as straightforward.
+
+        -   Air resistance?
+        -   Momentum ?
+        -   Force ?
+
+    -   Is the relationship between these things well known or is there uncertainty in the processes themselves?
+
+## Statistical Modeling Questions
+
+-   Once the process model is selected, how do we represent it?
+
+-   Statistical modeling around the physical representation
+
+-   Some Modeling Questions
+
+-   
+
+    ```         
+      Should we set up a log-linear model or linear model?
+    ```
+
+-   
+
+    ```         
+      How many levels of uncertainty are there?
+    ```
+
+-   
+
+    ```         
+      What sort of distributions should we use to represent uncertainty of the data?
+    ```
+
+## Motivations
+
+::: incremental
+-   Can we represent the spatial dependence in the counties of California.
+
+-   To which extent were socio-demographic and other factors affected the Covid-19 mortality counts.
+
+-   How did these effects change through time (time is measured in biweeks).
+
+-   Can we represent different pandemic regimes in California and tie it to particular policies.
+:::
+
+## Statistical Modeling
+
+::: incremental
+-   Recall we are trying to model and understand changes in Covid Mortality in counties of California $Y$.
+
+-   Y=f(Observed Covariates, Unknown Effects)
+
+-   $Y_{t,i}\sim Pois(\lambda_{t,i})$ t is time index, i is county index.
+
+-   $log(\lambda_{t,i})=Linear\ Equation_{t,i}$
+
+-   $Linear\ Equation_{t,i} = Obs. \ Covariates \ Effects_{t,i} + Unobs \ Effects_{t,i}$
+:::
+
+## Inference from the model
+
+-   Can make predictions on Process / Statistical Models
+-   How does median household income effect mortality risk when there are these other covariates present in the model.
+    -   Obs. Covariates: Median Household Income, Poverty Rate, Vaccination Rate, County Median Age, Median Sex, Perc White,\
+-   How does a particular county in CA perform across T time periods when given covariates.
+    -   Unobs Effects. Spatial Effects.
+
+##  {background-image="Statistical%20Golems_files//images/countiesofcalifornia.png" background-size="contain"}
+
+<span style="color:black"> - Things that are closer to each other are more likely to be similar.
+
+<span style="color:black"> - There is a process based on areal units, beyond observed quantities, which effects Covid-19 mortality.
+
+##  {background-image="Statistical%20Golems_files//images/countiesofcalifornia.png" background-size="contain"}
+
+::: {.incremental style="color: black;"}
+-   How do we represent a process of similarity in neighboring counties?
+
+-   Random effects? $\theta$ ? This would not take into account similarity of neighborhoods.
+
+-   By creating Adjacency Matrices. i.e.: A county is a neighbor of the other if they share boundaries. Spatial Effects are quantified with $\phi$
+
+-   node1 \<- c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
+
+-   node2 \<- c(7, 38, 39, 41, 43, 50, 3, 5, 9, 26,
+:::
+
+## Convolution of Unknown Effects
+
+-   Random Effects $\theta$
+
+-   Spatial Effects $\phi$
+
+-   A simple additive set of components is possible in the Bayesian Framework
+
+-   $\gamma = \theta + \phi$
+
+-   The Problem in : $Linear\ Equation_{t,i} = Obs. \ Covariates' \ Effects_{t,i} + \gamma_{t,i}$
+
+::: {.incremental style="color: white;"}
+-   Identifiability
+:::
+
+## Convolution of Unknown Effects
+
+-   First let us think about $\phi$
+
+::: {.incremental style="color: white;"}
+-   $$f(\phi_{1},\ldots,\phi_{N})$$
+
+-   How can we get this joint probability that need to be incorporated into the full joint distribution for Bayesian calculations?
+:::
+
+## Convolution of Unknown Effects:
+
+::: {.incremental style="color: white;"}
+-   $\phi_{i}$ is independent?
+    -   $f(\phi_{1})\times f(\phi_{2}) \ldots \times f(\phi_{N})$
+    -   Beats the purpose of spatial model.
+-   Use law of multiplication?
+    -   $$f(\phi_{1}|\phi_{2},\ldots,\phi_{N})\times f(\phi_{2}|\phi_{3},\ldots,\phi_{N})\times\ldots\times f(\phi_{N}) $$
+    -   Depends on indexing that might not correspond with the graph structure
+:::
+
+## Convolution of Unknown Effects:
+
+::: {.incremental style="color: white;"}
+-   Declare arbitrary full conditionals and derive joint prob from there?
+    -   A joint distribution might not be proper even though full conditionals of variables are.
+
+    -   $$p(y_{1},y_{2}) \propto exp \left(-\frac{1}{2}\large(y_{1}-y_{2}\large)^{2}\right)$$ $$f(y_{1}|y_{2})\sim N(y_{2},1) , f(y_{2}|y_{1})\sim N(y_{1},1) $$
+-   Instead we will make use of Markov Random Fields.
+:::
+
+## Convolution of Unknown Effects
+
+-   Brook's Lemma 1964, Besag 1974 From Local to Global (Markov Random Fields)
+
+    $$ \frac{P(\Phi)}{P(\Phi^{*})}= \frac{P(\phi_{1}|\phi_{2},\ldots,\phi_{N})}{P(\phi_{1}^{*}|\phi_{2},\ldots,\phi_{N})}\times \frac{P(\phi_{2}|\phi_{1}^{*},\phi_{3}\ldots,\phi_{N})}{P(\phi_{2}^{*}|\phi_{1}^{*},\phi_{3}\ldots,\phi_{N})}\times \\ \frac{P(\phi_{3}|\phi_{1}^{*},\phi_{2}^{*},\phi_{4}\ldots,\phi_{N})}{P(\phi_{3}^{*}|\phi_{1}^{*},\phi_{2}^{*},\phi_{4}\ldots,\phi_{N})}\times \frac{P(\phi_{n}|\phi_{1}^{*},\ldots,\phi_{N-1}^{*})}{P(\phi_{n}^{*}|\phi_{1}^{*},\ldots,\phi_{N-1}^{*})}$$
+
+-   Where $*$ represents a fixed value that exists in the domain of $\Phi$. [Example slides 21-27](https://www2.stat.duke.edu/~cr173/Sta444_Sp17/slides/Lec18.pdf)
+
+## Markov Random Fields
+
+Markov random fields are undirected graphical models composed of - Vertex: Random Variable
+
+-   Edge: Dependency between random variables
+
+-   Clique: A set of random variables where each is connected via edges.
+
+-   Potentials: a function of k arguments that are exchangeable in the function, defined over cliques. k=2 ex: $(Y_{i}-Y{j})^{2}$
+
+## Markov Random Fields:
+
+
+```{r}
+#| label: fig-myplot
+#| fig-cap: “Markov Random Field Shared Borders and Conditional Dependence”
+#| fig-align: center
+
+library(dagitty)
+dag_cali_sub=dagitty(
+  "dag{
+  LA--SanBern.
+  SanBern.--Orange
+  Orange -- LA
+  Kern -- LA
+  Kern -- SanBern.
+  }"  
+)
+coordinates(dag_cali_sub)=list( x=c(LA=1, SanBern.=2, Orange=3 , Kern=-0.5,Ventura=0),
+y=c(LA=0, SanBern.=1, Orange=-1,Kern=1,Ventura=0) )
+
+plot(dag_cali_sub)
+
+```
+
+
+## Markov Random Fields and Gibbs Distributions
+
+-   Hammersley-Clifford, 1971 shows how cliques and potentials can be used to determine the joint distributions.
+
+-   Besag 1974 and Clifford 1990 shows if there is MRF it is in the form of Gibbs distribution.
+
+-   Gibbs distribution: $p(\phi_{1},\ldots,\phi_{N})$ is defined via $\phi_{i}$ only through potential on cliques. k=1, no spatial structure, we choose k = 2.
+
+## Markov Random Fields and Gibbs Distributions
+
+-   Geman and Geman (1984) shows in order to sample from MRF, you can sample from Gibbs distribution.
+
+$$exp \left(-\frac{1}{2}\sum_{i \sim j}(\phi_{i}-\phi_{j})^{2} \right)$$
+
+## Markov Random Fields and Gibbs Distributions
+
+-   This is used to generate samples from $\Phi$ but is an improper prior distribution. If we wanted to make it a proper distribution we would need to model using full conditional distributions based on neighborhood (adjacency) matrices and calculate determinants from leading to $O(N^{3})$ time instead of $O(N^{2})$.
+
+$$exp \left(-\frac{1}{2}\sum_{i \sim j}(\phi_{i}-\phi_{j})^{2} \right)$$
+
+## Markov Random Fields and Gibbs Distributions
+
+-   This is an improper distribution. To make it identifiable we will make the sum of $\Phi$ equal to 0.
+
+$$exp \left(-\frac{1}{
+2}\sum_{i \sim j}(\phi_{i}-\phi_{j})^{2} \right)$$
+
+-   Gaussian Markov Random Field assumption leads to another derivation of the same formulation. [The formulation derives from precision matrix of the $\Phi$ joint distribution.](https://mc-stan.org/users/documentation/case-studies/icar_stan.html)
+
+## Markov Random Fields and Gibbs Distributions
+
+STAN Function via Mitzi Morris:
+
+
+```{STAN}
+#| eval: FALSE
+#| echo: true
+
+functions {
+  real icar_normal_lpdf(row_vector phi, int N, int[] node1, int[] node2) {
+    return -0.5 * dot_self(phi[node1] - phi[node2])
+    + normal_lpdf(sum(phi) | 0, 0.0001 * N);
+  }}
+
+```
+
+
+## Convolution of Unknown Effects: Besag York Mollie 2
+
+$$\sigma\times \left(\sqrt{\frac{\rho}{s}}\times\phi+\left(\sqrt{(1-\rho)}\times\theta\right) \right)$$ $\theta_{i}\sim N(0,1)$ random effect specific to county i.
+
+s is a scaling factor which [ensures $var(\phi_{i})\approx 1$](https://www.researchgate.net/publication/289527648_An_intuitive_Bayesian_spatial_model_for_disease_mapping_that_accounts_for_scaling)
+
+$\rho$ Mixing component between spatial and specific effects.
+
+$\sigma$ the overall standard deviation for combination of effects.
+
+## Application of Spatial Models
+
+
+```{r}
+#| eval: TRUE
+#| echo: FALSE
+
+#| eval: FALSE
+#| echo: true
+
+options(mc.cores=parallel::detectCores(),auto_write = TRUE)
+library(rstan)
+library(xtable)
+library(ggspatial)
+library(ggplot2)
+library(viridis)
+setwd("C:/Users/rm84/Desktop/research/HMM/data")
+load("workspacewithbasedata.RData")
+
+attach(listofdraws)
+
+summary1=xtable(summary((cbind.data.frame(beta_pov,
+beta_inc,beta_dens,beta_gini,beta_white,beta_age,beta_sex))))
+
+s1=(as.data.frame(cbind(beta_pov,beta_inc,beta_dens,beta_gini,
+beta_white,beta_age,beta_sex)))
+
+m1=as.data.frame(matrix(data=s1,nrow=6,ncol=7))
+
+  m1[1,]=round(sapply(s1,min),3)
+  m1[2,]=round(apply(s1[1:7],2,quantile,probs=0.025),3)
+  m1[3,]=round(sapply(s1,median),3)
+  m1[4,]=round(colMeans(s1),3)
+  m1[5,]=round(apply(s1[1:7],2,quantile,probs=0.975),3)
+  m1[6,]=round(sapply(s1,max),3)
+  row.names(m1) = c("Min","2.5th Perc.","Med.","Mean","97.5th Perc.","Max")
+knitr::kable(m1,digits=2,
+col.names = c("$\\beta_{Pov}$","$\\beta_{Inc}$","$\\beta_{Dens}$","$\\beta_{gini}$","$\\beta_{white}$","$\\beta_{age}$","$\\beta_{sex}$"),
+escape=FALSE)
+
+
+```
+
+
+## Outcomes $\theta$:
+
+![](Statistical_Golems_files/figure-revealjs/unnamed-chunk-17-1.png)
+
+## Outcomes $\theta$:
+
+![](Statistical_Golems_files/figure-revealjs/unnamed-chunk-18-1.png)
+
+## Outcomes $\phi$:
+
+![](Statistical_Golems_files/figure-revealjs/unnamed-chunk-13-2.png)
+
+## Outcomes $\phi$:
+
+![](Statistical_Golems_files/figure-revealjs/unnamed-chunk-23-1.png)
+
+## Outcomes Convolution:
+
+![](Statistical_Golems_files/figure-revealjs/unnamed-chunk-27-1.png)
+
+## Hidden Markov Models:
+
+-   Define $z_{t,n} = 1,\ldots,K$ as the indicator which determines the parameters of the process for $Y_{t,n}$.
+
+-   $z_{t}=k$
+
+-   $k$ is hidden but can be inferred from observed data. We can call $k$ the regime indicator.
+
+-   If the history of $z_{t}$ gave no information about it we would have a mixture distribution. $$P(Y_{t}|\lambda_{t})=  \sum\limits_{k=1}^{k=K} P(z=k)\times P(Y_{t}|\lambda_{t,k})$$
+
+## Hidden Markov Models:
+
+-   We suggest that there is some information in the regimes' history.
+
+-   However $P(z_{t}|z_{t-1},\ldots,z_{1})=P(z_{t}|z_{t-1})$, these are transition probabilities, furthermore
+
+-   These probabilities are time invariant. $P(z_{t}=k|z_{t-1}=l)=A_{l,k}$
+
+## Hidden Markov Models:
+
+-   Example with T=2, single Y, Ignore priors besides the one for $z_{1}$ $$ P(z_{1}=k)\times P(z_{t=2}=l|z_{t=1}=k)\times P(Y_{1}|\lambda_{1,k})\times P(Y_{2}|\lambda_{2,l})$$ $$P(z_{1}=k,z_{t=2}=l)\times P(Y_{1},Y_{2}|\lambda_{1,k},\lambda_{2,l})$$ $$P(z_{1}=k,z_{2}=l,Y_{1},Y_{2})$$
+
+-   Example with T=T $$ P(z_{1})\prod\limits_{t=2}^{t=T} P(z_{t}|z_{t-1})\times \prod\limits_{t=1}^{t=T}P(Y_{t}|\lambda_{t},z_{t}) $$ $$P(z_{1}=k,\ldots,z_{T}=l,Y_{1},\ldots,Y_{T}) $$
+
+## Hidden Markov Models:
+
+-   As K increases the computational requirements increase.
+
+
+```{STAN}
+#| eval: FALSE
+#| echo: true
+parameters
+{ordered[K] mu[N]; simplex[K] pi1[N]; simplex[K] A[K,N];}
+transformed parameters {
+matrix[K,N] lambda [T] ;real logalpha[T,K,N]; real accumulator[K];
+    
+for(k in 1:K){  for(n in 1:N){
+logalpha[1,k,n] = log(pi1[n,k]) + poisson_lpmf(y[1,n] | lambda[1,k,n]);}}
+
+for (t in 2:T) {for (j in 1:K){for (n in 1:N){
+accumulator[1] = logalpha[t-1, 1,n] + log(A[1, n,j]) + poisson_lpmf(y[t,n] | lambda[t,j,n]);
+accumulator[2] = logalpha[t-1, 2,n] + log(A[2, n,j]) + poisson_lpmf(y[t,n] | lambda[t,j,n]);
+logalpha[t, j,n] = log_sum_exp(to_vector(accumulator));}}}}
+```
+
+
+## Putting it together
+
+-   Y represents Covid 19 Mortality
+-   $Y_{t,n}$ represents Covid 19 Mortality at time $t$ in county $n$
+-   $t=1,\ldots,77$, $n=1,\ldots,58$
+-   $X=X_{Inc.},\ldots,X_{Vac}$
+-   Some covariates have a single value across 77 biweeks, some have 3 and some are recorded every biweek.
+-   K=2
+-   $\mu_k$ represents the change in base risk in state k.
+
+## Putting it together
+
+
+```{=tex}
+\begin{align}
+  & P(Y_{1},\ldots,Y_{77},z_{1},\ldots,z_{77})= & \\
+   & \prod\limits_{k=1}^{k=2} P(z_{t=1,k})\times \prod\limits_{l=1}^{l=2}\prod\limits_{n=1}^{n=58} P(z_{t,l}|z_{t-1,k})\times\prod\limits_{t=1}^{t=77}P(Y_{t,n}|\lambda_{t,k,n}) & \\
+    \\
+  &  \lambda_{t,k,n}=E^{\left(\mu_{k}+
+    \beta_{Inc}\times X_{t,Inc}+\ldots+
+    \beta_{t,Vac}\times X_{t,Vac}+Convolution_{t,n}
+    \right)} & \\
+    \\
+    
+  &  Convolution_{t,n}= & \\
+   & \sigma_{t}\times \left(\sqrt{\frac{\rho_{t}}{s}}\times\phi_{n}+\left(\sqrt{(1-\rho_{t})}\times\theta_{t,n}\right) \right) &
+
+\end{align}
+```
+
+## Preliminary results
+
+-   Change in Base Risk 
+
+-    $exp(\mu_1)=exp(-0.737)=0.478$, $exp(\mu_2)=exp(0.148)=1.16$
+
+-    $P(z_{t}=1|z_{t-1}=1)=0.933$, $P(z_{t}=2|z_{t-1}=1)=0.067$, 
+
+-    $P(z_{t}=1|z_{t-1}=2)=.066$, $P(z_{t}=2|z_{t-1}=2)=0.934$
+
+##  Preliminary results
+
+![](Statistical_Golems_files/figure-revealjs/BiweeksvsProbs.png)
+
+## Conclusion
+
+- Further work
+
+- Questions?
+
