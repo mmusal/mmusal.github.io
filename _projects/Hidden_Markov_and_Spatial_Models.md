@@ -50,4 +50,4 @@ First we need to have an understanding of the scripting language R to represent 
 
 #### [Hidden Markov Models STAN Output](https://mmusal.github.io/blog/2023/Hidden-Markov-Models-Outputs)
 
-### Combining the Models
+### [Spatial Models and HMM](https://mmusal.github.io/blog/2024/Statistical_Golems.html)
